@@ -56,18 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ---------- Fixed nav — dark on scroll ---------- */
+  /* ---------- Fixed nav — shadow on scroll ---------- */
   const nav = document.querySelector('.site-nav');
   if (nav) {
-    const isInnerPage = !!document.querySelector('.page-header');
-    if (isInnerPage) nav.classList.add('is-scrolled');
-
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 60) {
-        nav.classList.add('is-scrolled');
-      } else if (!isInnerPage) {
-        nav.classList.remove('is-scrolled');
-      }
+      nav.classList.toggle('is-scrolled', window.scrollY > 10);
     }, { passive: true });
   }
 

@@ -128,14 +128,11 @@ p { margin: 0; }
   left: 0;
   right: 0;
   z-index: 500;
-  background: transparent;
-  transition: background 0.3s ease, box-shadow 0.3s ease;
+  background: var(--color-near-black);
+  transition: box-shadow 0.3s ease;
 }
 .site-nav.is-scrolled {
-  background: rgba(10, 10, 10, 0.97);
-  box-shadow: 0 2px 24px rgba(0,0,0,0.35);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 24px rgba(0,0,0,0.5);
 }
 .site-nav .container {
   position: relative;
@@ -195,6 +192,7 @@ p { margin: 0; }
 .hero {
   position: relative;
   min-height: 791px;
+  margin-top: 84px;
   border-radius: 0 0 24px 24px;
   overflow: hidden;
   display: flex;
