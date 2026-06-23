@@ -128,7 +128,7 @@ p { margin: 0; }
   left: 0;
   right: 0;
   z-index: 500;
-  background: var(--color-near-black);
+  background: var(--color-black);
   transition: box-shadow 0.3s ease;
 }
 .site-nav.is-scrolled {
@@ -192,7 +192,6 @@ p { margin: 0; }
 .hero {
   position: relative;
   min-height: 791px;
-  margin-top: 84px;
   border-radius: 0 0 24px 24px;
   overflow: hidden;
   display: flex;
