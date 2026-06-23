@@ -123,30 +123,45 @@ p { margin: 0; }
    NAV
    =========================================================== */
 .site-nav {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 50;
+  z-index: 500;
   background: transparent;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+.site-nav.is-scrolled {
+  background: rgba(10, 10, 10, 0.97);
+  box-shadow: 0 2px 24px rgba(0,0,0,0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 .site-nav .container {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding-top: 24px;
-  padding-bottom: 24px;
-  gap: 24px;
+  justify-content: flex-end;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  gap: 16px;
+}
+/* Ẩn nút spacer vô hình — không cần nữa với centering tuyệt đối */
+.site-nav .container > .nav-call-btn:first-child {
+  display: none;
 }
 .nav-zalo-btn {
-  display: none; /* mirrors Figma's opacity:0 placeholder button */
+  display: none;
 }
 .nav-links {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 24px;
-  flex: 1;
+  white-space: nowrap;
 }
 .nav-link {
   font-weight: 500;
@@ -1823,6 +1838,8 @@ p { margin: 0; }
     top: 100%;
     left: 0;
     right: 0;
+    transform: none;
+    white-space: normal;
     flex-direction: column;
     align-items: center;
     gap: 0;
