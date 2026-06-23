@@ -219,6 +219,43 @@ tbody tr:hover td{background:#fafafa}
 /* Sheet import guide code block */
 pre.sheet-headers{background:#101010;color:#fecd27;border-radius:8px;padding:14px 16px;font-size:11px;line-height:1.8;overflow-x:auto;margin:10px 0}
 
+/* ===== DESIGN EDITOR ===== */
+.design-grid{display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start}
+.design-controls{display:flex;flex-direction:column;gap:14px}
+.design-preview-wrap{position:sticky;top:70px}
+.color-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.color-swatch{width:36px;height:36px;border-radius:8px;border:2px solid #e5e7eb;cursor:pointer;flex-shrink:0;overflow:hidden;padding:0;position:relative}
+.color-swatch input[type=color]{position:absolute;inset:-4px;width:calc(100%+8px);height:calc(100%+8px);border:none;cursor:pointer;opacity:0}
+.color-swatch-preview{width:100%;height:100%;border-radius:6px;pointer-events:none}
+.color-label{flex:1;font-size:13px;font-weight:500;color:#252b42}
+.color-hex{font-size:12px;font-family:'SF Mono','Courier New',monospace;color:#737373;background:#f4f6f9;border:1px solid #e5e7eb;border-radius:6px;padding:5px 8px;width:90px}
+.font-select{width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;color:#252b42;background:#fff}
+.font-select:focus{outline:none;border-color:#fecd27}
+.range-wrap{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.range-wrap label{font-size:13px;font-weight:500;color:#252b42;width:140px;flex-shrink:0}
+.range-wrap input[type=range]{flex:1;accent-color:#fecd27;height:4px}
+.range-val{font-size:12px;font-family:monospace;color:#737373;width:40px;text-align:right}
+
+/* Preview panel */
+.dp-nav{background:#000;padding:10px 16px;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:space-between;margin-bottom:0}
+.dp-nav-links{display:flex;align-items:center;gap:14px;flex:1;justify-content:center}
+.dp-nav-link{font-size:11px;color:rgba(255,255,255,.7);font-weight:500;letter-spacing:.5px}
+.dp-nav-logo{width:28px;height:28px;background:#fecd27;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#000}
+.dp-nav-btn{background:#fecd27;color:#000;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px}
+.dp-hero{padding:28px 20px;text-align:center;border-radius:0;background:linear-gradient(135deg,#1a1a2e,#101010)}
+.dp-hero-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:6px}
+.dp-hero-sub{font-size:11px;color:rgba(255,255,255,.6);margin-bottom:14px}
+.dp-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.dp-btn-primary{background:#fecd27;color:#101010;padding:8px 18px;border-radius:64px;font-size:12px;font-weight:700;border:none;cursor:default}
+.dp-btn-black{background:#101010;color:#fff;padding:8px 18px;border-radius:64px;font-size:12px;font-weight:700;border:none;cursor:default}
+.dp-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;background:#f5f5f5;border-radius:0 0 10px 10px}
+.dp-card{background:#fff;border-radius:12px;border:1px solid #d2d2d2;padding:10px;font-size:11px}
+.dp-card-img{width:100%;height:52px;background:#e7e7e7;border-radius:6px;margin-bottom:7px}
+.dp-card-name{font-weight:600;color:#252b42;margin-bottom:4px;font-size:11px}
+.dp-price{font-weight:700;color:#252b42;font-size:12px}
+.dp-cta{width:100%;background:#fecd27;border:none;border-radius:64px;padding:5px;font-size:10px;font-weight:700;color:#101010;cursor:default;margin-top:7px}
+.dp-section-title{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-align:center;margin:10px 0 8px;color:#252b42}
+
 /* Responsive */
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}
@@ -287,6 +324,11 @@ pre.sheet-headers{background:#101010;color:#fecd27;border-radius:8px;padding:14p
       <div class="sb-item" onclick="navigate('blog')" id="nav-blog">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         Tin tức & Blog
+      </div>
+
+      <div class="sb-item" onclick="navigate('design')" id="nav-design">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg>
+        Thiết kế Website
       </div>
 
       <div class="sb-section">Hệ thống</div>
@@ -396,7 +438,14 @@ const DEFAULT_SETTINGS = {
   adminPwd:'tiendu2026',
 }
 
-let S = { page:'dashboard', products:[], banners:[], blog:[], settings:{...DEFAULT_SETTINGS} }
+const DEFAULT_DESIGN = {
+  colorPrimary:'#fecd27', colorPrimaryDark:'#e1ae01', colorNavBg:'#000000',
+  colorText:'#252b42', colorBgSoft:'#f5f5f5',
+  fontBody:'Inter', fontCta:'Plus Jakarta Sans',
+  radiusPill:64, radiusLg:12, radiusMd:8,
+}
+
+let S = { page:'dashboard', products:[], banners:[], blog:[], settings:{...DEFAULT_SETTINGS}, design:{...DEFAULT_DESIGN} }
 let searchQuery = ''
 let filterCat = ''
 let currentEditId = null
@@ -406,17 +455,20 @@ let currentEditId = null
 // ========================================================
 function save() {
   localStorage.setItem('tiendu_admin', JSON.stringify(S))
-  // Also save public-facing product data for website integration
   localStorage.setItem('tiendu_products', JSON.stringify(S.products))
   localStorage.setItem('tiendu_banners', JSON.stringify(S.banners))
   localStorage.setItem('tiendu_settings', JSON.stringify(S.settings))
+  localStorage.setItem('tiendu_design', JSON.stringify(S.design))
   updateBadges()
 }
 
 function load() {
   const saved = localStorage.getItem('tiendu_admin')
   if (saved) {
-    try { S = JSON.parse(saved) } catch(e) {}
+    try {
+      S = JSON.parse(saved)
+      if (!S.design) S.design = {...DEFAULT_DESIGN}
+    } catch(e) {}
   } else {
     S.products = DEFAULT_PRODUCTS
     S.banners = DEFAULT_BANNERS
@@ -462,6 +514,7 @@ const PAGE_TITLES = {
   inventory:['Kho hàng','Cập nhật tồn kho & giá'],
   banners:['Banner & Hình ảnh','Quản lý banner trang chủ'],
   blog:['Tin tức & Blog','Quản lý bài viết'],
+  design:['Thiết kế Website','Chỉnh màu sắc, font chữ, border toàn site'],
   settings:['Cài đặt','Thông tin hệ thống & Google Sheets'],
 }
 
@@ -486,6 +539,7 @@ function render() {
     case 'inventory': c.innerHTML = renderInventory(); break
     case 'banners':   c.innerHTML = renderBanners();   break
     case 'blog':      c.innerHTML = renderBlog();      break
+    case 'design':    c.innerHTML = renderDesign(); setTimeout(updateDesignPreview, 0); break
     case 'settings':  c.innerHTML = renderSettings();  break
   }
 }
@@ -742,30 +796,79 @@ function deleteProduct(id) {
 // ========================================================
 // INVENTORY
 // ========================================================
+let invFilter = 'all'
+
 function renderInventory() {
-  const rows = S.products.map(p => {
-    const statusChip = p.stock===0 ? `<span class="chip chip-red">Hết hàng</span>` :
-      p.stock<15 ? `<span class="chip chip-yellow">Sắp hết (${p.stock})</span>` :
-      `<span class="chip chip-green">Còn hàng (${p.stock})</span>`
+  const total = S.products.length
+  const inStock = S.products.filter(p=>p.stock>0).length
+  const lowStock = S.products.filter(p=>p.stock>0&&p.stock<15).length
+  const outStock = S.products.filter(p=>p.stock===0).length
+  const maxStock = Math.max(...S.products.map(p=>p.stock), 1)
+
+  const filtered = S.products.filter(p => {
+    if (invFilter==='low') return p.stock>0 && p.stock<15
+    if (invFilter==='out') return p.stock===0
+    return true
+  })
+
+  const rows = filtered.map(p => {
+    const pct = Math.min(100, Math.round(p.stock/maxStock*100))
+    const barColor = p.stock===0?'#ef4444':p.stock<15?'#f59e0b':'#22c55e'
+    const statusChip = p.stock===0
+      ? `<span class="chip chip-red">Hết hàng</span>`
+      : p.stock<15 ? `<span class="chip chip-yellow">Sắp hết</span>`
+      : `<span class="chip chip-green">Còn hàng</span>`
     return `<tr>
       <td><img src="${p.image}" class="prod-img" alt="" onerror="this.style.background='#f4f6f9'"></td>
       <td>
         <div class="prod-name">${p.name}</div>
         <div style="font-size:11px;color:#737373;margin-top:1px">${p.brand} · ${CATS[p.category]?.split(' ').pop()}</div>
       </td>
-      <td class="mono">${p.oem||'—'}</td>
-      <td><input class="inv-input" type="number" value="${p.stock}" onchange="updateField('${p.id}','stock',this.value)" min="0"></td>
-      <td><input class="inv-input" type="number" value="${p.price}" onchange="updateField('${p.id}','price',this.value)" min="0" style="width:120px"></td>
-      <td><input class="inv-input" type="number" value="${p.wholesale||0}" onchange="updateField('${p.id}','wholesale',this.value)" min="0" style="width:120px"></td>
+      <td class="mono" style="font-size:12px">${p.oem||'—'}</td>
+      <td style="min-width:140px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <input class="inv-input" type="number" value="${p.stock}" onchange="updateField('${p.id}','stock',+this.value);render()" min="0" style="width:72px">
+          <div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden">
+            <div style="width:${pct}%;height:100%;background:${barColor};border-radius:3px;transition:width .3s"></div>
+          </div>
+        </div>
+      </td>
+      <td><input class="inv-input" type="number" value="${p.price}" onchange="updateField('${p.id}','price',+this.value)" min="0" style="width:110px"></td>
+      <td><input class="inv-input" type="number" value="${p.wholesale||0}" onchange="updateField('${p.id}','wholesale',+this.value)" min="0" style="width:110px"></td>
       <td>${statusChip}</td>
     </tr>`}).join('')
 
   return `
+  <!-- Stat strip -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+    <div class="stat-card" style="padding:14px;cursor:pointer;${invFilter==='all'?'border-color:#fecd27;background:#fffdf0':''}" onclick="invFilter='all';render()">
+      <div class="stat-val" style="font-size:22px">${total}</div><div class="stat-lbl">Tổng sản phẩm</div>
+    </div>
+    <div class="stat-card" style="padding:14px;cursor:pointer;${invFilter==='all'?'':''}" onclick="invFilter='all';render()">
+      <div class="stat-val" style="font-size:22px;color:#22c55e">${inStock}</div><div class="stat-lbl">Còn hàng</div>
+    </div>
+    <div class="stat-card" style="padding:14px;cursor:pointer;${invFilter==='low'?'border-color:#fecd27;background:#fffdf0':''}" onclick="invFilter='low';render()">
+      <div class="stat-val" style="font-size:22px;color:#f59e0b">${lowStock}</div><div class="stat-lbl">Sắp hết (&lt;15)</div>
+    </div>
+    <div class="stat-card" style="padding:14px;cursor:pointer;${invFilter==='out'?'border-color:#fecd27;background:#fffdf0':''}" onclick="invFilter='out';render()">
+      <div class="stat-val" style="font-size:22px;color:#ef4444">${outStock}</div><div class="stat-lbl">Hết hàng</div>
+    </div>
+  </div>
+
   <div class="table-wrap">
     <div class="tw-head">
-      <div class="tw-head-title">Quản lý kho hàng <span style="font-weight:400;color:#737373">(${S.products.length} sản phẩm)</span></div>
+      <div class="tw-head-left">
+        <div class="tw-head-title">Kho hàng
+          <span style="font-weight:400;color:#737373">(${filtered.length}${invFilter!=='all'?' lọc / '+total+' tổng':''})</span>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-sm ${invFilter==='all'?'btn-primary':'btn-ghost'}" onclick="invFilter='all';render()">Tất cả</button>
+          <button class="btn btn-sm ${invFilter==='low'?'btn-primary':'btn-ghost'}" onclick="invFilter='low';render()">Sắp hết</button>
+          <button class="btn btn-sm ${invFilter==='out'?'btn-primary':'btn-ghost'}" onclick="invFilter='out';render()">Hết hàng</button>
+        </div>
+      </div>
       <div class="row">
-        <span style="font-size:12px;color:#737373">Thay đổi giá trị → tự động lưu</span>
+        <span style="font-size:12px;color:#737373">Chỉnh số → tự lưu</span>
         <button class="btn btn-secondary btn-sm" onclick="exportCSV()">Xuất CSV</button>
         <button class="btn btn-primary btn-sm" onclick="saveAllInventory()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -773,12 +876,12 @@ function renderInventory() {
         </button>
       </div>
     </div>
-    <table>
+    ${filtered.length ? `<table>
       <thead><tr>
         <th width="56">Ảnh</th><th>Sản phẩm</th><th>Mã OEM</th><th>Tồn kho</th><th>Giá bán (₫)</th><th>Giá sỉ (₫)</th><th>Trạng thái</th>
       </tr></thead>
       <tbody>${rows}</tbody>
-    </table>
+    </table>` : `<div class="tw-empty"><h4>Không có sản phẩm nào trong mục này</h4></div>`}
   </div>`
 }
 
@@ -969,6 +1072,253 @@ function deleteBlog(id) {
   if (!confirm('Xóa bài viết này?')) return
   S.blog = S.blog.filter(x=>x.id!==id)
   save(); render(); toast('Đã xóa','s')
+}
+
+// ========================================================
+// DESIGN EDITOR
+// ========================================================
+const BODY_FONTS = ['Inter','Roboto','Open Sans','Nunito','Lato','Source Sans 3','Noto Sans','Mulish']
+const CTA_FONTS  = ['Plus Jakarta Sans','Montserrat','Poppins','Oswald','Raleway','Barlow','DM Sans','Lexend']
+
+function renderDesign() {
+  const d = S.design
+  const colorRow = (key, label, val) =>
+    `<div class="color-row">
+      <div class="color-swatch" title="${label}">
+        <div class="color-swatch-preview" id="swatch-${key}" style="background:${val}"></div>
+        <input type="color" value="${val}" oninput="onDesignColor('${key}',this.value)">
+      </div>
+      <span class="color-label">${label}</span>
+      <input class="color-hex" id="hex-${key}" value="${val}" maxlength="7"
+        oninput="onDesignHex('${key}',this.value)">
+    </div>`
+
+  const fontRow = (key, label, val, list) =>
+    `<div class="ff" style="margin-bottom:12px">
+      <label>${label}</label>
+      <select class="font-select" onchange="onDesignFont('${key}',this.value)">
+        ${list.map(f=>`<option value="${f}" ${val===f?'selected':''}>${f}</option>`).join('')}
+      </select>
+    </div>`
+
+  const rangeRow = (key, label, val, min, max) =>
+    `<div class="range-wrap">
+      <label>${label}</label>
+      <input type="range" min="${min}" max="${max}" value="${val}" oninput="onDesignRange('${key}',this.value)">
+      <span class="range-val" id="rv-${key}">${val}px</span>
+    </div>`
+
+  return `
+  <div class="design-grid">
+    <!-- CONTROLS -->
+    <div class="design-controls">
+
+      <div class="settings-card">
+        <h3>🎨 Màu sắc</h3>
+        <div class="settings-card-desc">Thay đổi màu sắc chủ đạo của toàn bộ website</div>
+        ${colorRow('colorPrimary',    'Màu chính (CTA, accent)', d.colorPrimary)}
+        ${colorRow('colorPrimaryDark','Màu hover / gradient',    d.colorPrimaryDark)}
+        ${colorRow('colorNavBg',      'Nền Navbar',              d.colorNavBg)}
+        ${colorRow('colorText',       'Màu chữ chính',           d.colorText)}
+        ${colorRow('colorBgSoft',     'Nền section sáng',        d.colorBgSoft)}
+      </div>
+
+      <div class="settings-card">
+        <h3>✍️ Font chữ</h3>
+        <div class="settings-card-desc">Font được load từ Google Fonts, áp dụng ngay khi lưu</div>
+        ${fontRow('fontBody','Font nội dung (body, nav, giá)', d.fontBody, BODY_FONTS)}
+        ${fontRow('fontCta', 'Font tiêu đề & nút CTA',        d.fontCta,  CTA_FONTS)}
+        <div style="font-size:12px;color:#737373;margin-top:-6px">
+          Preview: <span id="font-preview-body" style="font-size:14px;font-weight:500">${d.fontBody}</span>
+          &nbsp;·&nbsp;
+          <span id="font-preview-cta" style="font-size:14px;font-weight:700">${d.fontCta}</span>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h3>📐 Hình dạng & border</h3>
+        <div class="settings-card-desc">Điều chỉnh độ bo góc của nút bấm và card sản phẩm</div>
+        ${rangeRow('radiusPill','Nút bấm (border-radius)',  d.radiusPill, 0, 64)}
+        ${rangeRow('radiusLg',  'Card sản phẩm',           d.radiusLg,   0, 32)}
+        ${rangeRow('radiusMd',  'Tag / input / badge',     d.radiusMd,   0, 20)}
+      </div>
+
+      <div class="row" style="gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="saveDesign()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
+          Lưu & Áp dụng lên website
+        </button>
+        <button class="btn btn-secondary" onclick="copyDesignCSS()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy CSS
+        </button>
+        <button class="btn btn-ghost" onclick="resetDesign()">Reset mặc định</button>
+        <a href="../index.html" target="_blank" class="btn btn-ghost">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Xem website
+        </a>
+      </div>
+    </div>
+
+    <!-- LIVE PREVIEW -->
+    <div class="design-preview-wrap">
+      <div class="settings-card" style="padding:0;overflow:hidden">
+        <div style="padding:14px 18px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:14px;font-weight:700">Preview trực tiếp</div>
+            <div style="font-size:12px;color:#737373">Cập nhật ngay khi chỉnh thông số</div>
+          </div>
+          <span style="font-size:11px;background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:20px;font-weight:600">Live</span>
+        </div>
+        <div id="designPreview" style="font-family:'Inter',sans-serif">
+          <!-- Nav -->
+          <div class="dp-nav" id="dp-nav">
+            <div class="dp-nav-links">
+              <span class="dp-nav-link">SẢN PHẨM</span>
+              <span class="dp-nav-link">TRA CỨU XE</span>
+              <div class="dp-nav-logo" id="dp-logo">T</div>
+              <span class="dp-nav-link">TIN TỨC</span>
+              <span class="dp-nav-link">GIỚI THIỆU</span>
+            </div>
+            <span class="dp-nav-btn" id="dp-nav-btn">Gọi ngay</span>
+          </div>
+          <!-- Hero -->
+          <div class="dp-hero">
+            <div class="dp-hero-title" id="dp-hero-title">PHỤ TÙNG Ô TÔ CHÍNH HÃNG</div>
+            <div class="dp-hero-sub">Bán sỉ & lẻ · Giao toàn quốc · Nha Trang</div>
+            <div class="dp-buttons">
+              <div class="dp-btn-primary" id="dp-btn-primary">Tìm phụ tùng →</div>
+              <div class="dp-btn-black" id="dp-btn-black">Zalo tư vấn ngay</div>
+            </div>
+          </div>
+          <!-- Section title -->
+          <div class="dp-section-title" id="dp-section-title">Sản Phẩm Bán Chạy</div>
+          <!-- Cards -->
+          <div class="dp-cards" id="dp-cards">
+            <div class="dp-card" id="dp-card-1">
+              <div class="dp-card-img" id="dp-card-img-1"></div>
+              <div class="dp-card-name" id="dp-card-name-1">Lọc Không Khí Toyota</div>
+              <div class="dp-price" id="dp-price-1">185.000 ₫</div>
+              <div class="dp-cta" id="dp-cta-1">Liên hệ báo giá →</div>
+            </div>
+            <div class="dp-card" id="dp-card-2">
+              <div class="dp-card-img" id="dp-card-img-2"></div>
+              <div class="dp-card-name" id="dp-card-name-2">Má Phanh Honda CR-V</div>
+              <div class="dp-price" id="dp-price-2">450.000 ₫</div>
+              <div class="dp-cta" id="dp-cta-2">Liên hệ báo giá →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CSS Output -->
+      <div class="settings-card" style="margin-top:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-size:14px;font-weight:700">CSS Variables tạo ra</div>
+          <button class="btn btn-ghost btn-sm" onclick="copyDesignCSS()">Copy</button>
+        </div>
+        <pre id="cssOutput" style="background:#101010;color:#fecd27;border-radius:8px;padding:14px;font-size:11px;line-height:1.8;overflow-x:auto;margin:0;white-space:pre-wrap"></pre>
+      </div>
+    </div>
+  </div>`
+}
+
+function onDesignColor(key, val) {
+  S.design[key] = val
+  const swatch = document.getElementById('swatch-'+key)
+  const hex = document.getElementById('hex-'+key)
+  if (swatch) swatch.style.background = val
+  if (hex) hex.value = val
+  updateDesignPreview()
+}
+
+function onDesignHex(key, val) {
+  if (!/^#[0-9a-fA-F]{6}$/.test(val)) return
+  S.design[key] = val
+  const swatch = document.getElementById('swatch-'+key)
+  if (swatch) swatch.style.background = val
+  updateDesignPreview()
+}
+
+function onDesignFont(key, val) {
+  S.design[key] = val
+  const id = key === 'fontBody' ? 'font-preview-body' : 'font-preview-cta'
+  const el = document.getElementById(id)
+  if (el) el.textContent = val
+  updateDesignPreview()
+}
+
+function onDesignRange(key, val) {
+  S.design[key] = parseInt(val)
+  const rv = document.getElementById('rv-'+key)
+  if (rv) rv.textContent = val+'px'
+  updateDesignPreview()
+}
+
+function updateDesignPreview() {
+  const d = S.design
+  const $ = id => document.getElementById(id)
+  // Nav bg
+  const nav = $('dp-nav'); if(nav) nav.style.background = d.colorNavBg
+  const navBtn = $('dp-nav-btn'); if(navBtn){ navBtn.style.background=d.colorPrimary; navBtn.style.color=d.colorNavBg==='#ffffff'?'#101010':'#101010' }
+  // Logo dot
+  const logo = $('dp-logo'); if(logo) logo.style.background = d.colorPrimary
+  // Buttons
+  const btnP = $('dp-btn-primary'); if(btnP){ btnP.style.background=d.colorPrimary; btnP.style.borderRadius=d.radiusPill+'px'; btnP.style.fontFamily=d.fontCta }
+  const btnB = $('dp-btn-black');   if(btnB){ btnB.style.borderRadius=d.radiusPill+'px'; btnB.style.fontFamily=d.fontCta }
+  // Cards
+  ;[1,2].forEach(i => {
+    const card = $('dp-card-'+i); if(card){ card.style.borderRadius=d.radiusLg+'px' }
+    const img  = $('dp-card-img-'+i); if(img){ img.style.borderRadius=d.radiusMd+'px'; img.style.background=d.colorBgSoft }
+    const name = $('dp-card-name-'+i); if(name){ name.style.color=d.colorText; name.style.fontFamily=d.fontBody }
+    const price= $('dp-price-'+i); if(price){ price.style.fontFamily=d.fontBody }
+    const cta  = $('dp-cta-'+i); if(cta){ cta.style.background=d.colorPrimary; cta.style.borderRadius=d.radiusPill+'px'; cta.style.fontFamily=d.fontCta }
+  })
+  // Section bg
+  const cards = $('dp-cards'); if(cards) cards.style.background = d.colorBgSoft
+  // Section title
+  const st = $('dp-section-title'); if(st){ st.style.color=d.colorText; st.style.fontFamily=d.fontCta }
+  // Hero title
+  const ht = $('dp-hero-title'); if(ht) ht.style.fontFamily = d.fontCta
+  // CSS output
+  const css = $('cssOutput'); if(css) css.textContent = getDesignCSS()
+}
+
+function getDesignCSS() {
+  const d = S.design
+  return `:root {
+  --color-primary:      ${d.colorPrimary};
+  --color-primary-dark: ${d.colorPrimaryDark};
+  --color-text:         ${d.colorText};
+  --color-bg-soft:      ${d.colorBgSoft};
+  --radius-pill:        ${d.radiusPill}px;
+  --radius-lg:          ${d.radiusLg}px;
+  --radius-md:          ${d.radiusMd}px;
+  --font-body:          '${d.fontBody}', sans-serif;
+  --font-cta:           '${d.fontCta}', sans-serif;
+}
+.site-nav { background: ${d.colorNavBg} !important; }`
+}
+
+function saveDesign() {
+  save()
+  // Inject into current tab for preview
+  let el = document.getElementById('tiendu-design-overrides')
+  if (!el) { el = document.createElement('style'); el.id='tiendu-design-overrides'; document.head.appendChild(el) }
+  el.textContent = getDesignCSS()
+  toast('✅ Đã lưu & áp dụng lên website','s')
+}
+
+function resetDesign() {
+  if (!confirm('Reset về thiết kế mặc định?')) return
+  S.design = {...DEFAULT_DESIGN}
+  save()
+  render()
+  toast('Đã reset về mặc định','i')
+}
+
+function copyDesignCSS() {
+  navigator.clipboard.writeText(getDesignCSS()).then(() => toast('Đã copy CSS vào clipboard','s'))
 }
 
 // ========================================================
