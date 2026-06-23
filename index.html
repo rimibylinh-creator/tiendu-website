@@ -44,13 +44,16 @@
     <p class="hero-subtitle">Bán sỉ &amp; lẻ. Hàng chính hãng độc quyền từ các nhà sản xuất lớn<br>Giao nhanh toàn tỉnh Khánh Hoà và cả nước</p>
 
     <div class="hero-ctas">
-      <div class="hero-search">
-        <input type="text" placeholder="Fortuner 2004..">
-        <button class="btn btn-yellow hero-search-btn">
-          <img src="assets/icon-search.svg" alt=""> Tìm phụ tùng đúng kỹ thuật
-        </button>
+      <div class="hero-search-wrap">
+        <div class="hero-search">
+          <input type="text" id="heroSearchInput" placeholder="Lọc dầu, má phanh, Fortuner..." autocomplete="off">
+          <button class="btn btn-yellow hero-search-btn" id="heroSearchBtn">
+            <img src="assets/icon-search.svg" alt=""> Tìm phụ tùng
+          </button>
+        </div>
+        <div class="hero-search-results" id="heroSearchResults"></div>
       </div>
-      <a href="#" class="btn btn-black">
+      <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-black">
         <img src="assets/icon-zalo.png" class="btn-icon" alt=""> Zalo tư vấn ngay
       </a>
     </div>
@@ -147,7 +150,7 @@
             <span class="price">185.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -174,7 +177,7 @@
             <span class="price">450.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -201,7 +204,7 @@
             <span class="price">320.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -228,7 +231,7 @@
             <span class="price">275.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -255,7 +258,7 @@
             <span class="price">185.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -282,7 +285,7 @@
             <span class="price">1.250.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -309,7 +312,7 @@
             <span class="price">95.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -336,7 +339,7 @@
             <span class="price">320.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -363,7 +366,7 @@
             <span class="price">650.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -390,7 +393,7 @@
             <span class="price">145.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -417,7 +420,7 @@
             <span class="price">2.800.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -444,7 +447,7 @@
             <span class="price">580.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -604,7 +607,7 @@
 <section class="cta-banner-wrap">
   <div class="cta-banner">
     <h2 class="cta-banner-title">Cần tư vấn phụ tùng?<br>Liên hệ ngay với Tiên Du!</h2>
-    <a href="#" class="btn btn-black">
+    <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-black">
       <img src="assets/cta-banner-zalo.png" alt=""> Zalo tư vấn ngay
     </a>
   </div>
@@ -657,7 +660,7 @@
     <p class="footer-copy">© 2026 Tiên Du Nha Trang · Địa chỉ: 37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Phước Long, TP Nha Trang, Nha Trang, Vietnam, 650000</p>
     <div class="footer-social">
       <a href="#">Facebook</a>
-      <a href="#">Zalo</a>
+      <a href="https://zalo.me/0946915111" target="_blank" rel="noopener">Zalo</a>
       <a href="#">TikTok</a>
     </div>
   </div>
