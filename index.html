@@ -28,7 +28,7 @@
     </a>
 
     <button class="nav-burger" aria-label="Mở menu" aria-expanded="false">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
   </div>
 </nav>
@@ -44,13 +44,16 @@
     <p class="hero-subtitle">Bán sỉ &amp; lẻ. Hàng chính hãng độc quyền từ các nhà sản xuất lớn<br>Giao nhanh toàn tỉnh Khánh Hoà và cả nước</p>
 
     <div class="hero-ctas">
-      <div class="hero-search">
-        <input type="text" placeholder="Fortuner 2004..">
-        <button class="btn btn-yellow hero-search-btn">
-          <img src="assets/icon-search.svg" alt=""> Tìm phụ tùng đúng kỹ thuật
-        </button>
+      <div class="hero-search-wrap">
+        <div class="hero-search">
+          <input type="text" id="heroSearchInput" placeholder="Lọc dầu, má phanh, Fortuner..." autocomplete="off">
+          <button class="btn btn-yellow hero-search-btn" id="heroSearchBtn">
+            <img src="assets/icon-search.svg" alt=""> Tìm phụ tùng
+          </button>
+        </div>
+        <div class="hero-search-results" id="heroSearchResults"></div>
       </div>
-      <a href="#" class="btn btn-black">
+      <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-black">
         <img src="assets/icon-zalo.png" class="btn-icon" alt=""> Zalo tư vấn ngay
       </a>
     </div>
@@ -80,27 +83,27 @@
   <div class="section-inner">
     <h2 class="section-title">Danh mục sản phẩm</h2>
     <div class="category-grid">
-      <a href="#" class="category-card">
+      <a href="san-pham.html?category=dong-co" class="category-card">
         <div class="cat-image"><img src="assets/images/cat-loc-khi.jpg" alt="Bộ lọc không khí dòng cao"></div>
         <div class="cat-name">Bộ Lọc Không Khí Dòng Cao</div>
       </a>
-      <a href="#" class="category-card">
+      <a href="san-pham.html?category=phanh" class="category-card">
         <div class="cat-image"><img src="assets/images/cat-ma-phanh.jpg" alt="Má phanh gốm cao cấp"></div>
         <div class="cat-name">Má Phanh Gốm Cao Cấp</div>
       </a>
-      <a href="#" class="category-card">
+      <a href="san-pham.html?category=loc" class="category-card">
         <div class="cat-image"><img src="assets/images/cat-dau-nhot.jpg" alt="Dầu nhớt và bộ lọc"></div>
         <div class="cat-name">Dầu Nhớt &amp; Bộ Lọc</div>
       </a>
-      <a href="#" class="category-card">
+      <a href="san-pham.html?category=dien" class="category-card">
         <div class="cat-image"><img src="assets/images/cat-bugi.jpg" alt="Bugi Iridium"></div>
         <div class="cat-name">Bugi Iridium</div>
       </a>
-      <a href="#" class="category-card">
+      <a href="san-pham.html?category=lop" class="category-card">
         <div class="cat-image"><img src="assets/images/cat-lop-xe.jpg" alt="Lốp xe và vành"></div>
         <div class="cat-name">Lốp Xe &amp; Vành</div>
       </a>
-      <a href="#" class="category-card">
+      <a href="san-pham.html?category=dien" class="category-card">
         <div class="cat-image"><img src="assets/images/cat-den-xe.jpg" alt="Đèn xe và phụ kiện"></div>
         <div class="cat-name">Đèn Xe &amp; Phụ Kiện</div>
       </a>
@@ -147,7 +150,7 @@
             <span class="price">185.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -174,7 +177,7 @@
             <span class="price">450.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -201,7 +204,7 @@
             <span class="price">320.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -228,7 +231,7 @@
             <span class="price">275.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -255,7 +258,7 @@
             <span class="price">185.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -282,7 +285,7 @@
             <span class="price">1.250.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -309,7 +312,7 @@
             <span class="price">95.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -336,7 +339,7 @@
             <span class="price">320.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -363,7 +366,7 @@
             <span class="price">650.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -390,7 +393,7 @@
             <span class="price">145.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -417,7 +420,7 @@
             <span class="price">2.800.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -444,7 +447,7 @@
             <span class="price">580.000 ₫</span>
             <span class="stock-badge">Còn hàng</span>
           </div>
-          <button class="btn btn-yellow product-cta">Mua ngay →</button>
+          <a href="san-pham-chi-tiet.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
         </div>
       </article>
 
@@ -480,19 +483,19 @@
 <section class="promo-carousel">
   <div class="promo-track">
     <div class="promo-slide">
-      <img src="assets/banners/banner1.jpg" alt="AN TOÀN TỪNG LẦN PHANH">
+      <img src="assets/banners/banner1.jpg" alt="Charging at home">
       <div class="promo-slide-content">
-        <h3 class="promo-slide-title">AN TOÀN TỪNG LẦN PHANH</h3>
-        <p class="promo-slide-text">Bảo hành chất lượng. Xe bạn luôn an toàn.</p>
-        <a href="#" class="btn btn-yellow">Liên hệ ngay</a>
+        <h3 class="promo-slide-title">Charging at home</h3>
+        <p class="promo-slide-text">No tank half full — with a Wall Charger at home, you can wake up recharged.</p>
+        <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-yellow">Liên hệ ngay</a>
       </div>
     </div>
     <div class="promo-slide">
       <img src="assets/banners/banner2.jpg" alt="Charging at home">
       <div class="promo-slide-content">
-        <h3 class="promo-slide-title">LỌC GIÓ SẠCH — ĐỘNG CƠ KHỎE MẠNH</h3>
-        <p class="promo-slide-text">Thay định kỳ, xe chạy êm. Công suất đủ, tiêu xăng vừa phải. Hàng chính hãng 100%.</p>
-        <a href="#" class="btn btn-yellow">ĐẶT ĐỀ NGAY</a>
+        <h3 class="promo-slide-title">Charging at home</h3>
+        <p class="promo-slide-text">No tank half full — with a Wall Charger at home, you can wake up recharged.</p>
+        <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-yellow">Liên hệ ngay</a>
       </div>
     </div>
     <div class="promo-slide">
@@ -500,15 +503,15 @@
       <div class="promo-slide-content">
         <h3 class="promo-slide-title">Charging at home</h3>
         <p class="promo-slide-text">No tank half full — with a Wall Charger at home, you can wake up recharged.</p>
-        <a href="#" class="btn btn-yellow">Liên hệ ngay</a>
+        <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-yellow">Liên hệ ngay</a>
       </div>
     </div>
     <div class="promo-slide">
       <img src="assets/banners/banner4.jpg" alt="Charging at home">
       <div class="promo-slide-content">
-        <h3 class="promo-slide-title">DẦU NHỚT CHẤT LƯỢNG — ĐỘNG CƠ BỀN LÂU</h3>
-        <p class="promo-slide-text">Thợ tư vấn loại dầu phù hợp xe bạn. Thay đúng chu kỳ, tiết kiệm chi phí.</p>
-        <a href="#" class="btn btn-yellow">Liên hệ ngay</a>
+        <h3 class="promo-slide-title">Charging at home</h3>
+        <p class="promo-slide-text">No tank half full — with a Wall Charger at home, you can wake up recharged.</p>
+        <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-yellow">Liên hệ ngay</a>
       </div>
     </div>
   </div>
@@ -604,7 +607,7 @@
 <section class="cta-banner-wrap">
   <div class="cta-banner">
     <h2 class="cta-banner-title">Cần tư vấn phụ tùng?<br>Liên hệ ngay với Tiên Du!</h2>
-    <a href="#" class="btn btn-black">
+    <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-black">
       <img src="assets/cta-banner-zalo.png" alt=""> Zalo tư vấn ngay
     </a>
   </div>
@@ -657,11 +660,18 @@
     <p class="footer-copy">© 2026 Tiên Du Nha Trang · Địa chỉ: 37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Phước Long, TP Nha Trang, Nha Trang, Vietnam, 650000</p>
     <div class="footer-social">
       <a href="#">Facebook</a>
-      <a href="#">Zalo</a>
+      <a href="https://zalo.me/0946915111" target="_blank" rel="noopener">Zalo</a>
       <a href="#">TikTok</a>
     </div>
   </div>
 </footer>
+
+<!-- ============ FLOATING ZALO ============ -->
+<div class="floating-zalo">
+  <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" aria-label="Kết bạn Zalo">
+    <img src="assets/icon-zalo.png" alt="Zalo">
+  </a>
+</div>
 
 <script src="js/main.js"></script>
 </body>
