@@ -1906,10 +1906,14 @@ p { margin: 0; }
   bottom: 28px;
   right: 28px;
   z-index: 1000;
-  /* Tooltip on hover */
-  --tooltip: "Kết bạn Zalo";
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
-.floating-zalo a {
+
+/* Zalo button (direct <a> child) */
+.floating-zalo > a {
   display: block;
   width: 56px;
   height: 56px;
@@ -1922,19 +1926,49 @@ p { margin: 0; }
   outline: none;
   text-decoration: none;
 }
-.floating-zalo img {
+.floating-zalo > a img {
   width: 56px;
   height: 56px;
   object-fit: cover;
   display: block;
 }
-.floating-zalo a:hover {
+.floating-zalo > a:hover {
   transform: translateY(-3px) scale(1.07);
   box-shadow: 0 8px 24px rgba(0,104,255,0.45);
   animation: none;
 }
-.floating-zalo a:focus-visible {
+.floating-zalo > a:focus-visible {
   outline: 3px solid #0068FF;
+  outline-offset: 3px;
+}
+
+/* Call button */
+.floating-call a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+}
+.floating-call img {
+  width: 24px;
+  height: 24px;
+  display: block;
+  object-fit: contain;
+}
+.floating-call a:hover {
+  transform: translateY(-3px) scale(1.07);
+  box-shadow: 0 8px 24px rgba(254,205,39,0.45);
+}
+.floating-call a:focus-visible {
+  outline: 3px solid var(--color-primary);
   outline-offset: 3px;
 }
 
@@ -2088,9 +2122,11 @@ p { margin: 0; }
   .footer-top { flex-direction: column; }
   .footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
   /* Floating button */
-  .floating-zalo { bottom: 20px; right: 20px; }
-  .floating-zalo a { width: 52px; height: 52px; }
-  .floating-zalo img { width: 52px; height: 52px; }
+  .floating-zalo { bottom: 20px; right: 20px; gap: 8px; }
+  .floating-zalo > a { width: 52px; height: 52px; }
+  .floating-zalo > a img { width: 52px; height: 52px; }
+  .floating-call a { width: 52px; height: 52px; }
+  .floating-call img { width: 22px; height: 22px; }
   /* Promo */
   .promo-slide-content { padding: 28px 16px; }
   .promo-slide-title { font-size: 18px; }
