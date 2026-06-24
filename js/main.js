@@ -46,6 +46,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  /* ---------- Product cards — click anywhere to open detail ---------- */
+  cards.forEach((card) => {
+    const link = card.querySelector('.product-cta');
+    if (!link) return;
+    card.addEventListener('click', (e) => {
+      if (!e.target.closest('a, button')) {
+        window.location.href = link.href;
+      }
+    });
+  });
+
   /* ---------- Mobile nav toggle ---------- */
   const burger = document.querySelector('.nav-burger');
   const navLinks = document.querySelector('.nav-links');
@@ -319,12 +330,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filterSearch) filterSearch.addEventListener('keydown', e => { if (e.key === 'Enter') applyFilters(); });
   }
 
-  /* ---------- san-pham.html: read ?q= / ?vehicle= param và auto-filter ---------- */
+  /* ---------- san-pham.html: read ?q= / ?vehicle= / ?category= param và auto-filter ---------- */
   if (productGrid) {
     const params      = new URLSearchParams(window.location.search);
     const preQ        = params.get('q');
     const preVehicle  = params.get('vehicle');
     const preLabel    = params.get('label');
+    const preCat      = params.get('category');
+
+    if (preCat && !preVehicle && !preQ) {
+      const tabBtn = document.querySelector(`.tab-btn[data-filter="${preCat}"]`);
+      if (tabBtn) tabBtn.click();
+    }
 
     if (preVehicle) {
       /* Hiển thị banner "Đang xem phụ tùng tương thích với X" */

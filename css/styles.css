@@ -191,6 +191,7 @@ p { margin: 0; }
    =========================================================== */
 .hero {
   position: relative;
+  margin-top: 0;
   min-height: 791px;
   border-radius: 0 0 24px 24px;
   overflow: hidden;
@@ -209,7 +210,7 @@ p { margin: 0; }
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.85) 2%, rgba(0,0,0,0) 69%);
+  background: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 14%, rgba(0,0,0,0) 62%);
 }
 .hero-content {
   position: relative;
@@ -643,6 +644,8 @@ p { margin: 0; }
   font-weight: 500;
   white-space: nowrap;
 }
+.product-card { cursor: pointer; }
+
 .product-cta {
   width: 100%;
   margin-top: auto;
@@ -1891,33 +1894,49 @@ p { margin: 0; }
 /* ===========================================================
    FLOATING ZALO
    =========================================================== */
+/* Pulse ring animation for floating Zalo */
+@keyframes zalo-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(0,104,255,0.45); }
+  70%  { box-shadow: 0 0 0 12px rgba(0,104,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,104,255,0); }
+}
+
 .floating-zalo {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 999;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
+  bottom: 28px;
+  right: 28px;
+  z-index: 1000;
+  /* Tooltip on hover */
+  --tooltip: "Kết bạn Zalo";
 }
 .floating-zalo a {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--color-black);
-  color: var(--color-white);
-  font-weight: 600;
-  font-size: 13px;
-  padding: 12px 18px;
-  border-radius: var(--radius-pill);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-  transition: transform 0.2s, box-shadow 0.2s;
+  display: block;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: zalo-pulse 2.4s ease-out infinite;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
 }
-.floating-zalo a:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.3); }
-.floating-zalo img { width: 22px; height: 22px; }
-.floating-call a { background: var(--color-primary); color: var(--color-near-black); }
-.floating-call a:hover { box-shadow: 0 8px 28px rgba(254,205,39,0.4); }
+.floating-zalo img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  display: block;
+}
+.floating-zalo a:hover {
+  transform: translateY(-3px) scale(1.07);
+  box-shadow: 0 8px 24px rgba(0,104,255,0.45);
+  animation: none;
+}
+.floating-zalo a:focus-visible {
+  outline: 3px solid #0068FF;
+  outline-offset: 3px;
+}
 
 /* ===========================================================
    RESPONSIVE
@@ -2069,8 +2088,9 @@ p { margin: 0; }
   .footer-top { flex-direction: column; }
   .footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
   /* Floating button */
-  .floating-zalo { bottom: 16px; right: 16px; }
-  .floating-zalo a { padding: 10px 16px; font-size: 12px; }
+  .floating-zalo { bottom: 20px; right: 20px; }
+  .floating-zalo a { width: 52px; height: 52px; }
+  .floating-zalo img { width: 52px; height: 52px; }
   /* Promo */
   .promo-slide-content { padding: 28px 16px; }
   .promo-slide-title { font-size: 18px; }
