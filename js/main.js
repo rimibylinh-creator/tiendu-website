@@ -67,18 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ---------- Mobile dropdown toggle (touch) ---------- */
-  document.querySelectorAll('.nav-dropdown-trigger').forEach(trigger => {
-    trigger.addEventListener('click', e => {
-      if (window.innerWidth > 860) return;
-      e.preventDefault();
-      const menu = trigger.closest('.nav-dropdown').querySelector('.nav-dropdown-menu');
-      const isOpen = menu.classList.toggle('is-open');
-      trigger.classList.toggle('is-open', isOpen);
-      if (!isOpen) window.location.href = trigger.getAttribute('href');
-    });
-  });
-
   /* ---------- Fixed nav — shadow on scroll ---------- */
   const nav = document.querySelector('.site-nav');
   if (nav) {
