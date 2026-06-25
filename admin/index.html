@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — Tiên Du</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:#f4f6f9;color:#1a1a2e;font-size:14px}
@@ -78,6 +79,22 @@ img{max-width:100%;display:block}
 .btn-green{background:#dcfce7;color:#16a34a}
 .btn-green:hover{background:#bbf7d0}
 .publish-info{display:flex;align-items:center;gap:6px;font-size:12px;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;padding:6px 12px;border-radius:8px}
+.media-type-toggle{display:flex;gap:0;border:1.5px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-top:6px}
+.media-type-btn{flex:1;padding:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:#fff;color:#737373;font-family:inherit;transition:all .15s}
+.media-type-btn.active{background:#fecd27;color:#101010}
+.upload-zone{border:2px dashed #d2d2d2;border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:border-color .15s;background:#fafafa}
+.upload-zone:hover{border-color:#fecd27;background:#fffdf0}
+.upload-zone svg{width:32px;height:32px;color:#737373;margin-bottom:8px}
+.upload-zone p{font-size:13px;color:#737373;margin:4px 0}
+.upload-zone .highlight{color:#fecd27;font-weight:600}
+.sheet-preview-wrap{overflow-x:auto;margin-top:12px;border:1px solid #e5e7eb;border-radius:8px}
+.sheet-preview-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.sheet-preview-wrap th{background:#f4f6f9;padding:8px 12px;text-align:left;font-weight:600;border-bottom:1px solid #e5e7eb;white-space:nowrap}
+.sheet-preview-wrap td{padding:7px 12px;border-bottom:1px solid #f4f6f9;white-space:nowrap}
+.sheet-preview-wrap tr:last-child td{border-bottom:none}
+.github-status{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px}
+.github-status.ok{background:#dcfce7;color:#16a34a}
+.github-status.off{background:#f4f6f9;color:#737373}
 
 /* ===== STATS ===== */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
@@ -288,7 +305,6 @@ pre.sheet-headers{background:#101010;color:#fecd27;border-radius:8px;padding:14p
         <input type="password" id="loginPwd" placeholder="Nhập mật khẩu..." onkeydown="if(event.key==='Enter')doLogin()">
       </div>
       <button class="btn-login" onclick="doLogin()">Đăng nhập →</button>
-      <div class="login-hint">Mật khẩu mặc định: <code>tiendu2026</code></div>
     </div>
   </div>
 </div>
@@ -469,6 +485,9 @@ const DEFAULT_SETTINGS = {
   sheetId:'',
   scriptUrl:'',
   adminPwd:'tiendu2026',
+  githubToken:'',
+  githubRepo:'rimibylinh-creator/tiendu-website',
+  githubBranch:'main',
 }
 
 const DEFAULT_DESIGN = {
@@ -483,7 +502,9 @@ const DEFAULT_CMS = {
     hero: {
       title: 'PHỤ TÙNG Ô TÔ<br>PHÂN PHỐI ĐỘC QUYỀN',
       subtitle: 'Bán sỉ & lẻ. Hàng chính hãng độc quyền từ các nhà sản xuất lớn\nGiao nhanh toàn tỉnh Khánh Hoà và cả nước',
+      bgType: 'image',
       bgImage: 'assets/hero-bg.jpg',
+      bgVideo: '',
       zaloUrl: 'https://zalo.me/0946915111',
     },
     features: [
@@ -1493,6 +1514,39 @@ function renderSettings() {
     </div>
   </div>
 
+  <!-- GitHub Publish -->
+  <div class="settings-card">
+    <h3>🔗 Kết nối GitHub (Publish cross-domain)</h3>
+    <div class="settings-card-desc">Để admin ở domain riêng nhưng vẫn cập nhật được <strong>ototiendu.com</strong> — admin commit file <code>cms-data.json</code> lên GitHub, Vercel tự deploy (~30 giây).</div>
+
+    <div class="github-status ${gs.githubToken ? 'ok' : 'off'}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      ${gs.githubToken ? '✅ Đã kết nối GitHub · Publish sẽ commit tự động' : 'Chưa kết nối — nhấn Publish chỉ lưu cục bộ'}
+    </div>
+
+    <div class="gs-step">
+      <div style="display:flex;align-items:flex-start;gap:0;font-size:13px;font-weight:600"><span class="gs-step-num">1</span> Tạo GitHub Personal Access Token</div>
+      <p>Vào <strong>github.com → Settings → Developer settings → Personal access tokens → Tokens (classic)</strong> → Generate new token → chọn scope <strong>repo</strong> → Copy token.</p>
+    </div>
+    <div class="gs-step">
+      <div style="display:flex;align-items:flex-start;gap:0;font-size:13px;font-weight:600"><span class="gs-step-num">2</span> Deploy admin riêng trên Vercel</div>
+      <p>Vào <strong>vercel.com → Add New Project → Import repo này → Root Directory: <code>admin</code></strong> → Deploy → Nhận URL riêng (vd: tiendu-admin.vercel.app).</p>
+    </div>
+
+    <div class="frow" style="margin-top:12px">
+      <div class="ff full"><label>GitHub Personal Access Token</label><input id="s-gh-token" type="password" value="${gs.githubToken||''}" placeholder="ghp_xxxxxxxxxxxx"></div>
+      <div class="ff"><label>Repo (owner/name)</label><input id="s-gh-repo" value="${gs.githubRepo||'rimibylinh-creator/tiendu-website'}"></div>
+      <div class="ff"><label>Branch</label><input id="s-gh-branch" value="${gs.githubBranch||'main'}"></div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn btn-primary btn-sm" onclick="saveGithubSettings()">Lưu cấu hình</button>
+      <button class="btn btn-secondary btn-sm" onclick="testGithubConnection()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+        Test kết nối
+      </button>
+    </div>
+  </div>
+
   <!-- Security -->
   <div class="settings-card">
     <h3>Bảo mật</h3>
@@ -1718,15 +1772,16 @@ function previewBtn(file) {
   </a>`
 }
 
-function savePublishBar(onSave, file) {
-  return `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+function savePublishBar(pageKey, file) {
+  const hasGH = !!(S.settings && S.settings.githubToken)
+  return `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px">
     <div class="publish-info">
       <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
-      <span>Lưu → áp dụng ngay trên <strong>ototiendu.com</strong></span>
+      <span>${hasGH ? 'Publish → GitHub → <strong>ototiendu.com</strong> (~30s)' : 'Lưu cục bộ · <a href="#" onclick="navigate(\'settings\');return false" style="color:#16a34a">Cấu hình GitHub</a> để publish cross-domain'}</span>
     </div>
     <div style="display:flex;gap:8px">
       ${previewBtn(file)}
-      <button class="btn btn-primary" onclick="${onSave}()">
+      <button class="btn btn-primary" onclick="handlePublish('${pageKey}')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
         Lưu & Publish
       </button>
@@ -1775,27 +1830,60 @@ function renderPageHome() {
     </div>`).join('')
 
   return `
-  ${savePublishBar('savePageHome','index.html')}
+  ${savePublishBar('home','index.html')}
 
   <div class="settings-card">
     <h3>🦸 Hero Section</h3>
-    <div class="settings-card-desc">Banner lớn đầu trang — tiêu đề, phụ đề, ảnh nền, nút Zalo</div>
+    <div class="settings-card-desc">Banner lớn đầu trang — tiêu đề, phụ đề, media nền, nút Zalo</div>
     <div class="frow">
       <div class="ff full">
         <label>Tiêu đề hero <span style="font-weight:400;color:#737373">(dùng &lt;br&gt; để xuống dòng)</span></label>
         <input id="hero-title" value="${esc(h.hero.title)}">
       </div>
       <div class="ff full">
-        <label>Phụ đề / Mô tả <span style="font-weight:400;color:#737373">(xuống dòng bằng Enter)</span></label>
+        <label>Phụ đề / Mô tả <span style="font-weight:400;color:#737373">(Enter để xuống dòng)</span></label>
         <textarea id="hero-subtitle" rows="2">${esc(h.hero.subtitle)}</textarea>
       </div>
+
       <div class="ff full">
-        <label>URL hình nền hero</label>
-        <div style="display:flex;gap:10px;align-items:center">
-          <input id="hero-bg" value="${esc(h.hero.bgImage)}" style="flex:1">
-          <img src="../${esc(h.hero.bgImage)}" style="width:80px;height:50px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb;flex-shrink:0" onerror="this.style.opacity=.2">
+        <label>Loại media nền</label>
+        <div class="media-type-toggle">
+          <button class="media-type-btn ${(h.hero.bgType||'image')==='image'?'active':''}" id="btn-type-image" onclick="setHeroMediaType('image')">🖼 Hình ảnh</button>
+          <button class="media-type-btn ${h.hero.bgType==='video'?'active':''}" id="btn-type-video" onclick="setHeroMediaType('video')">🎬 Video</button>
         </div>
       </div>
+
+      <!-- IMAGE section -->
+      <div class="ff full" id="hero-image-wrap" style="${h.hero.bgType==='video'?'display:none':''}">
+        <label>Hình nền</label>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+          <input id="hero-bg" value="${esc(h.hero.bgImage||'')}" placeholder="assets/hero-bg.jpg" style="flex:1">
+          <img src="../${esc(h.hero.bgImage||'')}" id="hero-img-preview" style="width:80px;height:50px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb;flex-shrink:0" onerror="this.style.opacity=.2">
+        </div>
+        <div class="upload-zone" onclick="document.getElementById('hero-img-input').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <p>Kéo thả hoặc <span class="highlight">click để chọn ảnh</span></p>
+          <p>JPG, PNG, WebP — tối đa 3MB</p>
+        </div>
+        <input type="file" id="hero-img-input" accept="image/*" style="display:none" onchange="uploadHeroImage(this)">
+      </div>
+
+      <!-- VIDEO section -->
+      <div class="ff full" id="hero-video-wrap" style="${h.hero.bgType==='video'?'':'display:none'}">
+        <label>Video nền</label>
+        <input id="hero-video-url" value="${esc(h.hero.bgVideo||'')}" placeholder="https://... (mp4, webm)" style="margin-bottom:8px">
+        <div class="upload-zone" onclick="document.getElementById('hero-vid-input').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          <p>Kéo thả hoặc <span class="highlight">click để chọn video</span></p>
+          <p>MP4, WebM — tự động play, tắt tiếng, loop</p>
+        </div>
+        <input type="file" id="hero-vid-input" accept="video/mp4,video/webm" style="display:none" onchange="uploadHeroVideo(this)">
+        <p style="font-size:12px;color:#737373;margin-top:8px">💡 Video lớn nên host trên Cloudinary / CDN rồi dán URL vào ô trên.</p>
+        <div id="hero-vid-preview" style="display:none;margin-top:8px">
+          <video id="hero-vid-el" muted autoplay loop style="width:100%;max-height:160px;border-radius:8px;object-fit:cover"></video>
+        </div>
+      </div>
+
       <div class="ff full">
         <label>Link Zalo (nút "Zalo tư vấn ngay")</label>
         <input id="hero-zalo" value="${esc(h.hero.zaloUrl)}">
@@ -1855,7 +1943,9 @@ function savePageHome() {
   const h = S.cms.homepage
   h.hero.title    = document.getElementById('hero-title').value
   h.hero.subtitle = document.getElementById('hero-subtitle').value
-  h.hero.bgImage  = document.getElementById('hero-bg').value
+  h.hero.bgType   = document.getElementById('btn-type-video')?.classList.contains('active') ? 'video' : 'image'
+  h.hero.bgImage  = document.getElementById('hero-bg')?.value || h.hero.bgImage
+  h.hero.bgVideo  = document.getElementById('hero-video-url')?.value || h.hero.bgVideo
   h.hero.zaloUrl  = document.getElementById('hero-zalo').value
   h.features.forEach((f,i) => { const el = document.getElementById('feat-'+i); if(el) f.text = el.value })
   h.promo.forEach((p,i) => {
@@ -1933,6 +2023,34 @@ function renderPageInner(pageId) {
     </div>`
   }).join('')
 
+  const existingTable = pg.priceTable
+  const tablePreview = existingTable ? `
+    <div class="sheet-preview-wrap" style="margin-top:12px">
+      <table>
+        <thead><tr>${existingTable.headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead>
+        <tbody>${existingTable.rows.slice(0,8).map(r=>`<tr>${r.map(c=>`<td>${esc(String(c))}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>
+      ${existingTable.rows.length > 8 ? `<p style="padding:8px 12px;font-size:12px;color:#737373">... và ${existingTable.rows.length-8} dòng nữa</p>` : ''}
+    </div>` : ''
+
+  const sheetBlock = pageId === 'gia-si' ? `
+  <div class="settings-card" style="margin-top:12px">
+    <h3>📊 Bảng giá sỉ</h3>
+    <div class="settings-card-desc">Upload file Excel/CSV → tự động hiển thị bảng giá trên trang ototiendu.com</div>
+    <div class="upload-zone" onclick="document.getElementById('price-sheet-input').click()" style="margin-bottom:0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+      <p>Kéo thả hoặc <span class="highlight">click để chọn file</span></p>
+      <p>.xlsx, .xls, .csv — Hàng đầu tiên là tiêu đề cột</p>
+    </div>
+    <input type="file" id="price-sheet-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="uploadPriceSheet(this)">
+    <div id="sheet-preview-area">${tablePreview}</div>
+    ${existingTable ? `<div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+      <span style="font-size:12px;color:#16a34a">${existingTable.rows.length} dòng đang hiển thị trên trang</span>
+      <button class="btn btn-danger btn-sm" onclick="clearPriceTable()">Xóa bảng</button>
+    </div>` : ''}
+  </div>` : ''
+
   const extraBlock = info.extra === 'products' ? `
   <div class="settings-card" style="margin-top:12px">
     <h3>📦 Sản phẩm</h3>
@@ -1946,12 +2064,13 @@ function renderPageInner(pageId) {
   </div>` : ''
 
   return `
-  ${savePublishBar('savePageInner_'+pageId.replace('-',''), info.file||'index.html')}
+  ${savePublishBar(pageId, info.file||'index.html')}
   <div class="settings-card">
     <h3>🖼️ Hero — đầu trang ${info.label||''}</h3>
     <div class="settings-card-desc">Tiêu đề lớn và mô tả hiển thị ở đầu trang khi người dùng truy cập</div>
     <div class="frow">${fieldInputs}</div>
   </div>
+  ${sheetBlock}
   ${extraBlock}`
 }
 
@@ -1966,13 +2085,188 @@ function savePageInnerById(pageId) {
   toast('✅ Đã lưu & publish trang '+((info.label)||pageId),'s')
 }
 
-// Generate per-page save functions (avoids inline-onclick string interpolation issues)
-function savePageInner_sanpham()   { savePageInnerById('san-pham') }
-function savePageInner_tracuu()    { savePageInnerById('tra-cuu') }
-function savePageInner_giasi()     { savePageInnerById('gia-si') }
-function savePageInner_tintuc()    { savePageInnerById('tin-tuc') }
-function savePageInner_gioithieu() { savePageInnerById('gioi-thieu') }
-function savePageInner_lienhe()    { savePageInnerById('lien-he') }
+// ========================================================
+// HERO MEDIA UPLOAD
+// ========================================================
+function setHeroMediaType(type) {
+  const imgWrap = document.getElementById('hero-image-wrap')
+  const vidWrap = document.getElementById('hero-video-wrap')
+  const btnImg  = document.getElementById('btn-type-image')
+  const btnVid  = document.getElementById('btn-type-video')
+  if (type === 'video') {
+    if (imgWrap) imgWrap.style.display = 'none'
+    if (vidWrap) vidWrap.style.display = ''
+    if (btnImg) btnImg.classList.remove('active')
+    if (btnVid) btnVid.classList.add('active')
+  } else {
+    if (imgWrap) imgWrap.style.display = ''
+    if (vidWrap) vidWrap.style.display = 'none'
+    if (btnImg) btnImg.classList.add('active')
+    if (btnVid) btnVid.classList.remove('active')
+  }
+}
+
+function uploadHeroImage(input) {
+  const file = input.files[0]
+  if (!file) return
+  if (file.size > 3 * 1024 * 1024) { toast('Ảnh quá lớn (>3MB). Dùng ảnh nhỏ hơn hoặc nhập URL.','e'); return }
+  const reader = new FileReader()
+  reader.onload = e => {
+    const el = document.getElementById('hero-bg')
+    const preview = document.getElementById('hero-img-preview')
+    if (el) el.value = e.target.result
+    if (preview) { preview.src = e.target.result; preview.style.opacity = 1 }
+    toast('✅ Đã tải ảnh — nhấn Lưu & Publish để áp dụng','s')
+  }
+  reader.readAsDataURL(file)
+}
+
+function uploadHeroVideo(input) {
+  const file = input.files[0]
+  if (!file) return
+  const url = URL.createObjectURL(file)
+  const urlInput = document.getElementById('hero-video-url')
+  const previewWrap = document.getElementById('hero-vid-preview')
+  const previewEl   = document.getElementById('hero-vid-el')
+  if (previewEl) { previewEl.src = url; previewWrap.style.display = 'block' }
+
+  if (file.size > 20 * 1024 * 1024) {
+    toast('⚠️ Video >20MB — xem trước được nhưng nên host trên CDN và dán URL vào ô trên','w')
+    if (urlInput) urlInput.placeholder = 'Dán URL CDN vào đây...'
+    return
+  }
+
+  const reader = new FileReader()
+  reader.onload = e => {
+    if (urlInput) urlInput.value = e.target.result
+    toast('✅ Đã tải video — nhấn Lưu & Publish để áp dụng','s')
+  }
+  reader.readAsDataURL(file)
+}
+
+// ========================================================
+// PRICE SHEET UPLOAD (GIÁ SỈ)
+// ========================================================
+function uploadPriceSheet(input) {
+  const file = input.files[0]
+  if (!file) return
+  const isCsv = file.name.endsWith('.csv')
+  const reader = new FileReader()
+
+  reader.onload = e => {
+    try {
+      let headers, rows
+      if (isCsv) {
+        const lines = e.target.result.split('\n').map(l => l.trim()).filter(Boolean)
+        const parseRow = l => l.split(',').map(c => c.replace(/^"|"$/g,'').trim())
+        headers = parseRow(lines[0])
+        rows    = lines.slice(1).map(parseRow).filter(r => r.some(c => c))
+      } else {
+        const wb   = XLSX.read(e.target.result, {type:'array'})
+        const ws   = wb.Sheets[wb.SheetNames[0]]
+        const data = XLSX.utils.sheet_to_json(ws, {header:1, defval:''})
+        headers = data[0].map(String)
+        rows    = data.slice(1).filter(r => r.some(c => c !== ''))
+      }
+      if (!headers.length) { toast('File trống hoặc không đọc được','e'); return }
+
+      if (!S.cms.pages['gia-si']) S.cms.pages['gia-si'] = {}
+      S.cms.pages['gia-si'].priceTable = { headers, rows: rows.map(r => r.map(String)) }
+      save()
+
+      const area = document.getElementById('sheet-preview-area')
+      if (area) {
+        const headerHtml = headers.map(h => `<th>${esc(h)}</th>`).join('')
+        const rowsHtml   = rows.slice(0,10).map(r => `<tr>${r.map(c=>`<td>${esc(String(c))}</td>`).join('')}</tr>`).join('')
+        area.innerHTML = `<div class="sheet-preview-wrap">
+          <table><thead><tr>${headerHtml}</tr></thead><tbody>${rowsHtml}</tbody></table>
+          ${rows.length>10?`<p style="padding:8px 12px;font-size:12px;color:#737373">... và ${rows.length-10} dòng nữa</p>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+          <span style="font-size:12px;color:#16a34a">${rows.length} dòng đã tải — nhấn Lưu & Publish để áp dụng</span>
+          <button class="btn btn-danger btn-sm" onclick="clearPriceTable()">Xóa bảng</button>
+        </div>`
+      }
+      toast(`✅ Đã đọc ${rows.length} dòng từ file`, 's')
+    } catch(err) {
+      toast('Lỗi đọc file: ' + err.message, 'e')
+    }
+  }
+  isCsv ? reader.readAsText(file, 'UTF-8') : reader.readAsArrayBuffer(file)
+  input.value = ''
+}
+
+function clearPriceTable() {
+  if (!confirm('Xóa bảng giá sỉ từ CMS?')) return
+  if (S.cms.pages['gia-si']) delete S.cms.pages['gia-si'].priceTable
+  save()
+  render()
+  toast('Đã xóa bảng giá','s')
+}
+
+// ========================================================
+// GITHUB PUBLISH
+// ========================================================
+function saveGithubSettings() {
+  S.settings.githubToken  = document.getElementById('s-gh-token')?.value.trim()  || ''
+  S.settings.githubRepo   = document.getElementById('s-gh-repo')?.value.trim()   || ''
+  S.settings.githubBranch = document.getElementById('s-gh-branch')?.value.trim() || 'main'
+  save(); render(); toast('Đã lưu cấu hình GitHub','s')
+}
+
+async function testGithubConnection() {
+  const cfg = S.settings
+  if (!cfg.githubToken || !cfg.githubRepo) { toast('Nhập token và repo trước','e'); return }
+  const [owner, repo] = cfg.githubRepo.split('/')
+  try {
+    toast('Đang kiểm tra kết nối...','i')
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+      headers: { Authorization: `token ${cfg.githubToken}`, Accept: 'application/vnd.github.v3+json' }
+    })
+    if (res.ok) { const d = await res.json(); toast(`✅ Kết nối OK · Repo: ${d.full_name}`,'s') }
+    else { const e = await res.json(); toast('❌ Lỗi: ' + (e.message||res.status),'e') }
+  } catch(e) { toast('❌ Lỗi kết nối: ' + e.message,'e') }
+}
+
+async function githubPublish() {
+  const cfg = S.settings
+  if (!cfg.githubToken || !cfg.githubRepo) return false
+  const content = JSON.stringify(S.cms, null, 2)
+  const encoded = btoa(unescape(encodeURIComponent(content)))
+  const [owner, repo] = cfg.githubRepo.split('/')
+  const branch = cfg.githubBranch || 'main'
+  const path   = 'cms-data.json'
+  try {
+    toast('⏳ Đang publish lên GitHub...','i')
+    const getRes  = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`, {
+      headers: { Authorization: `token ${cfg.githubToken}`, Accept: 'application/vnd.github.v3+json' }
+    })
+    const existing = getRes.ok ? await getRes.json() : null
+    const putRes   = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+      method:'PUT',
+      headers: { Authorization: `token ${cfg.githubToken}`, Accept: 'application/vnd.github.v3+json', 'Content-Type':'application/json' },
+      body: JSON.stringify({ message:'Update CMS via admin panel', content:encoded, sha:existing?.sha, branch })
+    })
+    if (putRes.ok) { toast('✅ Đã publish lên GitHub — website cập nhật trong ~30 giây','s'); return true }
+    else { const err = await putRes.json(); toast('❌ GitHub: ' + (err.message||putRes.status),'e'); return false }
+  } catch(e) { toast('❌ Kết nối thất bại: ' + e.message,'e'); return false }
+}
+
+async function handlePublish(pageKey) {
+  // 1. Save locally
+  if (pageKey === 'home') {
+    savePageHome()
+  } else {
+    savePageInnerById(pageKey)
+  }
+  // 2. Publish to GitHub if configured
+  if (S.settings.githubToken) {
+    await githubPublish()
+  } else {
+    toast('✅ Đã lưu cục bộ · Cấu hình GitHub trong Cài đặt để publish cross-domain','s')
+  }
+}
 
 // ========================================================
 // INIT

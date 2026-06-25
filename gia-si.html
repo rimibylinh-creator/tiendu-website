@@ -88,6 +88,10 @@
 <section class="section" style="background:var(--color-bg-soft)">
   <div class="section-inner">
     <h2 class="section-title">Bảng chiết khấu theo đơn hàng</h2>
+    <!-- CMS: bảng từ sheet upload (ẩn mặc định, hiện khi có data) -->
+    <div id="cms-tier-table" style="display:none;margin-bottom:24px"></div>
+    <!-- Bảng mặc định -->
+    <div id="default-tier-table">
     <table class="tier-table">
       <thead>
         <tr>
@@ -129,6 +133,7 @@
         </tr>
       </tbody>
     </table>
+    </div><!-- end #default-tier-table -->
     <p style="text-align:center; font-size:13px; color:var(--color-text-muted); margin-top:-32px">
       * Chiết khấu thực tế phụ thuộc vào loại hàng và thỏa thuận hợp đồng. Liên hệ để nhận báo giá chi tiết.
     </p>
