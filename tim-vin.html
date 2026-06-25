@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tra Cứu Số VIN Xe — Tiên Du Phụ Tùng Ô Tô Nha Trang</title>
+<meta name="description" content="Tra cứu thông tin xe theo số VIN — nhận diện hãng, dòng xe, năm sản xuất, động cơ và gợi ý phụ tùng cần thay thế. Miễn phí, toàn cầu.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="site-nav" style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(16,16,16,0.97);backdrop-filter:blur(8px)">
+  <div class="container">
+    <a href="tel:0946915111" class="btn btn-yellow nav-call-btn" style="visibility:hidden">
+      <img src="assets/icon-phone.svg" class="btn-icon" alt=""> Gọi 0946.915.111
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a class="nav-link" href="san-pham.html">SẢN PHẨM</a></li>
+      <li><a class="nav-link" href="tra-cuu.html" style="color:#fecd27">TRA CỨU XE</a></li>
+      <li class="nav-logo"><a href="index.html"><img src="assets/nav-logo.png" alt="Tiên Du"></a></li>
+      <li><a class="nav-link" href="tin-tuc.html">TIN TỨC</a></li>
+      <li><a class="nav-link" href="gioi-thieu.html">GIỚI THIỆU</a></li>
+    </ul>
+    <a href="tuyen-dung.html" class="btn btn-outline nav-hire-btn" style="color:#fecd27; border-color:rgba(254,205,39,0.7)">Tuyển dụng</a>
+    <a href="tel:0946915111" class="btn btn-yellow nav-call-btn">
+      <img src="assets/icon-phone.svg" class="btn-icon" alt=""> Gọi 0946.915.111
+    </a>
+    <button class="nav-burger" aria-label="Mở menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ============ VIN HERO ============ -->
+<section class="vin-hero">
+  <div class="breadcrumb" style="justify-content:center;margin-bottom:20px">
+    <a href="index.html" style="color:rgba(255,255,255,0.4)">Trang chủ</a>
+    <span class="breadcrumb-sep">/</span>
+    <a href="tra-cuu.html" style="color:rgba(255,255,255,0.4)">Tra cứu xe</a>
+    <span class="breadcrumb-sep">/</span>
+    <span style="color:var(--color-primary)">Tìm theo số VIN</span>
+  </div>
+
+  <span class="vin-hero-label">Tra cứu toàn cầu</span>
+  <h1 class="vin-hero-title">Tìm Kiếm Theo Số VIN</h1>
+  <p class="vin-hero-sub">Nhập 17 ký tự số VIN (Vehicle Identification Number) để xem đầy đủ thông tin xe<br>và danh sách phụ tùng cần thay thế định kỳ</p>
+
+  <div class="vin-search-wrap">
+    <form class="vin-input-row" id="vinForm" onsubmit="handleVinSearch(event)">
+      <input
+        type="text"
+        id="vinInput"
+        class="vin-input"
+        placeholder="Nhập 17 ký tự số VIN…  VD: 1HGBH41JXMN109186"
+        maxlength="17"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="characters"
+        spellcheck="false"
+      >
+      <button type="submit" class="vin-submit">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Tra cứu
+      </button>
+    </form>
+    <div class="vin-hint">
+      <span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Hỗ trợ xe toàn thế giới
+      </span>
+      <span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Tra cứu miễn phí
+      </span>
+      <span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Số VIN ở đâu? Cột A cửa lái, tableau, hoặc cửa sổ trước
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIN RESULT ============ -->
+<section class="vin-result-section" id="vinResultSection" style="display:none">
+  <div class="vin-result-inner">
+
+    <!-- Loading state -->
+    <div id="vinLoading" style="display:none">
+      <div class="vin-vehicle-card">
+        <div class="vin-status">
+          <div class="vin-spinner"></div>
+          <div class="vin-status-title">Đang tra cứu dữ liệu xe…</div>
+          <div class="vin-status-sub">Kết nối cơ sở dữ liệu NHTSA toàn cầu</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error state -->
+    <div id="vinError" style="display:none">
+      <div class="vin-vehicle-card">
+        <div class="vin-status">
+          <div class="vin-status-icon">⚠️</div>
+          <div class="vin-status-title" id="vinErrorTitle">Không tìm thấy thông tin xe</div>
+          <div class="vin-status-sub" id="vinErrorMsg">Vui lòng kiểm tra lại số VIN. Số VIN gồm đúng 17 ký tự, không chứa chữ I, O, Q.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vehicle card -->
+    <div id="vinCard" style="display:none">
+      <div class="vin-vehicle-card">
+        <!-- Head -->
+        <div class="vin-vehicle-head">
+          <div>
+            <div id="vcMake" class="vin-vehicle-name">—</div>
+            <div class="vin-badge-row" id="vcBadges"></div>
+          </div>
+          <div id="vcYear" class="vin-vehicle-year">—</div>
+        </div>
+
+        <!-- Specs grid -->
+        <div class="vin-specs-grid" id="vcSpecs"></div>
+
+        <!-- Origin -->
+        <div class="vin-origin" id="vcOrigin"></div>
+      </div>
+
+      <!-- VIN anatomy boxes -->
+      <div class="vin-info-boxes">
+        <div class="vin-info-box">
+          <div class="vin-info-box-title">Cấu trúc số VIN</div>
+          <div class="vin-digit-row" id="vinDigitDisplay"></div>
+          <div style="margin-top:24px" class="vin-legend" id="vinLegend"></div>
+        </div>
+        <div class="vin-info-box">
+          <div class="vin-info-box-title">Lưu ý khi dùng kết quả</div>
+          <div style="display:flex;flex-direction:column;gap:14px;margin-top:4px">
+            <div style="display:flex;gap:10px;font-size:13px;line-height:1.5">
+              <span style="color:var(--color-primary-dark);font-size:18px;line-height:1">✓</span>
+              <span><strong>Kiểm tra chéo với giấy tờ xe</strong> — số VIN trên cửa xe / tableau phải khớp với đăng ký xe.</span>
+            </div>
+            <div style="display:flex;gap:10px;font-size:13px;line-height:1.5">
+              <span style="color:var(--color-primary-dark);font-size:18px;line-height:1">✓</span>
+              <span><strong>Phụ tùng theo đúng mã OEM</strong> — dù xe cùng hãng, khác phiên bản có thể dùng phụ tùng khác nhau.</span>
+            </div>
+            <div style="display:flex;gap:10px;font-size:13px;line-height:1.5">
+              <span style="color:var(--color-primary-dark);font-size:18px;line-height:1">✓</span>
+              <span><strong>Gọi Tiên Du để xác nhận</strong> — đội ngũ kỹ thuật có thể tra mã phụ tùng chính xác theo số VIN.</span>
+            </div>
+            <div style="display:flex;gap:10px;font-size:13px;line-height:1.5">
+              <span style="color:var(--color-primary-dark);font-size:18px;line-height:1">✓</span>
+              <span><strong>Nguồn dữ liệu</strong> — NHTSA vPIC (National Highway Traffic Safety Administration, Mỹ). Hỗ trợ hầu hết xe sản xuất từ 1981.</span>
+            </div>
+          </div>
+          <div style="margin-top:24px;display:flex;flex-direction:column;gap:10px">
+            <a href="tel:0946915111" class="btn btn-yellow" style="justify-content:center">
+              <img src="assets/icon-phone.svg" class="btn-icon" alt=""> Gọi xác nhận phụ tùng
+            </a>
+            <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-black" style="justify-content:center">
+              <img src="assets/icon-zalo.png" class="btn-icon" alt=""> Zalo gửi ảnh VIN
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ MAINTENANCE PARTS BLOG ============ -->
+<section class="vin-parts-section" id="vinPartsSection" style="display:none">
+  <div class="vin-parts-inner">
+    <div class="vin-parts-header">
+      <h2 class="vin-parts-title" id="partsTitle">Phụ Tùng Cần Thay Thế Định Kỳ</h2>
+      <p class="vin-parts-sub" id="partsSub">Lịch bảo dưỡng khuyến nghị cho xe của bạn — theo dõi đúng mốc để xe luôn vận hành tốt và an toàn.</p>
+    </div>
+    <div class="vin-parts-grid" id="vinPartsGrid"></div>
+
+    <!-- Extended maintenance tips -->
+    <div style="margin-top:48px;background:var(--color-bg-soft);border-radius:var(--radius-lg);padding:32px 36px">
+      <h3 style="font-size:16px;font-weight:700;color:var(--color-near-black);margin-bottom:20px">
+        📋 Bảng lịch bảo dưỡng tổng hợp
+      </h3>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead>
+            <tr style="background:var(--color-near-black);color:var(--color-white)">
+              <th style="padding:12px 16px;text-align:left;font-weight:600">Hạng mục</th>
+              <th style="padding:12px 16px;text-align:center;font-weight:600">Km / Thời gian</th>
+              <th style="padding:12px 16px;text-align:center;font-weight:600;display:none" id="thDiesel">Diesel</th>
+              <th style="padding:12px 16px;text-align:left;font-weight:600">Lưu ý</th>
+            </tr>
+          </thead>
+          <tbody id="maintenanceTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="margin-top:32px;text-align:center">
+      <p style="font-size:15px;color:var(--color-text-muted);margin-bottom:20px">Cần tư vấn phụ tùng đúng theo xe? Tiên Du có đầy đủ hàng chính hãng và aftermarket.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="san-pham.html" class="btn btn-yellow">Xem danh mục phụ tùng →</a>
+        <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-black">
+          <img src="assets/icon-zalo.png" class="btn-icon" alt=""> Báo giá theo VIN
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW TO FIND VIN ============ -->
+<section class="section" style="background:var(--color-bg-soft)">
+  <div class="section-inner" style="max-width:860px">
+    <h2 class="section-title" style="text-align:center;margin-bottom:40px">Số VIN Ở Đâu Trên Xe?</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+      <div style="background:var(--color-white);border-radius:var(--radius-lg);padding:28px;text-align:center">
+        <div style="font-size:40px;margin-bottom:12px">🚗</div>
+        <div style="font-weight:700;font-size:15px;color:var(--color-near-black);margin-bottom:8px">Cột A – Cửa lái</div>
+        <p style="font-size:13px;color:var(--color-text-muted);line-height:1.6;margin:0">Mở cửa lái, nhìn vào mép cột A (chân khung cửa). Tem VIN dán hoặc đúc nổi tại đây.</p>
+      </div>
+      <div style="background:var(--color-white);border-radius:var(--radius-lg);padding:28px;text-align:center">
+        <div style="font-size:40px;margin-bottom:12px">🪟</div>
+        <div style="font-weight:700;font-size:15px;color:var(--color-near-black);margin-bottom:8px">Kính chắn gió</div>
+        <p style="font-size:13px;color:var(--color-text-muted);line-height:1.6;margin:0">Góc dưới bên trái kính chắn gió phía trước, nhìn từ ngoài xe. VIN in trên tấm kim loại nhỏ.</p>
+      </div>
+      <div style="background:var(--color-white);border-radius:var(--radius-lg);padding:28px;text-align:center">
+        <div style="font-size:40px;margin-bottom:12px">📄</div>
+        <div style="font-weight:700;font-size:15px;color:var(--color-near-black);margin-bottom:8px">Giấy tờ xe</div>
+        <p style="font-size:13px;color:var(--color-text-muted);line-height:1.6;margin:0">Đăng ký xe, giấy kiểm định kỹ thuật, hoặc hợp đồng mua bán đều có in số VIN.</p>
+      </div>
+    </div>
+    <div style="margin-top:20px;background:rgba(254,205,39,0.1);border:1px solid rgba(254,205,39,0.3);border-radius:var(--radius-md);padding:16px 20px;font-size:13px;line-height:1.6;color:var(--color-text)">
+      <strong>Lưu ý:</strong> Số VIN gồm đúng <strong>17 ký tự</strong> chữ và số (không gồm chữ I, O, Q để tránh nhầm với số 1, 0). Nếu VIN bị mờ hoặc không đọc được, hãy liên hệ Tiên Du — chúng tôi có thể tra theo số khung trong giấy tờ xe.
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta-banner-wrap">
+  <div class="cta-banner">
+    <h2 class="cta-banner-title">Đã có số VIN?<br>Tiên Du tra và báo giá phụ tùng ngay!</h2>
+    <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-black">
+      <img src="assets/cta-banner-zalo.png" alt=""> Zalo gửi số VIN
+    </a>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="assets/footer-logo.png" alt="Tiên Du">
+      <p class="footer-brand-name">TIÊN DU</p>
+      <p class="footer-brand-desc">Tiên Du Nha Trang cung cấp các giải pháp vận tải và phụ tùng ô tô cao cấp hàng đầu Việt Nam.</p>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <p class="footer-col-title">SẢN PHẨM</p>
+        <a href="san-pham.html?category=dong-co">Phụ tùng động cơ</a>
+        <a href="san-pham.html?category=phanh">Hệ thống phanh</a>
+        <a href="san-pham.html?category=treo">Hệ thống treo &amp; lái</a>
+        <a href="san-pham.html?category=dien">Điện &amp; điện tử</a>
+        <a href="san-pham.html?category=noi-that">Thân vỏ &amp; nội thất</a>
+        <a href="san-pham.html?category=lop">Lốp &amp; La-zăng</a>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">THÔNG TIN</p>
+        <a href="gioi-thieu.html">Giới thiệu Tiên Du</a>
+        <a href="gia-si.html">Chính sách giá sỉ</a>
+        <a href="tin-tuc.html">Tin tức &amp; mẹo xe</a>
+        <a href="#">Chính sách đổi trả</a>
+        <a href="tra-cuu.html">Tra cứu theo xe</a>
+        <a href="tim-vin.html">Tra cứu theo VIN</a>
+      </div>
+      <div class="footer-col footer-contact">
+        <p class="footer-col-title">LIÊN HỆ</p>
+        <span>37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Phước Long, TP Nha Trang</span>
+        <a href="tel:0946915111">0946.915.111</a>
+        <span>Zalo: tiendu.nhatrang</span>
+        <a href="mailto:tienduoto@gmail.com">tienduoto@gmail.com</a>
+        <span>7:30 - 17:30 (Thứ 2 - Thứ 7)</span>
+      </div>
+    </div>
+  </div>
+  <div class="footer-divider"></div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2026 Tiên Du Nha Trang · Địa chỉ: 37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Phước Long, TP Nha Trang</p>
+    <div class="footer-social">
+      <a href="#">Facebook</a>
+      <a href="https://zalo.me/0946915111" target="_blank" rel="noopener">Zalo</a>
+      <a href="#">TikTok</a>
+    </div>
+  </div>
+</footer>
+
+<div class="floating-zalo">
+  <div class="floating-call">
+    <a href="tel:0946915111" aria-label="Gọi ngay">
+      <img src="assets/icon-phone.svg" alt="">
+    </a>
+  </div>
+  <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" aria-label="Kết bạn Zalo">
+    <img src="assets/icon-zalo.png" alt="Zalo">
+  </a>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+/* ============================================================
+   VIN LOOKUP — NHTSA vPIC API (free, global, no key needed)
+   ============================================================ */
+
+const NHTSA_URL = 'https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/';
+
+// Maintenance schedule data
+const PARTS_GASOLINE = [
+  { icon: '🛢️', name: 'Dầu nhớt & lọc dầu', interval: '5.000 – 7.500 km', desc: 'Thay dầu định kỳ là bảo dưỡng quan trọng nhất. Dầu bẩn làm tăng ma sát, nóng máy và mài mòn động cơ nhanh hơn.', cat: 'loc', label: 'Bộ phận lọc' },
+  { icon: '💨', name: 'Lọc không khí', interval: '15.000 – 30.000 km', desc: 'Lọc khí bẩn làm giảm công suất và tăng tiêu hao nhiên liệu. Đường Việt Nam nhiều bụi — nên kiểm tra sớm hơn.', cat: 'loc', label: 'Bộ phận lọc' },
+  { icon: '❄️', name: 'Lọc cabin (điều hòa)', interval: '15.000 – 20.000 km', desc: 'Lọc cabin bẩn gây mùi hôi trong xe, giảm lưu lượng gió điều hòa và có thể gây dị ứng đường hô hấp.', cat: 'loc', label: 'Bộ phận lọc' },
+  { icon: '🔴', name: 'Má phanh & đĩa phanh', interval: '30.000 – 60.000 km', desc: 'Má phanh mòn làm tăng khoảng cách dừng xe và có thể gây hư hại đĩa phanh tốn kém hơn nhiều.', cat: 'phanh', label: 'Hệ thống phanh' },
+  { icon: '⚡', name: 'Bugi đánh lửa', interval: '30.000 km (thường)<br>100.000 km (iridium)', desc: 'Bugi mòn làm khởi động khó, giật cục khi tăng tốc và tiêu hao nhiên liệu tăng đáng kể.', cat: 'dong-co', label: 'Động cơ' },
+  { icon: '⛽', name: 'Lọc nhiên liệu', interval: '40.000 – 60.000 km', desc: 'Lọc nhiên liệu tắc làm giảm áp suất bơm xăng, xe yếu máy khi leo dốc hoặc tải nặng.', cat: 'loc', label: 'Bộ phận lọc' },
+  { icon: '🔧', name: 'Dây đai dẫn động (curoa)', interval: '60.000 – 100.000 km', desc: 'Đứt dây curoa trên đường có thể làm hỏng toàn bộ cụm động cơ. Thay phòng ngừa rẻ hơn nhiều.', cat: 'dong-co', label: 'Động cơ' },
+  { icon: '🌡️', name: 'Nước làm mát', interval: '60.000 km / 2 năm', desc: 'Nước làm mát cũ mất khả năng chống gỉ và hạ nhiệt hiệu quả, dễ gây sôi máy trong điều kiện nắng nóng.', cat: 'dong-co', label: 'Động cơ' },
+  { icon: '⚙️', name: 'Dầu hộp số', interval: '40.000 – 80.000 km', desc: 'Dầu hộp số AT/CVT cần thay đúng hạn. Bỏ sót có thể dẫn đến trật số, giật số và hư hộp số tốn kém.', cat: 'dong-co', label: 'Động cơ' },
+];
+
+const PARTS_DIESEL = [
+  { icon: '🛢️', name: 'Dầu nhớt diesel & lọc dầu', interval: '5.000 – 10.000 km', desc: 'Động cơ diesel chịu tải nặng hơn, dầu xuống cấp nhanh. Dùng đúng độ nhớt SAE theo khuyến nghị nhà sản xuất.', cat: 'loc', label: 'Bộ phận lọc' },
+  { icon: '⛽', name: 'Lọc nhiên liệu diesel', interval: '10.000 – 20.000 km', desc: 'Diesel dễ lẫn nước và cặn hơn xăng. Lọc nhiên liệu diesel cần thay thường xuyên hơn để bảo vệ kim phun.', cat: 'loc', label: 'Bộ phận lọc' },
+  { icon: '💨', name: 'Lọc không khí & lọc cabin', interval: '15.000 – 30.000 km', desc: 'Tương tự xăng, nhưng động cơ diesel cần lưu lượng khí sạch cao hơn do áp suất nạp lớn.', cat: 'loc', label: 'Bộ phận lọc' },
+  { icon: '🔴', name: 'Má phanh & đĩa phanh', interval: '30.000 – 60.000 km', desc: 'Xe diesel thường nặng hơn (tải, SUV, bán tải) — hệ thống phanh chịu tải lớn hơn, cần kiểm tra thường xuyên.', cat: 'phanh', label: 'Hệ thống phanh' },
+  { icon: '🔧', name: 'Dây đai cam / đai dẫn động', interval: '60.000 – 100.000 km', desc: 'Quan trọng hơn trên diesel: đứt dây cam có thể làm cong piston và hỏng toàn bộ đầu máy.', cat: 'dong-co', label: 'Động cơ' },
+  { icon: '🌡️', name: 'Nước làm mát', interval: '60.000 km / 2 năm', desc: 'Đặc biệt quan trọng với diesel turbocharged — turbo tạo nhiệt cao, cần nước làm mát chất lượng tốt.', cat: 'dong-co', label: 'Động cơ' },
+];
+
+const MAINTENANCE_TABLE = [
+  { item: 'Dầu nhớt + lọc dầu', interval: '5.000 – 7.500 km hoặc 6 tháng', note: 'Ưu tiên thay theo km nếu chạy nhiều' },
+  { item: 'Lọc không khí động cơ', interval: '15.000 – 30.000 km', note: 'Kiểm tra sớm hơn nếu đường bụi nhiều' },
+  { item: 'Lọc cabin (điều hòa)', interval: '15.000 – 20.000 km', note: 'Mùi hôi điều hòa = dấu hiệu cần thay' },
+  { item: 'Lọc nhiên liệu', interval: '40.000 – 60.000 km', note: 'Diesel cần thay thường hơn: 10.000–20.000 km' },
+  { item: 'Má phanh trước', interval: '30.000 – 50.000 km', note: 'Nghe tiếng kít khi phanh = cần kiểm tra ngay' },
+  { item: 'Má phanh sau', interval: '60.000 – 80.000 km', note: 'Thường mòn chậm hơn phanh trước' },
+  { item: 'Bugi (thường)', interval: '30.000 km', note: 'Bugi iridium/platinum: 80.000–100.000 km' },
+  { item: 'Dây đai dẫn động / đai cam', interval: '60.000 – 100.000 km', note: 'QUAN TRỌNG: đứt đai cam có thể phá hỏng máy' },
+  { item: 'Nước làm mát', interval: '60.000 km hoặc 2 năm', note: 'Không pha loãng thêm — phải xả và thay hoàn toàn' },
+  { item: 'Dầu hộp số tự động (AT/CVT)', interval: '40.000 – 80.000 km', note: 'Một số xe "kín" theo nhà sản xuất — thực tế vẫn cần thay' },
+  { item: 'Dầu trợ lực lái (nếu có)', interval: '80.000 km hoặc 4 năm', note: 'Xe trợ lực điện (EPS): không cần thay' },
+  { item: 'Kiểm tra lốp xe', interval: 'Mỗi 6 tháng', note: 'Thay khi mòn đến giới hạn 1.6mm hoặc sau 5 năm' },
+];
+
+function getField(results, varName) {
+  const item = results.find(r => r.Variable === varName);
+  return (item && item.Value && item.Value.trim() !== '' && item.Value !== 'Not Applicable' && item.Value !== 'null') ? item.Value.trim() : null;
+}
+
+function validateVIN(vin) {
+  if (!vin || vin.length !== 17) return 'Số VIN phải có đúng 17 ký tự';
+  if (/[IOQ]/i.test(vin)) return 'Số VIN không được chứa chữ I, O hoặc Q';
+  if (!/^[A-HJ-NPR-Z0-9]{17}$/i.test(vin)) return 'Số VIN chỉ gồm chữ cái A–Z (trừ I,O,Q) và số 0–9';
+  return null;
+}
+
+function showState(state) {
+  document.getElementById('vinLoading').style.display = state === 'loading' ? 'block' : 'none';
+  document.getElementById('vinError').style.display = state === 'error' ? 'block' : 'none';
+  document.getElementById('vinCard').style.display = state === 'card' ? 'block' : 'none';
+  document.getElementById('vinResultSection').style.display = state ? 'block' : 'none';
+  document.getElementById('vinPartsSection').style.display = state === 'card' ? 'block' : 'none';
+  if (state) document.getElementById('vinResultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function showError(title, msg) {
+  document.getElementById('vinErrorTitle').textContent = title;
+  document.getElementById('vinErrorMsg').textContent = msg;
+  showState('error');
+}
+
+function buildVinDigits(vin) {
+  const groups = [
+    { pos: '1–3', label: 'WMI', tip: 'Nhà sản xuất' },
+    { pos: '4–8', label: 'VDS', tip: 'Đặc điểm xe' },
+    { pos: '9',   label: 'Chk', tip: 'Mã kiểm tra' },
+    { pos: '10',  label: 'Năm', tip: 'Năm sản xuất' },
+    { pos: '11',  label: 'NM',  tip: 'Nhà máy' },
+    { pos: '12–17', label: 'Seq', tip: 'Số thứ tự' },
+  ];
+  const highlights = [0,1,2, 9, 10, 11,12,13,14,15,16];
+  const container = document.getElementById('vinDigitDisplay');
+  container.innerHTML = '';
+  vin.toUpperCase().split('').forEach((ch, i) => {
+    const d = document.createElement('div');
+    d.className = 'vin-digit' + (highlights.includes(i) ? ' highlight' : '');
+    d.textContent = ch;
+    container.appendChild(d);
+  });
+
+  const legend = document.getElementById('vinLegend');
+  legend.innerHTML = groups.map(g => `
+    <div class="vin-legend-item">
+      <span class="vin-legend-pos">Vị trí ${g.pos}</span>
+      <span><strong>${g.label}</strong> — ${g.tip}</span>
+    </div>
+  `).join('');
+}
+
+function buildSpecsGrid(specs) {
+  const el = document.getElementById('vcSpecs');
+  el.innerHTML = specs.filter(s => s.value).map(s => `
+    <div class="vin-spec-item">
+      <div class="vin-spec-label">${s.label}</div>
+      <div class="vin-spec-value${s.highlight ? ' highlight' : ''}">${s.value}</div>
+    </div>
+  `).join('');
+}
+
+function buildPartsSection(fuelType, make) {
+  const isDiesel = fuelType && fuelType.toLowerCase().includes('diesel');
+  const parts = isDiesel ? PARTS_DIESEL : PARTS_GASOLINE;
+  const makeDisplay = make ? make.charAt(0).toUpperCase() + make.slice(1).toLowerCase() : 'xe';
+
+  document.getElementById('partsTitle').textContent = `Phụ Tùng Cần Thay Thế Định Kỳ — ${makeDisplay}`;
+  document.getElementById('partsSub').textContent = isDiesel
+    ? `Lịch bảo dưỡng khuyến nghị cho xe diesel ${makeDisplay}. Động cơ diesel có một số điểm khác biệt quan trọng so với xăng — lưu ý kỹ các mốc dưới đây.`
+    : `Lịch bảo dưỡng khuyến nghị cho xe ${makeDisplay}. Thực hiện đúng lịch giúp xe vận hành ổn định, tiết kiệm nhiên liệu và tránh các hỏng hóc đắt tiền.`;
+
+  document.getElementById('vinPartsGrid').innerHTML = parts.map(p => `
+    <div class="vin-part-card">
+      <div class="vin-part-icon">${p.icon}</div>
+      <div>
+        <div class="vin-part-name">${p.name}</div>
+        <span class="vin-part-interval">${p.interval}</span>
+      </div>
+      <p class="vin-part-desc">${p.desc}</p>
+      <a href="san-pham.html?category=${p.cat}" class="vin-part-cta">
+        Xem phụ tùng ${p.label} →
+      </a>
+    </div>
+  `).join('');
+
+  // Build maintenance table
+  document.getElementById('maintenanceTable').innerHTML = MAINTENANCE_TABLE.map((row, i) => `
+    <tr style="background:${i % 2 === 0 ? 'var(--color-white)' : 'var(--color-bg-soft)'}">
+      <td style="padding:12px 16px;font-weight:500;color:var(--color-near-black)">${row.item}</td>
+      <td style="padding:12px 16px;text-align:center;font-weight:600;color:var(--color-primary-dark)">${row.interval}</td>
+      <td style="padding:12px 16px;font-size:12px;color:var(--color-text-muted)">${row.note}</td>
+    </tr>
+  `).join('');
+}
+
+async function handleVinSearch(e) {
+  e.preventDefault();
+  const raw = document.getElementById('vinInput').value.trim().toUpperCase().replace(/[\s-]/g, '');
+  document.getElementById('vinInput').value = raw;
+
+  const validErr = validateVIN(raw);
+  if (validErr) {
+    showState('error');
+    document.getElementById('vinResultSection').style.display = 'block';
+    showError('Số VIN không hợp lệ', validErr);
+    return;
+  }
+
+  showState('loading');
+
+  try {
+    const res = await fetch(`${NHTSA_URL}${raw}?format=json`);
+    if (!res.ok) throw new Error('Network error');
+    const data = await res.json();
+    const results = data.Results || [];
+
+    const errorCode = getField(results, 'Error Code');
+    // Codes 2–7 = truly invalid VIN structure; code 8 = partial data (still show what we have)
+    const fatalCodes = ['2','3','4','5','6','7'];
+    if (fatalCodes.some(c => errorCode === c || (errorCode && errorCode.startsWith(c + ',')))) {
+      const errorText = getField(results, 'Error Text') || 'Số VIN không hợp lệ hoặc không tìm thấy trong cơ sở dữ liệu.';
+      showError('Số VIN không hợp lệ', errorText);
+      return;
+    }
+
+    const make        = getField(results, 'Make');
+    const model       = getField(results, 'Model');
+    const year        = getField(results, 'Model Year');
+    const bodyClass   = getField(results, 'Body Class');
+    const engineConf  = getField(results, 'Engine Configuration');
+    const cylinders   = getField(results, 'Engine Number of Cylinders');
+    const displacement= getField(results, 'Displacement (L)');
+    const fuelType    = getField(results, 'Fuel Type - Primary');
+    const driveType   = getField(results, 'Drive Type');
+    const transStyle  = getField(results, 'Transmission Style');
+    const transSpeeds = getField(results, 'Transmission Speeds');
+    const manufacturer= getField(results, 'Manufacturer Name');
+    const country     = getField(results, 'Country of Manufacture');
+    const plantCountry= getField(results, 'Plant Country');
+    const plantState  = getField(results, 'Plant State');
+    const gvwr        = getField(results, 'Gross Vehicle Weight Rating From');
+    const doors       = getField(results, 'Doors');
+    const seats       = getField(results, 'Number of Seat Rows');
+
+    if (!make && !model) {
+      showError('Không nhận diện được xe', 'Cơ sở dữ liệu không có thông tin cho số VIN này. Thử kiểm tra lại từng ký tự hoặc liên hệ Tiên Du để được hỗ trợ.');
+      return;
+    }
+
+    // Head
+    const nameParts = [make, model].filter(Boolean);
+    document.getElementById('vcMake').textContent = nameParts.join(' ') || 'Không xác định';
+    document.getElementById('vcYear').textContent = year || '—';
+
+    // Badges
+    const badges = [];
+    if (bodyClass) badges.push({ text: bodyClass, primary: false });
+    if (fuelType) badges.push({ text: fuelType, primary: fuelType.toLowerCase().includes('diesel') });
+    if (driveType) badges.push({ text: driveType, primary: false });
+    document.getElementById('vcBadges').innerHTML = badges.map(b =>
+      `<span class="vin-badge${b.primary ? ' vin-badge-primary' : ''}">${b.text}</span>`
+    ).join('');
+
+    // Engine display
+    const engineParts = [];
+    if (displacement) engineParts.push(`${parseFloat(displacement).toFixed(1)}L`);
+    if (cylinders) engineParts.push(`${cylinders} xy-lanh`);
+    if (engineConf) engineParts.push(engineConf);
+    const engineDisplay = engineParts.join(' · ') || null;
+
+    // Transmission
+    const transParts = [];
+    if (transStyle) transParts.push(transStyle);
+    if (transSpeeds) transParts.push(`${transSpeeds} cấp`);
+    const transDisplay = transParts.join(' ') || null;
+
+    buildSpecsGrid([
+      { label: 'Hãng xe', value: make },
+      { label: 'Dòng xe', value: model },
+      { label: 'Năm sản xuất', value: year, highlight: true },
+      { label: 'Kiểu dáng', value: bodyClass },
+      { label: 'Động cơ', value: engineDisplay },
+      { label: 'Nhiên liệu', value: fuelType },
+      { label: 'Dẫn động', value: driveType },
+      { label: 'Hộp số', value: transDisplay },
+      { label: 'Cửa / Hàng ghế', value: [doors ? doors + ' cửa' : null, seats ? seats + ' hàng ghế' : null].filter(Boolean).join(' · ') || null },
+    ]);
+
+    // Origin strip
+    const originParts = [];
+    if (manufacturer) originParts.push(`<span class="vin-origin-item"><strong>Nhà sản xuất:</strong> ${manufacturer}</span>`);
+    if (country) originParts.push(`<span class="vin-origin-item"><strong>Quốc gia SX:</strong> ${country}</span>`);
+    if (plantCountry && plantCountry !== country) originParts.push(`<span class="vin-origin-item"><strong>Nhà máy:</strong> ${[plantState, plantCountry].filter(Boolean).join(', ')}</span>`);
+    document.getElementById('vcOrigin').innerHTML = originParts.join('') || '<span class="vin-origin-item">Không có thông tin xuất xứ</span>';
+
+    buildVinDigits(raw);
+    buildPartsSection(fuelType, make);
+
+    showState('card');
+
+  } catch (err) {
+    showError('Lỗi kết nối', 'Không thể kết nối đến cơ sở dữ liệu. Vui lòng kiểm tra internet và thử lại, hoặc liên hệ Tiên Du để được tra cứu thủ công.');
+  }
+}
+
+// Auto-format VIN input: uppercase, remove invalid chars
+document.getElementById('vinInput').addEventListener('input', function() {
+  const pos = this.selectionStart;
+  const cleaned = this.value.toUpperCase().replace(/[IOQ\s-]/g, '').replace(/[^A-HJ-NPR-Z0-9]/g, '');
+  if (cleaned !== this.value) {
+    this.value = cleaned;
+    this.setSelectionRange(pos, pos);
+  }
+});
+</script>
+</body>
+</html>
