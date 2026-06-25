@@ -130,7 +130,7 @@
       if (slug === 'gioi-thieu') {
         setText('.about-story-title', pg.storyTitle)
         if (pg.storyText) {
-          const p = document.querySelector('.about-story-body p')
+          const p = document.querySelector('.about-story-text p')
           if (p) p.textContent = pg.storyText
         }
       }
