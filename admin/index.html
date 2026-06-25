@@ -411,7 +411,7 @@ pre.sheet-headers{background:#101010;color:#fecd27;border-radius:8px;padding:14p
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
           Sync Sheets
         </button>
-        <a href="../san-pham.html" target="_blank" class="btn btn-ghost btn-sm">
+        <a id="topbar-site-link" href="#" target="_blank" class="btn btn-ghost btn-sm">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Xem website
         </a>
@@ -488,6 +488,7 @@ const DEFAULT_SETTINGS = {
   githubToken:'',
   githubRepo:'rimibylinh-creator/tiendu-website',
   githubBranch:'main',
+  siteUrl:'https://ototiendu.com',
 }
 
 const DEFAULT_DESIGN = {
@@ -568,6 +569,8 @@ function load() {
   if (saved) {
     try {
       S = JSON.parse(saved)
+      // Merge settings với defaults để các field mới luôn có giá trị
+      S.settings = {...DEFAULT_SETTINGS, ...(S.settings || {})}
       if (!S.design) S.design = {...DEFAULT_DESIGN}
       if (!S.cms) S.cms = JSON.parse(JSON.stringify(DEFAULT_CMS))
       if (!S.cms.homepage) S.cms.homepage = JSON.parse(JSON.stringify(DEFAULT_CMS.homepage))
@@ -660,6 +663,7 @@ function render() {
     case 'page-gioi-thieu': c.innerHTML = renderPageInner('gioi-thieu'); break
     case 'page-lien-he':    c.innerHTML = renderPageInner('lien-he');   break
   }
+  updateTopbarLink()
 }
 
 // ========================================================
@@ -1271,7 +1275,7 @@ function renderDesign() {
           Copy CSS
         </button>
         <button class="btn btn-ghost" onclick="resetDesign()">Reset mặc định</button>
-        <a href="../index.html" target="_blank" class="btn btn-ghost">
+        <a id="design-site-link" href="#" target="_blank" class="btn btn-ghost" onclick="this.href=siteBase()+'/'">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Xem website
         </a>
@@ -1447,6 +1451,20 @@ function renderSettings() {
   const connected = !!gs.sheetId
 
   return `
+  <!-- Site URL -->
+  <div class="settings-card">
+    <h3>🌐 URL website chính</h3>
+    <div class="settings-card-desc">Dùng cho nút "Xem website" và "Xem trang" trong admin — đặc biệt quan trọng khi admin chạy ở domain riêng</div>
+    <div class="frow">
+      <div class="ff full">
+        <label>URL website (ototiendu.com)</label>
+        <input id="s-siteurl" value="${gs.siteUrl||'https://ototiendu.com'}" placeholder="https://ototiendu.com">
+        <div class="ff-hint">Không có dấu / ở cuối · Dùng https://</div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="saveSiteUrl()">Lưu URL</button>
+  </div>
+
   <!-- Contact Info -->
   <div class="settings-card">
     <h3>Thông tin liên hệ</h3>
@@ -1578,6 +1596,19 @@ function renderSettings() {
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(this)">
     </div>
   </div>`
+}
+
+function saveSiteUrl() {
+  const val = (document.getElementById('s-siteurl').value || '').trim().replace(/\/$/, '')
+  S.settings.siteUrl = val || 'https://ototiendu.com'
+  save()
+  updateTopbarLink()
+  toast('Đã lưu URL website','s')
+}
+
+function updateTopbarLink() {
+  const el = document.getElementById('topbar-site-link')
+  if (el) el.href = siteBase() + '/'
 }
 
 function saveContactInfo() {
@@ -1765,8 +1796,17 @@ function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 }
 
+function siteBase() {
+  const url = (S.settings && S.settings.siteUrl) || ''
+  if (url) return url.replace(/\/$/, '')
+  // Same-domain fallback: go up from /admin/
+  return window.location.origin
+}
+
 function previewBtn(file) {
-  return `<a href="../${file}" target="_blank" class="btn btn-ghost btn-sm">
+  const base = siteBase()
+  const href = file === 'index.html' ? base + '/' : base + '/' + file
+  return `<a href="${href}" target="_blank" class="btn btn-ghost btn-sm">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
     Xem trang
   </a>`

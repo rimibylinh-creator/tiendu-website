@@ -10,7 +10,11 @@
     // 1. Thử fetch /cms-data.json (cross-domain, được publish từ admin riêng)
     try {
       const res = await fetch('/cms-data.json?t=' + Date.now(), { cache: 'no-cache' })
-      if (res.ok) cms = await res.json()
+      if (res.ok) {
+        const data = await res.json()
+        // Chỉ dùng nếu có nội dung thực sự (không phải {} rỗng)
+        if (data && (data.homepage || data.pages)) cms = data
+      }
     } catch (_) {}
 
     // 2. Fallback: localStorage (same-domain dev / admin ở cùng domain)
