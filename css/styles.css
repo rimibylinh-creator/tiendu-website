@@ -2982,3 +2982,56 @@ p { margin: 0; }
   .promo-slide-title { font-size: 18px; }
   .promo-slide-text { font-size: 13px; }
 }
+
+/* ============================================================
+   FAQ ACCORDION — used on tin-tuc/ article pages
+   ============================================================ */
+.faq-section {
+  margin-top: 48px;
+  border-top: 2px solid var(--color-primary);
+  padding-top: 32px;
+}
+.faq-section h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-near-black);
+  margin: 0 0 24px;
+}
+.faq-item {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-near-black);
+  cursor: pointer;
+  background: var(--color-bg-soft);
+  user-select: none;
+  transition: background 0.15s;
+}
+.faq-question:hover { background: var(--color-bg-tab); }
+.faq-question.open { background: var(--color-primary); color: var(--color-near-black); }
+.faq-toggle {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+.faq-question.open .faq-toggle { transform: rotate(180deg); }
+.faq-answer {
+  display: none;
+  padding: 16px 20px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--color-text);
+  background: var(--color-white);
+}
+.faq-answer.open { display: block; }
