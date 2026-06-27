@@ -86,8 +86,9 @@
   ]
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body>
+<body data-product-slug="bo-loc-nhien-lieu-cao-cap">
 
 <nav class="site-nav">
   <div class="container">
@@ -132,8 +133,8 @@
           <span class="chip chip-category" style="margin-left:8px">Bộ Phận Lọc</span>
         </div>
         <h1 style="font-size:clamp(22px,3vw,32px); font-weight:700; color:var(--color-near-black); margin:0 0 16px">Bộ Lọc Nhiên Liệu Cao Cấp</h1>
-        <div style="font-size:28px; font-weight:700; color:var(--color-near-black); margin-bottom:8px">145.000 ₫</div>
-        <span class="stock-badge" style="font-size:13px">Còn hàng</span>
+        <div id="productPrice" style="font-size:28px; font-weight:700; color:var(--color-near-black); margin-bottom:8px">145.000 ₫</div>
+        <span id="productStock" class="stock-badge" style="font-size:13px">Còn hàng</span>
 
         <div style="margin:24px 0; border-top:1px solid var(--color-border); padding-top:24px">
           <table style="width:100%; border-collapse:collapse; font-size:14px">
@@ -269,7 +270,7 @@
       </div>
       <div class="footer-col footer-contact">
         <p class="footer-col-title">LIÊN HỆ</p>
-        <span>37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Phước Long, TP Nha Trang</span>
+        <span>37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Nam Nha Trang, TP Nha Trang</span>
         <a href="tel:0946915111">0946.915.111</a>
         <span>Zalo: tiendu.nhatrang</span>
         <a href="mailto:tienduoto@gmail.com">tienduoto@gmail.com</a>
@@ -279,7 +280,7 @@
   </div>
   <div class="footer-divider"></div>
   <div class="footer-bottom">
-    <p class="footer-copy">© 2026 Tiên Du Nha Trang · Địa chỉ: 37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Phước Long, TP Nha Trang</p>
+    <p class="footer-copy">© 2026 Tiên Du Nha Trang · Địa chỉ: 37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Nam Nha Trang, TP Nha Trang</p>
     <div class="footer-social">
       <a href="#">Facebook</a>
       <a href="https://zalo.me/0946915111" target="_blank" rel="noopener">Zalo</a>
@@ -298,5 +299,6 @@
 </div>
 
 <script src="../js/main.js"></script>
+<script src="../js/product-detail-loader.js"></script>
 </body>
 </html>

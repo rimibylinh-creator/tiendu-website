@@ -21,6 +21,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 <link rel="canonical" href="https://ototiendu.com/san-pham.html">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -143,247 +144,7 @@
     </div>
 
     <div class="product-grid" id="productGrid">
-
-      <article class="product-card" data-category="dong-co">
-        <div class="product-card-image">
-          <img src="assets/products/p01-loc-khong-khi.jpg" alt="Bộ Lọc Không Khí Dòng Cao">
-          <div class="product-tags">
-            <div class="tag-group"><span class="chip chip-brand">TOYOTA</span><span class="chip">2004</span></div>
-            <span class="chip chip-category">Động Cơ</span>
-          </div>
-        </div>
-        <div class="product-card-content">
-          <p class="product-name">Bộ Lọc Không Khí Dòng Cao</p>
-          <div class="product-desc">
-            <div class="product-desc-line"><span class="dot">·</span><span>Động cơ 2.0L – 2.5L</span></div>
-            <div class="product-desc-line"><span class="dot">·</span><span>Tiêu chuẩn OEM</span></div>
-          </div>
-          <div class="product-divider"></div>
-          <div class="price-row"><span class="price">185.000 ₫</span><span class="stock-badge">Còn hàng</span></div>
-          <a href="san-pham/loc-khong-khi-dong-cao.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
-        </div>
-      </article>
-
-      <article class="product-card" data-category="phanh">
-        <div class="product-card-image">
-          <img src="assets/products/p02-ma-phanh.jpg" alt="Má Phanh Gốm Cao Cấp">
-          <div class="product-tags">
-            <div class="tag-group"><span class="chip chip-brand">TOYOTA</span><span class="chip">2024</span></div>
-            <span class="chip chip-category">Hệ Thống Phanh</span>
-          </div>
-        </div>
-        <div class="product-card-content">
-          <p class="product-name">Má Phanh Gốm Cao Cấp</p>
-          <div class="product-desc">
-            <div class="product-desc-line"><span class="dot">·</span><span>Phanh trước / sau</span></div>
-            <div class="product-desc-line"><span class="dot">·</span><span>Độ bền cao gấp 3x</span></div>
-          </div>
-          <div class="product-divider"></div>
-          <div class="price-row"><span class="price">450.000 ₫</span><span class="stock-badge">Còn hàng</span></div>
-          <a href="san-pham/ma-phanh-gom-cao-cap.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
-        </div>
-      </article>
-
-      <article class="product-card" data-category="dong-co">
-        <div class="product-card-image">
-          <img src="assets/products/p03-dau-nhot.jpg" alt="Dầu Nhớt & Bộ Lọc">
-          <div class="product-tags">
-            <div class="tag-group"><span class="chip chip-brand">HONDA</span><span class="chip">2023</span></div>
-            <span class="chip chip-category">Động Cơ</span>
-          </div>
-        </div>
-        <div class="product-card-content">
-          <p class="product-name">Dầu Nhớt &amp; Bộ Lọc Động Cơ</p>
-          <div class="product-desc">
-            <div class="product-desc-line"><span class="dot">·</span><span>5W-30 Full Synthetic</span></div>
-            <div class="product-desc-line"><span class="dot">·</span><span>Thay sau 5.000 km</span></div>
-          </div>
-          <div class="product-divider"></div>
-          <div class="price-row"><span class="price">320.000 ₫</span><span class="stock-badge">Còn hàng</span></div>
-          <a href="san-pham/dau-nhot-bo-loc-dong-co.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
-        </div>
-      </article>
-
-      <article class="product-card" data-category="dien">
-        <div class="product-card-image">
-          <img src="assets/products/p04-bugi.jpg" alt="Bugi Iridium">
-          <div class="product-tags">
-            <div class="tag-group"><span class="chip chip-brand">TOYOTA</span><span class="chip">2024</span></div>
-            <span class="chip chip-category">Đánh Lửa</span>
-          </div>
-        </div>
-        <div class="product-card-content">
-          <p class="product-name">Bugi Iridium</p>
-          <div class="product-desc">
-            <div class="product-desc-line"><span class="dot">·</span><span>Đầu điện cực Iridium</span></div>
-            <div class="product-desc-line"><span class="dot">·</span><span>Tuổi thọ 100.000 km</span></div>
-          </div>
-          <div class="product-divider"></div>
-          <div class="price-row"><span class="price">275.000 ₫</span><span class="stock-badge">Còn hàng</span></div>
-          <a href="san-pham/bugi-iridium.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
-        </div>
-      </article>
-
-      <article class="product-card" data-category="treo">
-        <div class="product-card-image">
-          <img src="assets/products/p06-giam-xoc.jpg" alt="Bộ Giảm Xóc Thể Thao">
-          <div class="product-tags">
-            <div class="tag-group"><span class="chip chip-brand">MITSUBISHI</span><span class="chip">2022</span></div>
-            <span class="chip chip-category">Hệ Thống Treo</span>
-          </div>
-        </div>
-        <div class="product-card-content">
-          <p class="product-name">Bộ Giảm Xóc Thể Thao</p>
-          <div class="product-desc">
-            <div class="product-desc-line"><span class="dot">·</span><span>Hệ thống treo trước</span></div>
-            <div class="product-desc-line"><span class="dot">·</span><span>Tải trọng 450 kg</span></div>
-          </div>
-          <div class="product-divider"></div>
-          <div class="price-row"><span class="price">1.250.000 ₫</span><span class="stock-badge">Còn hàng</span></div>
-          <a href="san-pham/bo-giam-xoc-the-thao.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
-        </div>
-      </article>
-
-      <article class="product-card" data-category="loc">
-        <div class="product-card-image">
-          <img src="assets/products/p07-loc-dau.jpg" alt="Bộ Lọc Dầu Động Cơ">
-          <div class="product-tags">
-            <div class="tag-group"><span class="chip chip-brand">HONDA</span><span class="chip">2024</span></div>
-            <span class="chip chip-category">Động Cơ</span>
-          </div>
-        </div>
-        <div class="product-card-content">
-          <p class="product-name">Bộ Lọc Dầu Động Cơ</p>
-          <div class="product-desc">
-            <div class="product-desc-line"><span class="dot">·</span><span>Áp suất 6 - 8 bar</span></div>
-            <div class="product-desc-line"><span class="dot">·</span><span>Thay mỗi 5.000 km</span></div>
-          </div>
-          <div class="product-divider"></div>
-          <div class="price-row"><span class="price">95.000 ₫</span><span class="stock-badge">Còn hàng</span></div>
-          <a href="san-pham/bo-loc-dau-dong-co.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
-        </div>
-      </article>
-
-      <article class="product-card" data-category="dong-co">
-        <div class="product-card-image">
-          <img src="assets/products/p08-day-curoa.jpg" alt="Dây Curoa Truyền Động">
-          <div class="product-tags">
-            <div class="tag-group"><span class="chip chip-brand">TOYOTA</span><span class="chip">2023</span></div>
-            <span class="chip chip-category">Truyền Động</span>
-          </div>
-        </div>
-        <div class="product-card-content">
-          <p class="product-name">Dây Curoa Truyền Động</p>
-          <div class="product-desc">
-            <div class="product-desc-line"><span class="dot">·</span><span>Chiều dài 1.680 mm</span></div>
-            <div class="product-desc-line"><span class="dot">·</span><span>Tải trọng 5 kN</span></div>
-          </div>
-          <div class="product-divider"></div>
-          <div class="price-row"><span class="price">320.000 ₫</span><span class="stock-badge">Còn hàng</span></div>
-          <a href="san-pham/day-curoa-truyen-dong.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
-        </div>
-      </article>
-
-      <article class="product-card" data-category="dien">
-        <div class="product-card-image">
-          <img src="assets/products/p09-cam-bien-oxy.jpg" alt="Cảm Biến Oxy Khí Thải">
-          <div class="product-tags">
-            <div class="tag-group"><span class="chip chip-brand">HYUNDAI</span><span class="chip">2023</span></div>
-            <span class="chip chip-category">Hệ Thống Điện</span>
-          </div>
-        </div>
-        <div class="product-card-content">
-          <p class="product-name">Cảm Biến Oxy Khí Thải</p>
-          <div class="product-desc">
-            <div class="product-desc-line"><span class="dot">·</span><span>Tín hiệu 0 - 1V</span></div>
-            <div class="product-desc-line"><span class="dot">·</span><span>Nhiệt độ tối đa 850°C</span></div>
-          </div>
-          <div class="product-divider"></div>
-          <div class="price-row"><span class="price">650.000 ₫</span><span class="stock-badge">Còn hàng</span></div>
-          <a href="san-pham/cam-bien-oxy-khi-thai.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
-        </div>
-      </article>
-
-      <article class="product-card" data-category="loc">
-        <div class="product-card-image">
-          <img src="assets/products/p10-loc-nhien-lieu.jpg" alt="Bộ Lọc Nhiên Liệu Cao Cấp">
-          <div class="product-tags">
-            <div class="tag-group"><span class="chip chip-brand">MAZDA</span><span class="chip">2024</span></div>
-            <span class="chip chip-category">Nhiên Liệu</span>
-          </div>
-        </div>
-        <div class="product-card-content">
-          <p class="product-name">Bộ Lọc Nhiên Liệu Cao Cấp</p>
-          <div class="product-desc">
-            <div class="product-desc-line"><span class="dot">·</span><span>Áp suất 3 - 5 bar</span></div>
-            <div class="product-desc-line"><span class="dot">·</span><span>Lọc 10 micron</span></div>
-          </div>
-          <div class="product-divider"></div>
-          <div class="price-row"><span class="price">145.000 ₫</span><span class="stock-badge">Còn hàng</span></div>
-          <a href="san-pham/bo-loc-nhien-lieu-cao-cap.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
-        </div>
-      </article>
-
-      <article class="product-card" data-category="dien">
-        <div class="product-card-image">
-          <img src="assets/products/p11-den-pha-led.jpg" alt="Đèn Pha LED Cao Cấp">
-          <div class="product-tags">
-            <div class="tag-group"><span class="chip chip-brand">FORD</span><span class="chip">2024</span></div>
-            <span class="chip chip-category">Hệ Thống Điện</span>
-          </div>
-        </div>
-        <div class="product-card-content">
-          <p class="product-name">Đèn Pha LED Cao Cấp</p>
-          <div class="product-desc">
-            <div class="product-desc-line"><span class="dot">·</span><span>6000K White Light</span></div>
-            <div class="product-desc-line"><span class="dot">·</span><span>Tuổi thọ 30.000h</span></div>
-          </div>
-          <div class="product-divider"></div>
-          <div class="price-row"><span class="price">2.800.000 ₫</span><span class="stock-badge">Còn hàng</span></div>
-          <a href="san-pham/den-pha-led-cao-cap.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
-        </div>
-      </article>
-
-      <article class="product-card" data-category="dong-co">
-        <div class="product-card-image">
-          <img src="assets/products/p12-bom-nuoc.jpg" alt="Bơm Nước Làm Mát">
-          <div class="product-tags">
-            <div class="tag-group"><span class="chip chip-brand">NISSAN</span><span class="chip">2023</span></div>
-            <span class="chip chip-category">Làm Mát</span>
-          </div>
-        </div>
-        <div class="product-card-content">
-          <p class="product-name">Bơm Nước Làm Mát</p>
-          <div class="product-desc">
-            <div class="product-desc-line"><span class="dot">·</span><span>Lưu lượng 50 L/phút</span></div>
-            <div class="product-desc-line"><span class="dot">·</span><span>Trục thép không gỉ</span></div>
-          </div>
-          <div class="product-divider"></div>
-          <div class="price-row"><span class="price">580.000 ₫</span><span class="stock-badge">Còn hàng</span></div>
-          <a href="san-pham/bom-nuoc-lam-mat.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
-        </div>
-      </article>
-
-      <article class="product-card" data-category="phanh">
-        <div class="product-card-image">
-          <img src="assets/products/p05-loc-khong-khi-2.jpg" alt="Đĩa Phanh Thông Gió">
-          <div class="product-tags">
-            <div class="tag-group"><span class="chip chip-brand">BMW</span><span class="chip">2023</span></div>
-            <span class="chip chip-category">Hệ Thống Phanh</span>
-          </div>
-        </div>
-        <div class="product-card-content">
-          <p class="product-name">Đĩa Phanh Thông Gió</p>
-          <div class="product-desc">
-            <div class="product-desc-line"><span class="dot">·</span><span>Đường kính 320 mm</span></div>
-            <div class="product-desc-line"><span class="dot">·</span><span>Thép hợp kim cao cấp</span></div>
-          </div>
-          <div class="product-divider"></div>
-          <div class="price-row"><span class="price">890.000 ₫</span><span class="stock-badge">Còn hàng</span></div>
-          <a href="san-pham/dia-phanh-thong-gio.html" class="btn btn-yellow product-cta">Xem chi tiết →</a>
-        </div>
-      </article>
-
+      <p style="color:var(--color-text-muted);padding:24px 0">Đang tải sản phẩm...</p>
     </div>
 
     <div class="cta-more-wrap">
@@ -431,7 +192,7 @@
       </div>
       <div class="footer-col footer-contact">
         <p class="footer-col-title">LIÊN HỆ</p>
-        <span>37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Phước Long, TP Nha Trang</span>
+        <span>37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Nam Nha Trang, TP Nha Trang</span>
         <a href="tel:0946915111">0946.915.111</a>
         <span>Zalo: tiendu.nhatrang</span>
         <a href="mailto:tienduoto@gmail.com">tienduoto@gmail.com</a>
@@ -441,7 +202,7 @@
   </div>
   <div class="footer-divider"></div>
   <div class="footer-bottom">
-    <p class="footer-copy">© 2026 Tiên Du Nha Trang · Địa chỉ: 37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Phước Long, TP Nha Trang</p>
+    <p class="footer-copy">© 2026 Tiên Du Nha Trang · Địa chỉ: 37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Nam Nha Trang, TP Nha Trang</p>
     <div class="footer-social">
       <a href="#">Facebook</a>
       <a href="https://zalo.me/0946915111" target="_blank" rel="noopener">Zalo</a>
@@ -462,6 +223,26 @@
   </a>
 </div>
 
+<script src="js/supabase-client.js"></script>
+<script>
+(async function () {
+  const grid    = document.getElementById('productGrid')
+  const countEl = document.getElementById('productsCount')
+
+  const products = await getProducts()
+  grid.innerHTML = products.map(p => renderProductCard(p, 'san-pham/')).join('')
+  if (countEl) countEl.textContent = 'Hiển thị ' + products.length + ' sản phẩm'
+
+  reinitProductTabs('productGrid')
+
+  // Lọc theo ?category= trên URL
+  const cat = new URLSearchParams(location.search).get('category')
+  if (cat) {
+    const btn = document.querySelector(`.tab-btn[data-filter="${cat}"]`)
+    if (btn) btn.click()
+  }
+})()
+</script>
 <script src="js/main.js"></script>
 <script src="js/cms-loader.js"></script>
 </body>
