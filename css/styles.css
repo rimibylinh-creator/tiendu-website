@@ -2798,6 +2798,21 @@ p { margin: 0; }
   font-family: 'Courier New', monospace;
 }
 
+/* Product detail grid */
+.product-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .product-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
 /* Responsive VIN */
 @media (max-width: 860px) {
   .vin-hero { padding: 100px 20px 48px; }
