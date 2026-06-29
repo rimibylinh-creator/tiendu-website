@@ -2290,7 +2290,35 @@ p { margin: 0; }
 
 /* Info panel */
 .pd-info { display: flex; flex-direction: column; gap: 0; }
-.pd-info-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.pd-info-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+
+/* Override chip sizes for product detail page */
+.pd-info-chips .chip,
+.pd-info-chips .chip-brand,
+.pd-info-chips .chip-category {
+  padding: 5px 14px;
+  font-size: 12px;
+  border-radius: var(--radius-pill);
+}
+.pd-info-chips .chip-brand {
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.pd-info-chips .stock-badge {
+  padding: 5px 14px !important;
+  font-size: 12px !important;
+  border-radius: var(--radius-pill) !important;
+}
+.chip-year {
+  background: var(--color-bg-soft);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  white-space: nowrap;
+}
 .pd-info-title {
   font-size: clamp(20px, 2.5vw, 30px); font-weight: 700;
   color: var(--color-near-black); margin: 0 0 20px; line-height: 1.3;

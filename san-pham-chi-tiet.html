@@ -266,6 +266,17 @@
 
   // ── Xe tương thích ────────────────────────────────────────
   const vehicles = product.compatible_vehicles || []
+
+  // Year range chip — extract min/max years from vehicle strings
+  const yearMatches = vehicles.flatMap(v => [...v.matchAll(/(\d{4})/g)].map(m => +m[1]))
+  const yearChip = yearMatches.length >= 2
+    ? `<span class="chip-year">${Math.min(...yearMatches)}–${Math.max(...yearMatches)}</span>`
+    : ''
+  // Top 2 unique short model names (strip brand prefix + displacement + year)
+  const modelNames = vehicles.slice(0, 3).map(v =>
+    v.replace(/^\w+ /, '').replace(/\s*\d+\.\d+.*/, '').replace(/\s*\(.*\)/, '').trim()
+  ).filter((v, i, a) => v && a.indexOf(v) === i).slice(0, 2)
+  const modelChips = modelNames.map(m => `<span class="chip">${escHtml(m)}</span>`).join('')
   const vehiclesTabHTML = vehicles.length
     ? `<p style="color:var(--color-text-muted);font-size:14px;margin-bottom:16px">Sản phẩm tương thích với các dòng xe phổ biến sau:</p>
        <div class="pd-vehicles-grid">
@@ -311,7 +322,7 @@
       <!-- Info panel -->
       <div class="pd-info">
         <div class="pd-info-chips">
-          ${brandChip}${catChip}${stockChipHTML}
+          ${brandChip}${catChip}${yearChip}${modelChips}${stockChipHTML}
         </div>
 
         <h1 class="pd-info-title">${escHtml(product.name)}</h1>
