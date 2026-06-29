@@ -7,6 +7,31 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON)
 
 // ── Fetch ──────────────────────────────────────────────────────
 
+async function getProductBySlug(slug) {
+  const { data, error } = await db
+    .from('products')
+    .select('*, brands(name, slug), categories(name, slug)')
+    .eq('slug', slug)
+    .eq('is_published', true)
+    .single()
+  if (error) { console.error('getProductBySlug:', error); return null; }
+  return data
+}
+
+async function getRelatedProducts(categoryId, excludeSlug, limit = 4) {
+  let q = db
+    .from('products')
+    .select('id, slug, name, price, stock_status, short_specs, thumbnail_url, brands(name, slug), categories(name, slug)')
+    .eq('is_published', true)
+    .neq('slug', excludeSlug)
+    .limit(limit)
+  if (categoryId) q = q.eq('category_id', categoryId)
+  else q = q.eq('is_featured', true)
+  const { data, error } = await q
+  if (error) { console.error('getRelatedProducts:', error); return []; }
+  return data || []
+}
+
 async function getProducts({ limit } = {}) {
   let q = db
     .from('products')
@@ -69,7 +94,7 @@ function renderProductCard(p, baseHref) {
   const specHTML = specs.map(s =>
     `<div class="product-desc-line"><span class="dot">·</span><span>${s}</span></div>`
   ).join('')
-  const href = (baseHref || 'san-pham/') + p.slug + '.html'
+  const href = 'san-pham-chi-tiet.html?slug=' + p.slug
   return `
 <article class="product-card" data-category="${catSlug}">
   <div class="product-card-image">
