@@ -3,401 +3,832 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Tiên Du Kho Hàng</title>
+<title>Admin — Tiên Du</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0 }
-  body { font-family: Inter, sans-serif; background: #f5f5f5; color: #252b42; font-size: 14px }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,-apple-system,sans-serif;background:#f5f5f5;color:#252b42;font-size:14px;height:100vh;overflow:hidden}
 
-  /* ── Login ── */
-  #loginWrap {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  }
-  .login-card {
-    background: #fff; border-radius: 12px; padding: 40px; width: 360px;
-    box-shadow: 0 4px 24px rgba(0,0,0,.1);
-  }
-  .login-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px }
-  .login-card p  { color: #737373; margin-bottom: 28px; font-size: 13px }
-  .field { margin-bottom: 16px }
-  .field label { display: block; font-weight: 500; margin-bottom: 6px }
-  .field input {
-    width: 100%; border: 1px solid #d2d2d2; border-radius: 8px;
-    padding: 10px 12px; font-size: 14px; outline: none;
-  }
-  .field input:focus { border-color: #fecd27 }
-  #loginErr { color: #ef4444; font-size: 13px; margin-bottom: 12px; display: none }
+/* ── Login ── */
+#loginWrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f5f5}
+.login-card{background:#fff;border-radius:16px;padding:48px 40px;width:400px;box-shadow:0 8px 32px rgba(0,0,0,.1)}
+.login-logo{font-size:22px;font-weight:800;letter-spacing:1px;margin-bottom:4px}
+.login-sub{color:#737373;font-size:13px;margin-bottom:32px}
+.field{margin-bottom:18px}
+.field label{display:block;font-weight:700;font-size:11px;color:#737373;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.field input{width:100%;border:1.5px solid #d2d2d2;border-radius:8px;padding:11px 14px;font-size:14px;outline:none;transition:border-color .15s;font-family:inherit}
+.field input:focus{border-color:#fecd27}
+#loginErr{color:#dc2626;font-size:13px;margin-bottom:14px;padding:10px 14px;background:#fef2f2;border-radius:8px;display:none}
 
-  /* ── Admin shell ── */
-  #adminWrap { display: none; min-height: 100vh }
-  .topbar {
-    background: #000; color: #fff; padding: 14px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .topbar-title { font-weight: 700; font-size: 16px }
-  .topbar-right { display: flex; align-items: center; gap: 16px; font-size: 13px }
-  #userEmail { color: #fecd27 }
+/* ── Layout ── */
+#adminWrap{display:none;height:100vh}
+.layout{display:grid;grid-template-columns:220px 1fr;grid-template-rows:56px 1fr;height:100vh}
 
-  .main { padding: 24px }
-  .tabs { display: flex; gap: 8px; margin-bottom: 20px }
-  .tab {
-    padding: 8px 20px; border-radius: 64px; border: 1px solid #d2d2d2;
-    background: #fff; cursor: pointer; font-size: 13px; font-weight: 500;
-  }
-  .tab.active { background: #fecd27; border-color: #fecd27; font-weight: 700 }
+/* ── Topbar ── */
+.topbar{grid-column:1/-1;background:#101010;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:2px solid #fecd27}
+.topbar-brand{font-weight:800;font-size:13px;letter-spacing:2.5px;color:#fecd27}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-user{color:rgba(255,255,255,.45);font-size:12px}
+.btn-logout{background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);border-radius:6px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .12s}
+.btn-logout:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.4)}
 
-  /* ── Table ── */
-  .tbl-wrap { background: #fff; border-radius: 12px; overflow: auto; box-shadow: 0 2px 8px rgba(0,0,0,.06) }
-  table { width: 100%; border-collapse: collapse; min-width: 700px }
-  th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #f0f0f0 }
-  th { background: #fafafa; font-size: 12px; font-weight: 600; color: #737373; text-transform: uppercase; letter-spacing: .5px }
-  tr:last-child td { border-bottom: none }
-  tr:hover td { background: #fffdf0 }
+/* ── Sidebar ── */
+.sidebar{background:#fff;border-right:1px solid #ebebeb;padding:16px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.nav-section-label{font-size:10px;font-weight:700;color:#c0c0c0;text-transform:uppercase;letter-spacing:.8px;padding:10px 10px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:#737373;border:none;background:none;width:100%;text-align:left;text-decoration:none;transition:all .12s;font-family:inherit}
+.nav-item:hover{background:#f5f5f5;color:#252b42}
+.nav-item.active{background:#fecd27;color:#000;font-weight:700}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-divider{height:1px;background:#f0f0f0;margin:8px 2px}
 
-  /* ── Controls ── */
-  select.ctl, input.ctl {
-    border: 1px solid #d2d2d2; border-radius: 6px; padding: 6px 8px;
-    font-size: 13px; background: #fff; outline: none;
-  }
-  select.ctl:focus, input.ctl:focus { border-color: #fecd27 }
-  input.ctl[type=number] { width: 72px }
+/* ── Main ── */
+.main{overflow-y:auto;padding:28px 32px;background:#f7f7f7}
 
-  .badge {
-    display: inline-block; padding: 3px 10px; border-radius: 64px; font-size: 12px; font-weight: 600;
-  }
-  .badge-in  { background: #dcfce7; color: #16a34a }
-  .badge-out { background: #fee2e2; color: #dc2626 }
-  .badge-pre { background: #fef9c3; color: #ca8a04 }
+/* ── Page header ── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:16px}
+.ph-title{font-size:21px;font-weight:800;color:#101010}
+.ph-sub{font-size:13px;color:#737373;margin-top:3px}
 
-  .toggle {
-    position: relative; display: inline-block; width: 36px; height: 20px;
-  }
-  .toggle input { opacity: 0; width: 0; height: 0 }
-  .slider {
-    position: absolute; inset: 0; background: #d2d2d2; border-radius: 20px; cursor: pointer; transition: .2s;
-  }
-  .slider:before {
-    content: ''; position: absolute; width: 14px; height: 14px; left: 3px; bottom: 3px;
-    background: #fff; border-radius: 50%; transition: .2s;
-  }
-  input:checked + .slider { background: #22c55e }
-  input:checked + .slider:before { transform: translateX(16px) }
+/* ── Stat cards ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.stat{background:#fff;border-radius:12px;padding:20px 22px;border:1px solid #ebebeb;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.stat-label{font-size:11px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.stat-val{font-size:36px;font-weight:800;color:#101010;line-height:1}
+.stat-note{font-size:11px;color:#b8b8b8;margin-top:5px}
+.stat.green .stat-val{color:#15803d}
+.stat.red   .stat-val{color:#dc2626}
+.stat.amber .stat-val{color:#b45309}
 
-  .btn-save {
-    background: #fecd27; border: none; border-radius: 6px; padding: 6px 14px;
-    font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s;
-  }
-  .btn-save:hover { opacity: .85 }
-  .btn-save:disabled { opacity: .4; cursor: default }
-  .btn-save.saved { background: #dcfce7; color: #16a34a }
+/* ── Toolbar ── */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.search-input{border:1.5px solid #d2d2d2;border-radius:8px;padding:8px 14px;font-size:13px;outline:none;width:240px;transition:border-color .15s;font-family:inherit;background:#fff;color:#252b42}
+.search-input:focus{border-color:#fecd27}
+.fselect{border:1.5px solid #d2d2d2;border-radius:8px;padding:8px 12px;font-size:13px;outline:none;background:#fff;font-family:inherit;color:#252b42;cursor:pointer}
+.fselect:focus{border-color:#fecd27}
 
-  .btn-logout {
-    background: transparent; border: 1px solid rgba(255,255,255,.3);
-    color: #fff; border-radius: 6px; padding: 6px 14px; font-size: 13px;
-    cursor: pointer; transition: background .15s;
-  }
-  .btn-logout:hover { background: rgba(255,255,255,.1) }
+/* ── Table card ── */
+.tcard{background:#fff;border-radius:12px;border:1px solid #ebebeb;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:.5px;background:#fafafa;border-bottom:1px solid #ebebeb;white-space:nowrap}
+td{padding:10px 16px;border-bottom:1px solid #f3f3f3;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fffef2}
+.thumb{width:42px;height:42px;object-fit:cover;border-radius:6px;background:#f0f0f0;display:block}
+.rname{font-weight:600;color:#101010;font-size:13px}
+.rmeta{font-size:11px;color:#a0a0a0;margin-top:2px}
+.rsub{font-size:12px;color:#a0a0a0;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  .btn-primary {
-    background: #fecd27; border: none; border-radius: 8px; padding: 10px 20px;
-    font-size: 14px; font-weight: 700; cursor: pointer; width: 100%;
-  }
+/* ── Badges / chips ── */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:64px;font-size:11px;font-weight:700;white-space:nowrap}
+.b-green {background:#dcfce7;color:#15803d}
+.b-red   {background:#fee2e2;color:#b91c1c}
+.b-yellow{background:#fef9c3;color:#92400e}
+.b-gray  {background:#f0f0f0;color:#737373}
+.b-blue  {background:#dbeafe;color:#1e40af}
+.chip{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:600;background:#f0f0f0;color:#252b42;margin-right:3px}
 
-  #toast {
-    position: fixed; bottom: 24px; right: 24px; background: #252b42; color: #fff;
-    padding: 12px 20px; border-radius: 8px; font-size: 13px;
-    opacity: 0; transform: translateY(8px); transition: .2s; pointer-events: none;
-  }
-  #toast.show { opacity: 1; transform: translateY(0) }
+/* ── Toggle ── */
+.toggle{position:relative;display:inline-block;width:36px;height:20px}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#d2d2d2;border-radius:20px;cursor:pointer;transition:.18s}
+.slider:before{content:'';position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.18s}
+input:checked+.slider{background:#22c55e}
+input:checked+.slider:before{transform:translateX(16px)}
 
-  .loading { color: #737373; padding: 24px; text-align: center }
-  .name-col { font-weight: 500 }
-  .name-col small { display: block; font-size: 11px; color: #737373; font-weight: 400 }
+/* ── Buttons ── */
+.btn-primary{background:#fecd27;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;transition:opacity .12s;color:#000}
+.btn-primary:hover{opacity:.85}
+.btn-outline{background:#fff;border:1.5px solid #d2d2d2;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;color:#252b42;transition:border-color .12s}
+.btn-outline:hover{border-color:#252b42}
+.btn-ghost{background:none;border:none;padding:5px 8px;cursor:pointer;border-radius:6px;font-size:14px;color:#737373;transition:all .12s;line-height:1;font-family:inherit}
+.btn-ghost:hover{background:#f0f0f0;color:#252b42}
+.btn-del{background:none;border:none;padding:5px 8px;cursor:pointer;border-radius:6px;font-size:14px;color:#ef4444;transition:all .12s;line-height:1;font-family:inherit}
+.btn-del:hover{background:#fee2e2}
+.btn-danger{background:#dc2626;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.48);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;backdrop-filter:blur(4px)}
+.modal-box{background:#fff;border-radius:16px;width:100%;max-width:700px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.2)}
+.modal-box.sm{max-width:440px}
+.modal-head{padding:22px 24px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-size:17px;font-weight:700;color:#101010}
+.modal-close{background:none;border:none;font-size:18px;cursor:pointer;color:#737373;padding:4px 8px;border-radius:6px;line-height:1;font-family:inherit}
+.modal-close:hover{background:#f0f0f0}
+.modal-body{padding:20px 24px;overflow-y:auto;flex:1}
+.modal-foot{padding:14px 24px;border-top:1px solid #f0f0f0;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0}
+
+/* ── Form ── */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg.s2{grid-column:1/-1}
+.flabel{font-size:11px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:.4px}
+.finput,.fsel,.ftextarea{width:100%;border:1.5px solid #d2d2d2;border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;background:#fff;color:#252b42}
+.finput:focus,.fsel:focus,.ftextarea:focus{border-color:#fecd27}
+.ftextarea{resize:vertical;min-height:72px}
+.fnote{font-size:11px;color:#c0c0c0}
+
+/* ── Specs ── */
+.spec-item{display:flex;gap:8px;margin-bottom:8px}
+.spec-item input{flex:1;border:1.5px solid #d2d2d2;border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;transition:border-color .12s}
+.spec-item input:focus{border-color:#fecd27}
+.btn-rm{background:#fee2e2;color:#dc2626;border:none;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;line-height:1}
+.btn-add-spec{width:100%;background:#f7f7f7;border:1.5px dashed #d2d2d2;border-radius:6px;padding:7px;font-size:12px;color:#737373;cursor:pointer;font-family:inherit;transition:all .12s;margin-top:4px}
+.btn-add-spec:hover{border-color:#fecd27;color:#252b42}
+
+/* ── Image preview ── */
+.img-prev{width:76px;height:76px;object-fit:cover;border-radius:8px;border:1px solid #ebebeb;display:none;margin-top:4px}
+.img-prev.on{display:block}
+
+/* ── Empty state ── */
+.empty{text-align:center;padding:48px 16px;color:#c0c0c0}
+.empty-icon{font-size:36px;margin-bottom:10px}
+.empty p{font-size:13px}
+
+/* ── Toast ── */
+#toast{position:fixed;bottom:24px;right:24px;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;z-index:9999;white-space:nowrap;max-width:320px}
+#toast.on{opacity:1;transform:translateY(0)}
+#toast.ok {background:#101010;color:#fff}
+#toast.err{background:#dc2626;color:#fff}
+
+/* ── Responsive ── */
+@media(max-width:820px){
+  .layout{grid-template-columns:1fr;grid-template-rows:56px 48px 1fr}
+  .sidebar{flex-direction:row;overflow-x:auto;padding:0;border-right:none;border-bottom:1px solid #ebebeb;gap:0}
+  .nav-section-label,.nav-divider{display:none}
+  .nav-item{border-radius:0;padding:12px 16px;white-space:nowrap;border-bottom:3px solid transparent}
+  .nav-item.active{background:transparent;color:#000;border-bottom-color:#fecd27}
+  .main{padding:16px}
+  .stats{grid-template-columns:1fr 1fr}
+  .fgrid{grid-template-columns:1fr}
+  .fg.s2{grid-column:1}
+  .modal-box{max-height:95vh}
+}
 </style>
 </head>
 <body>
 
-<!-- ── LOGIN ── -->
+<!-- ── LOGIN ─────────────────────────── -->
 <div id="loginWrap">
   <div class="login-card">
-    <h1>Tiên Du Admin</h1>
-    <p>Đăng nhập để quản lý kho hàng</p>
-    <div class="field">
-      <label>Email</label>
+    <div class="login-logo">⚙ TIÊN DU</div>
+    <p class="login-sub">Hệ thống quản trị — chỉ dành cho nội bộ</p>
+    <div class="field"><label>Email</label>
       <input type="email" id="email" placeholder="admin@ototiendu.com" autocomplete="username">
     </div>
-    <div class="field">
-      <label>Mật khẩu</label>
+    <div class="field"><label>Mật khẩu</label>
       <input type="password" id="pass" placeholder="••••••••" autocomplete="current-password">
     </div>
     <div id="loginErr">Email hoặc mật khẩu không đúng.</div>
-    <button class="btn-primary" onclick="doLogin()">Đăng nhập</button>
+    <button class="btn-primary" style="width:100%;padding:12px;font-size:14px" onclick="doLogin()">Đăng nhập</button>
   </div>
 </div>
 
-<!-- ── ADMIN SHELL ── -->
+<!-- ── ADMIN ──────────────────────────── -->
 <div id="adminWrap">
+<div class="layout">
+
   <div class="topbar">
-    <span class="topbar-title">⚙️ Tiên Du Admin</span>
+    <span class="topbar-brand">TIÊN DU ADMIN</span>
     <div class="topbar-right">
-      <span id="userEmail"></span>
+      <span class="topbar-user" id="uEmail"></span>
       <button class="btn-logout" onclick="doLogout()">Đăng xuất</button>
     </div>
   </div>
 
-  <div class="main">
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('products', this)">Sản phẩm</button>
-      <button class="tab" onclick="showTab('posts', this)">Bài viết</button>
+  <aside class="sidebar">
+    <span class="nav-section-label">Tổng quan</span>
+    <button class="nav-item active" id="nav-dashboard" onclick="showTab('dashboard')">
+      <span class="nav-icon">📊</span> Dashboard
+    </button>
+    <div class="nav-divider"></div>
+    <span class="nav-section-label">Nội dung</span>
+    <button class="nav-item" id="nav-products" onclick="showTab('products')">
+      <span class="nav-icon">📦</span> Sản phẩm
+    </button>
+    <button class="nav-item" id="nav-posts" onclick="showTab('posts')">
+      <span class="nav-icon">📝</span> Bài viết
+    </button>
+    <div class="nav-divider"></div>
+    <a class="nav-item" href="/" target="_blank">
+      <span class="nav-icon">🌐</span> Xem website
+    </a>
+  </aside>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard">
+      <div class="ph">
+        <div><div class="ph-title">Dashboard</div><div class="ph-sub">Tổng quan hệ thống</div></div>
+        <button class="btn-outline" onclick="loadDashboard()" style="font-size:13px">↻ Làm mới</button>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Tổng sản phẩm</div>
+          <div class="stat-val" id="s-total">—</div>
+          <div class="stat-note">đang quản lý</div>
+        </div>
+        <div class="stat green">
+          <div class="stat-label">Còn hàng</div>
+          <div class="stat-val" id="s-in">—</div>
+          <div class="stat-note">sản phẩm</div>
+        </div>
+        <div class="stat red">
+          <div class="stat-label">Hết hàng</div>
+          <div class="stat-val" id="s-out">—</div>
+          <div class="stat-note">cần nhập kho</div>
+        </div>
+        <div class="stat amber">
+          <div class="stat-label">Bài viết</div>
+          <div class="stat-val" id="s-posts">—</div>
+          <div class="stat-note">đã đăng</div>
+        </div>
+      </div>
+      <div class="ph" style="margin-top:4px">
+        <div>
+          <div class="ph-title" style="font-size:16px">⚠️ Cần nhập kho</div>
+          <div class="ph-sub">Tồn kho còn dưới 10 sản phẩm</div>
+        </div>
+      </div>
+      <div class="tcard" id="lowWrap">
+        <div class="empty"><div class="empty-icon">✅</div><p>Tất cả sản phẩm đều đủ hàng!</p></div>
+      </div>
     </div>
 
-    <!-- Products tab -->
-    <div id="tab-products">
-      <div class="tbl-wrap">
+    <!-- PRODUCTS -->
+    <div id="tab-products" style="display:none">
+      <div class="ph">
+        <div><div class="ph-title">Sản phẩm</div><div class="ph-sub" id="pCount">Đang tải...</div></div>
+        <button class="btn-primary" onclick="openProductModal()">+ Thêm sản phẩm</button>
+      </div>
+      <div class="toolbar">
+        <input class="search-input" placeholder="🔍 Tìm tên sản phẩm..." oninput="pFilter(this.value,'q')">
+        <select class="fselect" onchange="pFilter(this.value,'cat')" id="catSel">
+          <option value="">Tất cả danh mục</option>
+        </select>
+        <select class="fselect" onchange="pFilter(this.value,'stock')">
+          <option value="">Tất cả trạng thái</option>
+          <option value="in_stock">✅ Còn hàng</option>
+          <option value="out_of_stock">❌ Hết hàng</option>
+          <option value="preorder">⏳ Đặt trước</option>
+        </select>
+      </div>
+      <div class="tcard">
         <table>
-          <thead>
-            <tr>
-              <th>Sản phẩm</th>
-              <th>Giá (₫)</th>
-              <th>Trạng thái kho</th>
-              <th>Số lượng</th>
-              <th>Nổi bật</th>
-              <th>Hiển thị</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="productBody">
-            <tr><td colspan="7" class="loading">Đang tải...</td></tr>
-          </tbody>
+          <thead><tr>
+            <th></th><th>Sản phẩm</th><th>Giá</th><th>Kho</th><th>Tồn</th>
+            <th>Nổi bật</th><th>Hiển thị</th><th style="text-align:right">Thao tác</th>
+          </tr></thead>
+          <tbody id="pBody"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- Posts tab -->
+    <!-- POSTS -->
     <div id="tab-posts" style="display:none">
-      <div class="tbl-wrap">
+      <div class="ph">
+        <div><div class="ph-title">Bài viết</div><div class="ph-sub" id="poCount">Đang tải...</div></div>
+        <button class="btn-primary" onclick="openPostModal()">+ Thêm bài viết</button>
+      </div>
+      <div class="toolbar">
+        <input class="search-input" placeholder="🔍 Tìm tiêu đề..." oninput="poFilter(this.value)">
+      </div>
+      <div class="tcard">
         <table>
-          <thead>
-            <tr>
-              <th>Bài viết</th>
-              <th>Chuyên mục</th>
-              <th>Ngày đăng</th>
-              <th>Hiển thị</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="postBody">
-            <tr><td colspan="5" class="loading">Đang tải...</td></tr>
-          </tbody>
+          <thead><tr>
+            <th></th><th>Bài viết</th><th>Chuyên mục</th><th>Ngày đăng</th>
+            <th>Hiển thị</th><th style="text-align:right">Thao tác</th>
+          </tr></thead>
+          <tbody id="poBody"></tbody>
         </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+</div>
+
+<!-- ── PRODUCT MODAL ───────────────────── -->
+<div class="modal-overlay" id="productModal" style="display:none" onclick="backdropClose(event,'productModal')">
+<div class="modal-box">
+  <div class="modal-head">
+    <span class="modal-title" id="pMTitle">Thêm sản phẩm</span>
+    <button class="modal-close" onclick="closeModal('productModal')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="fgrid">
+      <div class="fg">
+        <label class="flabel">Tên sản phẩm *</label>
+        <input class="finput" id="p_name" placeholder="Má Phanh Gốm Cao Cấp" oninput="autoSlug('p_name','p_slug')">
+      </div>
+      <div class="fg">
+        <label class="flabel">Slug (URL) *</label>
+        <input class="finput" id="p_slug" placeholder="ma-phanh-gom-cao-cap">
+        <span class="fnote">Tự động tạo từ tên</span>
+      </div>
+      <div class="fg">
+        <label class="flabel">Thương hiệu</label>
+        <select class="fsel" id="p_brand"></select>
+      </div>
+      <div class="fg">
+        <label class="flabel">Danh mục</label>
+        <select class="fsel" id="p_cat"></select>
+      </div>
+      <div class="fg">
+        <label class="flabel">Giá (₫) *</label>
+        <input class="finput" type="number" id="p_price" placeholder="450000" step="1000" min="0">
+      </div>
+      <div class="fg">
+        <label class="flabel">Trạng thái kho</label>
+        <select class="fsel" id="p_status">
+          <option value="in_stock">✅ Còn hàng</option>
+          <option value="out_of_stock">❌ Hết hàng</option>
+          <option value="preorder">⏳ Đặt trước</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="flabel">Số lượng tồn kho</label>
+        <input class="finput" type="number" id="p_qty" placeholder="50" min="0">
+      </div>
+      <div class="fg">
+        <label class="flabel">URL ảnh sản phẩm</label>
+        <input class="finput" id="p_thumb" placeholder="assets/products/p01.jpg" oninput="prevImg('p_thumb','p_prev')">
+      </div>
+      <div class="fg s2">
+        <img class="img-prev" id="p_prev" alt="Xem trước ảnh">
+      </div>
+      <div class="fg s2">
+        <label class="flabel">Thông số kỹ thuật <span style="text-transform:none;font-weight:400">(hiện trên card, tối đa 3 dòng)</span></label>
+        <div id="specsList" style="margin-top:4px"></div>
+        <button class="btn-add-spec" type="button" onclick="addSpec()">+ Thêm thông số</button>
+      </div>
+      <div class="fg">
+        <label class="flabel">Nổi bật trang chủ</label>
+        <label class="toggle" style="margin-top:6px">
+          <input type="checkbox" id="p_feat"><span class="slider"></span>
+        </label>
+      </div>
+      <div class="fg">
+        <label class="flabel">Hiển thị trên website</label>
+        <label class="toggle" style="margin-top:6px">
+          <input type="checkbox" id="p_pub" checked><span class="slider"></span>
+        </label>
       </div>
     </div>
   </div>
+  <div class="modal-foot">
+    <button class="btn-outline" onclick="closeModal('productModal')">Hủy</button>
+    <button class="btn-primary" onclick="saveProduct()">Lưu sản phẩm</button>
+  </div>
+</div>
+</div>
+
+<!-- ── POST MODAL ─────────────────────── -->
+<div class="modal-overlay" id="postModal" style="display:none" onclick="backdropClose(event,'postModal')">
+<div class="modal-box">
+  <div class="modal-head">
+    <span class="modal-title" id="poMTitle">Thêm bài viết</span>
+    <button class="modal-close" onclick="closeModal('postModal')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="fgrid">
+      <div class="fg s2">
+        <label class="flabel">Tiêu đề *</label>
+        <input class="finput" id="po_title" placeholder="5 Dấu Hiệu Má Phanh Cần Thay..." oninput="autoSlug('po_title','po_slug')">
+      </div>
+      <div class="fg">
+        <label class="flabel">Slug (URL) *</label>
+        <input class="finput" id="po_slug" placeholder="dau-hieu-ma-phanh-can-thay">
+        <span class="fnote">Tự động tạo từ tiêu đề</span>
+      </div>
+      <div class="fg">
+        <label class="flabel">Chuyên mục</label>
+        <select class="fsel" id="po_cat"></select>
+      </div>
+      <div class="fg s2">
+        <label class="flabel">Mô tả ngắn (excerpt)</label>
+        <textarea class="ftextarea" id="po_excerpt" placeholder="Tóm tắt bài viết, hiển thị trên trang danh sách..."></textarea>
+      </div>
+      <div class="fg">
+        <label class="flabel">URL ảnh bìa</label>
+        <input class="finput" id="po_cover" placeholder="assets/banners/banner1.jpg" oninput="prevImg('po_cover','po_prev')">
+      </div>
+      <div class="fg">
+        <label class="flabel">Ngày đăng</label>
+        <input class="finput" type="datetime-local" id="po_date">
+      </div>
+      <div class="fg s2">
+        <img class="img-prev" id="po_prev" alt="Xem trước ảnh bìa">
+      </div>
+      <div class="fg">
+        <label class="flabel">Hiển thị trên website</label>
+        <label class="toggle" style="margin-top:6px">
+          <input type="checkbox" id="po_pub" checked><span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn-outline" onclick="closeModal('postModal')">Hủy</button>
+    <button class="btn-primary" onclick="savePost()">Lưu bài viết</button>
+  </div>
+</div>
+</div>
+
+<!-- ── CONFIRM DELETE ─────────────────── -->
+<div class="modal-overlay" id="confirmModal" style="display:none" onclick="backdropClose(event,'confirmModal')">
+<div class="modal-box sm">
+  <div class="modal-head">
+    <span class="modal-title">Xác nhận xoá</span>
+    <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+  </div>
+  <div class="modal-body">
+    <p>Bạn có chắc muốn xoá <strong id="delName"></strong>?</p>
+    <p style="color:#ef4444;font-size:12px;margin-top:10px">⚠️ Hành động này không thể hoàn tác.</p>
+  </div>
+  <div class="modal-foot">
+    <button class="btn-outline" onclick="closeModal('confirmModal')">Hủy</button>
+    <button class="btn-danger" onclick="execDelete()">Xoá vĩnh viễn</button>
+  </div>
+</div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-const SUPABASE_URL  = 'https://kdqjhlpvxrpijeoibgki.supabase.co'
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkcWpobHB2eHJwaWplb2liZ2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1Mjc0NDYsImV4cCI6MjA5ODEwMzQ0Nn0.cm4yaxaZZi6zIbEij8MEZqfHj_EbVhwlOK93szN-rMQ'
+const SB_URL = 'https://kdqjhlpvxrpijeoibgki.supabase.co'
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkcWpobHB2eHJwaWplb2liZ2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1Mjc0NDYsImV4cCI6MjA5ODEwMzQ0Nn0.cm4yaxaZZi6zIbEij8MEZqfHj_EbVhwlOK93szN-rMQ'
 const { createClient } = supabase
-const db = createClient(SUPABASE_URL, SUPABASE_ANON)
+const db = createClient(SB_URL, SB_KEY)
 
-// ── Auth ────────────────────────────────────────────────────────
+let brands = [], cats = [], postCats = []
+let allP = [], allPo = []
+const pStore = {}, poStore = {}
+const pF = { q: '', cat: '', stock: '' }
+let editPId = null, editPoId = null
+let delTarget = {}
+
+// ── AUTH ─────────────────────────────────────────────
 
 async function doLogin() {
   const email = document.getElementById('email').value.trim()
   const pass  = document.getElementById('pass').value
   const err   = document.getElementById('loginErr')
   err.style.display = 'none'
-
   const { data, error } = await db.auth.signInWithPassword({ email, password: pass })
   if (error) { err.style.display = 'block'; return }
-  showAdmin(data.user)
+  startAdmin(data.user)
 }
 
-async function doLogout() {
-  await db.auth.signOut()
-  document.getElementById('adminWrap').style.display = 'none'
-  document.getElementById('loginWrap').style.display = 'flex'
-}
+async function doLogout() { await db.auth.signOut(); location.reload() }
 
-document.getElementById('pass').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doLogin()
-})
+document.getElementById('pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin() })
 
-// Kiểm tra session còn hiệu lực
 ;(async () => {
   const { data: { session } } = await db.auth.getSession()
-  if (session?.user) showAdmin(session.user)
+  if (session?.user) startAdmin(session.user)
 })()
 
-function showAdmin(user) {
+async function startAdmin(user) {
   document.getElementById('loginWrap').style.display = 'none'
   document.getElementById('adminWrap').style.display = 'block'
-  document.getElementById('userEmail').textContent = user.email
-  loadProducts()
+  document.getElementById('uEmail').textContent = user.email
+  await Promise.all([loadBrands(), loadCats(), loadPostCats()])
+  loadDashboard()
 }
 
-// ── Tabs ────────────────────────────────────────────────────────
+// ── NAVIGATION ────────────────────────────────────────
 
-function showTab(name, btn) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
-  btn.classList.add('active')
-  document.getElementById('tab-products').style.display = name === 'products' ? '' : 'none'
-  document.getElementById('tab-posts').style.display    = name === 'posts'    ? '' : 'none'
-  if (name === 'posts') loadPosts()
+function showTab(name) {
+  ;['dashboard','products','posts'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === name ? '' : 'none'
+    const nav = document.getElementById('nav-' + t)
+    if (nav) nav.classList.toggle('active', t === name)
+  })
+  if (name === 'products' && !allP.length)  loadProducts()
+  if (name === 'posts'    && !allPo.length) loadPosts()
 }
 
-// ── Products ────────────────────────────────────────────────────
+// ── REFERENCE DATA ────────────────────────────────────
+
+async function loadBrands() {
+  const { data } = await db.from('brands').select('id,name').order('name')
+  brands = data || []
+}
+async function loadCats() {
+  const { data } = await db.from('categories').select('id,name,slug').order('name')
+  cats = data || []
+  const sel = document.getElementById('catSel')
+  cats.forEach(c => sel.insertAdjacentHTML('beforeend', `<option value="${c.slug}">${c.name}</option>`))
+}
+async function loadPostCats() {
+  const { data } = await db.from('post_categories').select('id,name').order('name')
+  postCats = data || []
+}
+
+// ── DASHBOARD ─────────────────────────────────────────
+
+async function loadDashboard() {
+  const [{ data: ps }, { data: pos }] = await Promise.all([
+    db.from('products').select('id,name,stock_status,stock_quantity,is_published'),
+    db.from('posts').select('id').eq('is_published', true)
+  ])
+  document.getElementById('s-total').textContent = ps?.length || 0
+  document.getElementById('s-in').textContent    = ps?.filter(p => p.stock_status === 'in_stock').length || 0
+  document.getElementById('s-out').textContent   = ps?.filter(p => p.stock_status === 'out_of_stock').length || 0
+  document.getElementById('s-posts').textContent = pos?.length || 0
+
+  const low = ps?.filter(p => (p.stock_quantity || 0) < 10 && p.stock_status === 'in_stock') || []
+  const wrap = document.getElementById('lowWrap')
+  wrap.innerHTML = !low.length
+    ? '<div class="empty"><div class="empty-icon">✅</div><p>Tất cả sản phẩm đều đủ hàng!</p></div>'
+    : `<table><thead><tr><th>Sản phẩm</th><th>Số lượng còn</th><th></th></tr></thead><tbody>
+      ${low.map(p => `<tr>
+        <td><span class="rname">${p.name}</span></td>
+        <td><span class="badge b-red">${p.stock_quantity}</span></td>
+        <td><button class="btn-ghost" style="font-size:12px" onclick="showTab('products')">Cập nhật →</button></td>
+      </tr>`).join('')}
+    </tbody></table>`
+}
+
+// ── PRODUCTS ──────────────────────────────────────────
 
 async function loadProducts() {
+  document.getElementById('pCount').textContent = 'Đang tải...'
   const { data } = await db.from('products')
-    .select('id, name, price, stock_status, stock_quantity, is_featured, is_published, brands(name), categories(name)')
+    .select('*,brands(id,name),categories(id,name,slug)')
     .order('created_at', { ascending: false })
+  allP = data || []
+  allP.forEach(p => pStore[p.id] = p)
+  renderP(allP)
+}
 
-  const tbody = document.getElementById('productBody')
-  if (!data?.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="loading">Chưa có sản phẩm</td></tr>'
+function renderP(list) {
+  document.getElementById('pCount').textContent = `${list.length} sản phẩm`
+  const tbody = document.getElementById('pBody')
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-icon">📦</div><p>Không tìm thấy sản phẩm nào</p></div></td></tr>'
     return
   }
-
-  tbody.innerHTML = data.map(p => `
-    <tr>
-      <td class="name-col">
-        ${p.name}
-        <small>${p.brands?.name || ''} · ${p.categories?.name || ''}</small>
-      </td>
+  tbody.innerHTML = list.map(p => {
+    const sb = p.stock_status === 'out_of_stock' ? '<span class="badge b-red">Hết hàng</span>'
+             : p.stock_status === 'preorder'     ? '<span class="badge b-yellow">Đặt trước</span>'
+             : '<span class="badge b-green">Còn hàng</span>'
+    return `<tr>
+      <td style="width:54px"><img class="thumb" src="${p.thumbnail_url||''}" onerror="this.style.opacity=0" alt=""></td>
       <td>
-        <input class="ctl" type="number" value="${p.price}" step="1000"
-          onchange="markDirty('${p.id}')" id="price-${p.id}" style="width:110px">
+        <div class="rname">${p.name}</div>
+        <div class="rmeta">${p.brands?.name?`<span class="chip">${p.brands.name}</span>`:''}${p.categories?.name?`<span class="chip">${p.categories.name}</span>`:''}</div>
       </td>
-      <td>
-        <select class="ctl" onchange="markDirty('${p.id}')" id="status-${p.id}">
-          <option value="in_stock"     ${p.stock_status==='in_stock'     ? 'selected':''}>✅ Còn hàng</option>
-          <option value="out_of_stock" ${p.stock_status==='out_of_stock' ? 'selected':''}>❌ Hết hàng</option>
-          <option value="preorder"     ${p.stock_status==='preorder'     ? 'selected':''}>⏳ Đặt trước</option>
-        </select>
-      </td>
-      <td>
-        <input class="ctl" type="number" min="0" value="${p.stock_quantity ?? 0}"
-          onchange="markDirty('${p.id}')" id="qty-${p.id}">
-      </td>
-      <td>
-        <label class="toggle">
-          <input type="checkbox" ${p.is_featured ? 'checked':''}
-            onchange="markDirty('${p.id}')" id="feat-${p.id}">
-          <span class="slider"></span>
-        </label>
-      </td>
-      <td>
-        <label class="toggle">
-          <input type="checkbox" ${p.is_published ? 'checked':''}
-            onchange="markDirty('${p.id}')" id="pub-${p.id}">
-          <span class="slider"></span>
-        </label>
-      </td>
-      <td>
-        <button class="btn-save" id="save-${p.id}" disabled onclick="saveProduct('${p.id}')">Lưu</button>
-      </td>
-    </tr>
-  `).join('')
-}
-
-function markDirty(id) {
-  const btn = document.getElementById('save-' + id)
-  btn.disabled = false
-  btn.textContent = 'Lưu'
-  btn.className = 'btn-save'
-}
-
-async function saveProduct(id) {
-  const btn = document.getElementById('save-' + id)
-  btn.disabled = true; btn.textContent = '...'
-
-  const { error } = await db.from('products').update({
-    price:          parseInt(document.getElementById('price-'  + id).value),
-    stock_status:   document.getElementById('status-' + id).value,
-    stock_quantity: parseInt(document.getElementById('qty-'    + id).value),
-    is_featured:    document.getElementById('feat-'   + id).checked,
-    is_published:   document.getElementById('pub-'    + id).checked,
-  }).eq('id', id)
-
-  if (error) {
-    btn.disabled = false; btn.textContent = 'Lỗi!'
-    showToast('❌ ' + error.message)
-  } else {
-    btn.textContent = '✓ Đã lưu'; btn.className = 'btn-save saved'
-    showToast('✅ Đã cập nhật!')
-  }
-}
-
-// ── Posts ───────────────────────────────────────────────────────
-
-async function loadPosts() {
-  const { data } = await db.from('posts')
-    .select('id, title, is_published, published_at, post_categories(name)')
-    .order('published_at', { ascending: false })
-
-  const tbody = document.getElementById('postBody')
-  if (!data?.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="loading">Chưa có bài viết</td></tr>'
-    return
-  }
-
-  tbody.innerHTML = data.map(p => {
-    const d = new Date(p.published_at)
-    const date = d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear()
-    return `
-    <tr>
-      <td class="name-col" style="max-width:380px">${p.title}</td>
-      <td><span class="badge badge-in">${p.post_categories?.name || '—'}</span></td>
-      <td>${date}</td>
-      <td>
-        <label class="toggle">
-          <input type="checkbox" ${p.is_published ? 'checked':''}
-            onchange="markPostDirty('${p.id}')" id="ppub-${p.id}">
-          <span class="slider"></span>
-        </label>
-      </td>
-      <td>
-        <button class="btn-save" id="psave-${p.id}" disabled onclick="savePost('${p.id}')">Lưu</button>
+      <td style="white-space:nowrap"><strong>${fmtP(p.price)}</strong></td>
+      <td>${sb}</td>
+      <td><span class="badge b-blue">${p.stock_quantity??0}</span></td>
+      <td><label class="toggle"><input type="checkbox" ${p.is_featured?'checked':''} onchange="qSet('products','is_featured',this.checked,'${p.id}')"><span class="slider"></span></label></td>
+      <td><label class="toggle"><input type="checkbox" ${p.is_published?'checked':''} onchange="qSet('products','is_published',this.checked,'${p.id}')"><span class="slider"></span></label></td>
+      <td style="text-align:right;white-space:nowrap">
+        <button class="btn-ghost" onclick="openProductModal(pStore['${p.id}'])" title="Chỉnh sửa">✏️</button>
+        <button class="btn-del"   onclick="confirmDel('products','${p.id}','${esc(p.name)}')" title="Xoá">🗑️</button>
       </td>
     </tr>`
   }).join('')
 }
 
-function markPostDirty(id) {
-  const btn = document.getElementById('psave-' + id)
-  btn.disabled = false; btn.textContent = 'Lưu'; btn.className = 'btn-save'
+function pFilter(val, key) {
+  pF[key] = val.toLowerCase()
+  let list = allP
+  if (pF.q)     list = list.filter(p => p.name.toLowerCase().includes(pF.q))
+  if (pF.cat)   list = list.filter(p => p.categories?.slug === pF.cat)
+  if (pF.stock) list = list.filter(p => p.stock_status === pF.stock)
+  renderP(list)
 }
 
-async function savePost(id) {
-  const btn = document.getElementById('psave-' + id)
-  btn.disabled = true; btn.textContent = '...'
+async function qSet(table, field, val, id) {
+  const { error } = await db.from(table).update({ [field]: val }).eq('id', id)
+  if (error) { toast('❌ Cập nhật thất bại', 'err'); return }
+  toast('✅ Đã lưu!')
+  const arr = table === 'products' ? allP : allPo
+  const row = arr.find(r => r.id === id)
+  if (row) row[field] = val
+  if (table === 'products') pStore[id] = { ...pStore[id], [field]: val }
+  else poStore[id] = { ...poStore[id], [field]: val }
+}
 
-  const { error } = await db.from('posts').update({
-    is_published: document.getElementById('ppub-' + id).checked,
-  }).eq('id', id)
+function openProductModal(p = null) {
+  editPId = p?.id || null
+  document.getElementById('pMTitle').textContent = p ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm'
 
-  if (error) {
-    btn.disabled = false; btn.textContent = 'Lỗi!'
-    showToast('❌ ' + error.message)
-  } else {
-    btn.textContent = '✓ Đã lưu'; btn.className = 'btn-save saved'
-    showToast('✅ Đã cập nhật!')
+  const bSel = document.getElementById('p_brand')
+  const cSel = document.getElementById('p_cat')
+  bSel.innerHTML = '<option value="">— Chọn thương hiệu —</option>' + brands.map(b => `<option value="${b.id}">${b.name}</option>`).join('')
+  cSel.innerHTML = '<option value="">— Chọn danh mục —</option>'   + cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('')
+
+  sv('p_name', p?.name || ''); sv('p_slug', p?.slug || '')
+  sv('p_price', p?.price || ''); sv('p_qty', p?.stock_quantity ?? '')
+  sv('p_thumb', p?.thumbnail_url || ''); sv('p_status', p?.stock_status || 'in_stock')
+  document.getElementById('p_feat').checked = !!p?.is_featured
+  document.getElementById('p_pub').checked  = p ? !!p.is_published : true
+  if (p?.brands?.id)     bSel.value = p.brands.id
+  if (p?.categories?.id) cSel.value = p.categories.id
+
+  document.getElementById('specsList').innerHTML = ''
+  const specs = p?.short_specs || []
+  specs.length ? specs.forEach(s => addSpec(s)) : addSpec()
+
+  prevImg('p_thumb', 'p_prev')
+  document.getElementById('productModal').style.display = 'flex'
+}
+
+async function saveProduct() {
+  const name  = gv('p_name').trim()
+  const slug  = gv('p_slug').trim()
+  const price = parseInt(gv('p_price'))
+  if (!name || !slug || !price) { toast('⚠️ Nhập đầy đủ tên, slug và giá', 'err'); return }
+
+  const specs = [...document.querySelectorAll('#specsList .spec-item input')]
+    .map(i => i.value.trim()).filter(Boolean)
+
+  const payload = {
+    name, slug, price,
+    brand_id:       document.getElementById('p_brand').value || null,
+    category_id:    document.getElementById('p_cat').value   || null,
+    stock_status:   gv('p_status'),
+    stock_quantity: parseInt(gv('p_qty')) || 0,
+    thumbnail_url:  gv('p_thumb').trim() || null,
+    short_specs:    specs,
+    is_featured:    document.getElementById('p_feat').checked,
+    is_published:   document.getElementById('p_pub').checked,
   }
+
+  const { error } = editPId
+    ? await db.from('products').update(payload).eq('id', editPId)
+    : await db.from('products').insert(payload)
+
+  if (error) { toast('❌ ' + error.message, 'err'); return }
+  toast(editPId ? '✅ Đã cập nhật sản phẩm!' : '✅ Đã thêm sản phẩm mới!')
+  closeModal('productModal')
+  allP = []; await loadProducts(); loadDashboard()
 }
 
-// ── Toast ───────────────────────────────────────────────────────
+// ── POSTS ─────────────────────────────────────────────
+
+async function loadPosts() {
+  document.getElementById('poCount').textContent = 'Đang tải...'
+  const { data } = await db.from('posts')
+    .select('*,post_categories(id,name)')
+    .order('published_at', { ascending: false })
+  allPo = data || []
+  allPo.forEach(p => poStore[p.id] = p)
+  renderPo(allPo)
+}
+
+function renderPo(list) {
+  document.getElementById('poCount').textContent = `${list.length} bài viết`
+  const tbody = document.getElementById('poBody')
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">📝</div><p>Chưa có bài viết nào</p></div></td></tr>'
+    return
+  }
+  tbody.innerHTML = list.map(p => {
+    const d = new Date(p.published_at)
+    const dt = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`
+    return `<tr>
+      <td style="width:54px"><img class="thumb" src="${p.cover_image_url||''}" onerror="this.style.opacity=0" alt=""></td>
+      <td>
+        <div class="rname">${p.title}</div>
+        <div class="rsub">${p.excerpt||''}</div>
+      </td>
+      <td>${p.post_categories?.name?`<span class="badge b-blue">${p.post_categories.name}</span>`:'—'}</td>
+      <td style="color:#a0a0a0;white-space:nowrap">${dt}</td>
+      <td><label class="toggle"><input type="checkbox" ${p.is_published?'checked':''} onchange="qSet('posts','is_published',this.checked,'${p.id}')"><span class="slider"></span></label></td>
+      <td style="text-align:right;white-space:nowrap">
+        <button class="btn-ghost" onclick="openPostModal(poStore['${p.id}'])" title="Sửa">✏️</button>
+        <button class="btn-del"   onclick="confirmDel('posts','${p.id}','${esc(p.title)}')" title="Xoá">🗑️</button>
+      </td>
+    </tr>`
+  }).join('')
+}
+
+function poFilter(q) {
+  const lower = q.toLowerCase()
+  renderPo(allPo.filter(p => p.title.toLowerCase().includes(lower)))
+}
+
+function openPostModal(p = null) {
+  editPoId = p?.id || null
+  document.getElementById('poMTitle').textContent = p ? 'Chỉnh sửa bài viết' : 'Thêm bài viết'
+
+  const cSel = document.getElementById('po_cat')
+  cSel.innerHTML = '<option value="">— Chọn chuyên mục —</option>' + postCats.map(c => `<option value="${c.id}">${c.name}</option>`).join('')
+
+  sv('po_title', p?.title || ''); sv('po_slug', p?.slug || '')
+  sv('po_excerpt', p?.excerpt || ''); sv('po_cover', p?.cover_image_url || '')
+  document.getElementById('po_pub').checked = p ? !!p.is_published : true
+  if (p?.post_categories?.id) cSel.value = p.post_categories.id
+
+  const dt = p?.published_at ? new Date(p.published_at) : new Date()
+  const pad = n => String(n).padStart(2,'0')
+  document.getElementById('po_date').value =
+    `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`
+
+  prevImg('po_cover', 'po_prev')
+  document.getElementById('postModal').style.display = 'flex'
+}
+
+async function savePost() {
+  const title = gv('po_title').trim()
+  const slug  = gv('po_slug').trim()
+  if (!title || !slug) { toast('⚠️ Nhập đầy đủ tiêu đề và slug', 'err'); return }
+
+  const payload = {
+    title, slug,
+    excerpt:          gv('po_excerpt').trim() || null,
+    cover_image_url:  gv('po_cover').trim()   || null,
+    post_category_id: document.getElementById('po_cat').value || null,
+    published_at:     new Date(document.getElementById('po_date').value).toISOString(),
+    is_published:     document.getElementById('po_pub').checked,
+  }
+
+  const { error } = editPoId
+    ? await db.from('posts').update(payload).eq('id', editPoId)
+    : await db.from('posts').insert(payload)
+
+  if (error) { toast('❌ ' + error.message, 'err'); return }
+  toast(editPoId ? '✅ Đã cập nhật bài viết!' : '✅ Đã thêm bài viết mới!')
+  closeModal('postModal')
+  allPo = []; await loadPosts()
+}
+
+// ── DELETE ────────────────────────────────────────────
+
+function confirmDel(table, id, name) {
+  delTarget = { table, id }
+  document.getElementById('delName').textContent = name
+  document.getElementById('confirmModal').style.display = 'flex'
+}
+
+async function execDelete() {
+  const { error } = await db.from(delTarget.table).delete().eq('id', delTarget.id)
+  if (error) { toast('❌ Xoá thất bại: ' + error.message, 'err'); return }
+  toast('🗑️ Đã xoá!')
+  closeModal('confirmModal')
+  if (delTarget.table === 'products') { allP = []; await loadProducts(); loadDashboard() }
+  else { allPo = []; await loadPosts() }
+}
+
+// ── SPECS ─────────────────────────────────────────────
+
+function addSpec(val = '') {
+  const div = document.createElement('div')
+  div.className = 'spec-item'
+  div.innerHTML = `<input type="text" value="${val}" placeholder="VD: Động cơ 2.0L – 2.5L">
+    <button class="btn-rm" type="button" onclick="this.parentElement.remove()" title="Xoá">×</button>`
+  document.getElementById('specsList').appendChild(div)
+}
+
+// ── MODAL ─────────────────────────────────────────────
+
+function closeModal(id) { document.getElementById(id).style.display = 'none' }
+function backdropClose(e, id) { if (e.target.id === id) closeModal(id) }
+
+// ── SLUG AUTO ─────────────────────────────────────────
+
+const VI = {'à':'a','á':'a','ả':'a','ã':'a','ạ':'a','ă':'a','ắ':'a','ặ':'a','ằ':'a','ẳ':'a','ẵ':'a','â':'a','ấ':'a','ầ':'a','ẩ':'a','ẫ':'a','ậ':'a','è':'e','é':'e','ẻ':'e','ẽ':'e','ẹ':'e','ê':'e','ế':'e','ề':'e','ể':'e','ễ':'e','ệ':'e','ì':'i','í':'i','ỉ':'i','ĩ':'i','ị':'i','ò':'o','ó':'o','ỏ':'o','õ':'o','ọ':'o','ô':'o','ố':'o','ồ':'o','ổ':'o','ỗ':'o','ộ':'o','ơ':'o','ớ':'o','ờ':'o','ở':'o','ỡ':'o','ợ':'o','ù':'u','ú':'u','ủ':'u','ũ':'u','ụ':'u','ư':'u','ứ':'u','ừ':'u','ử':'u','ữ':'u','ự':'u','ỳ':'y','ý':'y','ỷ':'y','ỹ':'y','ỵ':'y','đ':'d'}
+
+function toSlug(s) {
+  return s.toLowerCase().split('').map(c => VI[c] ?? c).join('')
+    .replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-').replace(/-+/g,'-')
+}
+
+function autoSlug(srcId, dstId) {
+  const el = document.getElementById(dstId)
+  if (!el._manual) el.value = toSlug(document.getElementById(srcId).value)
+}
+
+document.addEventListener('input', e => {
+  if (e.target.id === 'p_slug' || e.target.id === 'po_slug') e.target._manual = true
+})
+
+// ── IMAGE PREVIEW ─────────────────────────────────────
+
+function prevImg(inputId, imgId) {
+  const url = document.getElementById(inputId).value.trim()
+  const img = document.getElementById(imgId)
+  if (url) { img.src = url; img.classList.add('on') } else img.classList.remove('on')
+}
+
+// ── UTILS ─────────────────────────────────────────────
+
+const fmtP = n => new Intl.NumberFormat('vi-VN').format(n) + ' ₫'
+const gv   = id => document.getElementById(id).value
+const sv   = (id, v) => { document.getElementById(id).value = v; document.getElementById(id)._manual = false }
+const esc  = s => (s || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'")
 
 let toastTimer
-function showToast(msg) {
+function toast(msg, type = 'ok') {
   const el = document.getElementById('toast')
-  el.textContent = msg
-  el.classList.add('show')
+  el.textContent = msg; el.className = `on ${type}`
   clearTimeout(toastTimer)
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2500)
+  toastTimer = setTimeout(() => el.className = '', 3200)
 }
 </script>
 </body>
