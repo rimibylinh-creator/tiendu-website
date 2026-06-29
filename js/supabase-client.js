@@ -10,7 +10,7 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON)
 async function getProductBySlug(slug) {
   const { data, error } = await db
     .from('products')
-    .select('*, brands(name, slug), categories(name, slug)')
+    .select('*, brands(name, slug), categories(name, slug), product_images(image_url, display_order)')
     .eq('slug', slug)
     .eq('is_published', true)
     .single()

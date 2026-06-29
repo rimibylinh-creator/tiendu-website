@@ -230,41 +230,61 @@
   const stock   = stockLabel(product.stock_status)
   const stockOk = product.stock_status !== 'out_of_stock'
 
-  // ── Gallery ───────────────────────────────────────────────
-  const galleryHTML = product.thumbnail_url
-    ? `<div class="gallery-main">
-        <img id="galleryMain" src="${product.thumbnail_url}" alt="${escHtml(product.name)}" style="transition:opacity .15s">
-        <span class="gallery-badge-oem">Hàng Chính Hãng</span>
-       </div>`
+  // ── Gallery images ────────────────────────────────────────
+  const allImages = []
+  if (product.thumbnail_url) allImages.push(product.thumbnail_url)
+  ;(product.product_images || [])
+    .sort((a, b) => a.display_order - b.display_order)
+    .forEach(img => { if (img.image_url && img.image_url !== product.thumbnail_url) allImages.push(img.image_url) })
+
+  const galleryMainHTML = allImages.length
+    ? `<img id="galleryMain" src="${allImages[0]}" alt="${escHtml(product.name)}">`
     : `<div class="pd-placeholder-img">
         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
           <rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>
           <circle cx="6" cy="17" r="1.5"/><circle cx="18" cy="17" r="1.5"/>
-        </svg>
+        </svg></div>`
+
+  const thumbsHTML = allImages.length > 1
+    ? `<div class="gallery-thumbs">
+        ${allImages.map((img, i) => `
+          <div class="gallery-thumb${i === 0 ? ' active' : ''}" onclick="switchGallery(this,'${img}')">
+            <img src="${img}" alt="" loading="${i < 4 ? 'eager' : 'lazy'}">
+          </div>`).join('')}
        </div>`
-
-  // ── Chips ─────────────────────────────────────────────────
-  const brandChip = brand ? `<span class="chip chip-brand">${escHtml(brand.toUpperCase())}</span>` : ''
-  const catChip   = catName ? `<span class="chip chip-category">${escHtml(catName)}</span>` : ''
-
-  // ── Specs list ────────────────────────────────────────────
-  const specsHTML = specs.length
-    ? specs.map(s => `<div class="product-desc-line"><span class="dot">·</span><span>${escHtml(s)}</span></div>`).join('')
     : ''
 
-  // ── Description tab ───────────────────────────────────────
-  const hasDesc = product.description && product.description.trim()
-  const tabsHTML = hasDesc ? `
-<section class="product-tabs-section">
-  <div class="product-tabs-inner">
-    <div class="product-tab-nav" role="tablist">
-      <button class="product-tab-nav-btn active" role="tab" onclick="openTab('tab-desc')" id="btn-desc">Mô tả sản phẩm</button>
-    </div>
-    <div class="product-tab-panel active" id="tab-desc">
-      <div style="max-width:800px;font-size:15px;line-height:1.8;color:var(--color-text)">
-        ${product.description}
+  // ── Chips ─────────────────────────────────────────────────
+  const brandChip = brand   ? `<span class="chip chip-brand">${escHtml(brand.toUpperCase())}</span>` : ''
+  const catChip   = catName ? `<span class="chip chip-category">${escHtml(catName)}</span>` : ''
+  const stockChip = `<span class="pd-stock-chip ${stockOk ? 'in' : 'out'}">● ${stock}</span>`
+
+  // ── Xe tương thích ────────────────────────────────────────
+  const vehicles = product.compatible_vehicles || []
+  const vehiclesHTML = vehicles.length ? `
+    <div class="pd-vehicles">
+      <div class="pd-section-label">Xe tương thích</div>
+      <div class="pd-vehicles-list">
+        ${vehicles.map(v => `<span class="pd-vehicle-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>${escHtml(v)}</span>`).join('')}
       </div>
-    </div>
+    </div>` : ''
+
+  // ── Specs list ────────────────────────────────────────────
+  const specsHTML = specs.length ? `
+    <div class="pd-specs-list">
+      <div class="pd-section-label">Thông số kỹ thuật</div>
+      <ul class="pd-spec-ul">
+        ${specs.map(s => `<li>${escHtml(s)}</li>`).join('')}
+      </ul>
+    </div>` : ''
+
+  // ── Description ───────────────────────────────────────────
+  const hasDesc = product.description && product.description.trim()
+  const descHTML = hasDesc ? `
+<section class="pd-desc-section">
+  <div class="pd-desc-inner">
+    <h2 class="pd-desc-title">Mô tả sản phẩm</h2>
+    <div class="pd-desc-body">${product.description}</div>
   </div>
 </section>` : ''
 
@@ -273,25 +293,30 @@
 <section class="product-detail-section">
   <div class="product-detail-layout">
 
+    <!-- Gallery -->
     <div class="product-gallery">
-      ${galleryHTML}
+      <div class="gallery-main">
+        ${galleryMainHTML}
+        <span class="gallery-badge-oem">Hàng Chính Hãng</span>
+      </div>
+      ${thumbsHTML}
     </div>
 
+    <!-- Info panel -->
     <div class="product-info">
+
       <div class="product-info-header">
-        <div class="product-info-cats">
-          ${brandChip}${catChip}
-          <span class="stock-badge" style="font-size:12px;padding:4px 12px;${stockOk?'':'background:#e5e7eb;color:#9ca3af'}">● ${stock}</span>
-        </div>
+        <div class="product-info-cats">${brandChip}${catChip}${stockChip}</div>
         <h1 class="product-info-name">${escHtml(product.name)}</h1>
       </div>
 
-      ${specsHTML ? `<div style="display:flex;flex-direction:column;gap:6px;margin:16px 0">${specsHTML}</div>` : ''}
-
       <div class="product-price-row">
         <span class="product-price-main">${formatPrice(product.price)}</span>
-        <span class="product-price-wholesale">Giá sỉ: <a href="gia-si.html" style="color:var(--color-primary-dark);font-weight:600">Liên hệ</a></span>
+        <span class="product-price-wholesale">Giá sỉ: <a href="gia-si.html">Liên hệ</a></span>
       </div>
+
+      ${vehiclesHTML}
+      ${specsHTML}
 
       <div class="product-cta-group">
         <a href="tel:0946915111" class="btn btn-yellow">
@@ -304,29 +329,23 @@
 
       <div class="product-guarantees">
         <div class="guarantee-item">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
-          </svg>
-          <span>Hàng chính hãng 100%</span>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          <span>Chính hãng 100%</span>
         </div>
         <div class="guarantee-item">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/>
-          </svg>
-          <span>Đổi trả miễn phí 30 ngày</span>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+          <span>Đổi trả 30 ngày</span>
         </div>
         <div class="guarantee-item">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-            <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-          </svg>
-          <span>Giao hàng toàn quốc</span>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <span>Giao toàn quốc</span>
         </div>
       </div>
+
     </div>
   </div>
 </section>
-${tabsHTML}`
+${descHTML}`
 
   document.getElementById('pdContent').hidden = false
   document.getElementById('pdCta').hidden = false
@@ -368,13 +387,13 @@ function escHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 }
 
-function openTab(id) {
-  document.querySelectorAll('.product-tab-panel').forEach(p => p.classList.remove('active'))
-  document.querySelectorAll('.product-tab-nav-btn').forEach(b => b.classList.remove('active'))
-  document.getElementById(id).classList.add('active')
-  const btnId = 'btn-' + id.replace('tab-', '')
-  const btn = document.getElementById(btnId)
-  if (btn) btn.classList.add('active')
+function switchGallery(thumbEl, imgSrc) {
+  const main = document.getElementById('galleryMain')
+  if (!main) return
+  main.style.opacity = '0'
+  setTimeout(() => { main.src = imgSrc; main.style.opacity = '1' }, 150)
+  document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'))
+  thumbEl.classList.add('active')
 }
 </script>
 </body>

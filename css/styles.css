@@ -2018,8 +2018,8 @@ p { margin: 0; }
   max-width: var(--container-max);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 56px;
   align-items: start;
 }
 
@@ -2067,7 +2067,7 @@ p { margin: 0; }
 .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
 
 /* Info panel */
-.product-info { display: flex; flex-direction: column; gap: 24px; }
+.product-info { display: flex; flex-direction: column; gap: 20px; position: sticky; top: 24px; }
 
 .product-info-header { display: flex; flex-direction: column; gap: 10px; }
 .product-info-cats { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -2256,6 +2256,81 @@ p { margin: 0; }
   color: var(--color-text-muted);
   line-height: 1.4;
 }
+
+/* Stock chip */
+.pd-stock-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 600; padding: 4px 12px;
+  border-radius: var(--radius-sm);
+}
+.pd-stock-chip.in  { background: #dcfce7; color: #15803d; }
+.pd-stock-chip.out { background: #fee2e2; color: #dc2626; }
+
+/* Section label (xe tương thích / thông số) */
+.pd-section-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+
+/* Xe tương thích */
+.pd-vehicles { display: flex; flex-direction: column; gap: 0; }
+.pd-vehicles-list { display: flex; gap: 8px; flex-wrap: wrap; }
+.pd-vehicle-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--color-bg-soft); border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm); padding: 5px 10px;
+  font-size: 12px; font-weight: 500; color: var(--color-text);
+  white-space: nowrap;
+}
+.pd-vehicle-chip svg { color: var(--color-text-muted); flex-shrink: 0; }
+
+/* Specs list in info panel */
+.pd-specs-list { display: flex; flex-direction: column; gap: 0; }
+.pd-spec-ul {
+  margin: 0; padding: 0; list-style: none;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.pd-spec-ul li {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 14px; color: var(--color-text); line-height: 1.5;
+}
+.pd-spec-ul li::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--color-primary); flex-shrink: 0; margin-top: 6px;
+}
+
+/* Dividers between info sections */
+.pd-vehicles + .pd-specs-list,
+.pd-specs-list + .product-cta-group { margin-top: 4px; }
+
+/* Price wholesale link */
+.product-price-wholesale a {
+  color: var(--color-primary-dark); font-weight: 600; text-decoration: none;
+}
+.product-price-wholesale a:hover { text-decoration: underline; }
+
+/* Description section */
+.pd-desc-section {
+  background: var(--color-bg-soft);
+  padding: 56px var(--container-pad) 72px;
+}
+.pd-desc-inner {
+  max-width: 860px; margin: 0 auto;
+}
+.pd-desc-title {
+  font-size: 20px; font-weight: 700; color: var(--color-near-black);
+  margin: 0 0 24px; padding-bottom: 16px;
+  border-bottom: 2px solid var(--color-primary);
+  display: inline-block;
+}
+.pd-desc-body {
+  font-size: 15px; line-height: 1.85; color: var(--color-text);
+}
+.pd-desc-body img { max-width: 100%; border-radius: var(--radius-lg); margin: 16px 0; }
+.pd-desc-body h2, .pd-desc-body h3 { color: var(--color-near-black); margin: 24px 0 10px; }
+.pd-desc-body p { margin: 0 0 12px; }
+.pd-desc-body ul, .pd-desc-body ol { padding-left: 20px; margin: 0 0 12px; }
 
 /* Product Tabs */
 .product-tabs-section {
@@ -2859,10 +2934,14 @@ p { margin: 0; }
   /* Product detail */
   .product-detail-layout { grid-template-columns: 1fr; gap: 32px; }
   .product-gallery { position: static; }
+  .product-info { position: static; }
   .product-info-name { font-size: 22px; }
   .product-price-main { font-size: 26px; }
   .product-guarantees { grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .product-tabs-section { padding: 0 var(--container-pad) 56px; }
+  .pd-desc-section { padding: 40px var(--container-pad) 48px; }
+  .pd-vehicles-list { gap: 6px; }
+  .gallery-thumbs { grid-template-columns: repeat(5, 1fr); }
   /* Inner pages */
   .page-hero-title { font-size: 30px; letter-spacing: 1.5px; }
   .partner-form { padding: 32px 24px; }
