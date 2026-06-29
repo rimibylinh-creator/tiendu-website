@@ -2258,7 +2258,7 @@ p { margin: 0; }
 }
 
 /* ── Product Detail page layout ───────────────── */
-.pd-section { background: var(--color-white); padding: 56px 0 80px; }
+.pd-section { background: var(--color-white); padding: 56px 0 48px; }
 
 /* Gallery */
 .pd-gallery { display: flex; flex-direction: column; gap: 12px; }
@@ -2351,7 +2351,6 @@ p { margin: 0; }
   grid-template-columns: 1fr 1fr;
   gap: 56px;
   align-items: start;
-  max-width: 1100px;
 }
 @media (max-width: 760px) {
   .pd-hero-grid { grid-template-columns: 1fr; gap: 28px; }
@@ -2359,7 +2358,7 @@ p { margin: 0; }
 
 /* Tabs section */
 .pd-tabs-section {
-  margin-top: 64px; border-top: 2px solid var(--color-border); padding-top: 0;
+  margin-top: 48px; border-top: 2px solid var(--color-border); padding-top: 0;
 }
 .pd-tab-bar {
   display: flex; border-bottom: 2px solid var(--color-border); margin-bottom: 32px;
@@ -2396,7 +2395,7 @@ p { margin: 0; }
 .pd-vehicles-grid { display: flex; flex-wrap: wrap; gap: 10px; }
 
 /* Description tab */
-.pd-description { font-size: 15px; line-height: 1.8; color: var(--color-text); }
+.pd-description { font-size: 15px; line-height: 1.8; color: var(--color-text); max-width: 680px; }
 .pd-description h3 { font-size: 17px; font-weight: 700; margin: 24px 0 8px; color: var(--color-near-black); }
 .pd-description p { margin: 0 0 14px; }
 .pd-description ul { padding-left: 20px; margin: 0 0 14px; }
@@ -2410,14 +2409,16 @@ p { margin: 0; }
 /* Benefits bar */
 .pd-benefits-bar {
   display: flex; flex-wrap: wrap; gap: 12px 36px;
-  margin-top: 56px; padding: 28px 36px;
-  background: var(--color-near-black); border-radius: var(--radius-lg);
+  margin-top: 40px; padding: 24px 28px;
+  background: rgba(254,205,39,0.08);
+  border: 1.5px solid rgba(254,205,39,0.35);
+  border-radius: var(--radius-lg);
 }
 .pd-benefit-item {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; gap: 8px;
 }
-.pd-benefit-item svg { color: var(--color-primary); flex-shrink: 0; }
-.pd-benefit-item span { font-size: 14px; font-weight: 500; color: var(--color-white); }
+.pd-benefit-item svg { color: var(--color-primary-dark); flex-shrink: 0; }
+.pd-benefit-item span { font-size: 14px; font-weight: 500; color: var(--color-near-black); }
 
 /* Mobile responsive */
 @media (max-width: 860px) {
