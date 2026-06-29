@@ -112,6 +112,9 @@ input:checked+.slider:before{transform:translateX(16px)}
 .btn-import:hover{background:#dcfce7;border-color:#86efac}
 .btn-tmpl{background:none;border:none;font-size:12px;color:#737373;cursor:pointer;font-family:inherit;padding:2px 4px;text-decoration:underline}
 .btn-tmpl:hover{color:#252b42}
+.btn-sheet{background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:#1e40af;white-space:nowrap;transition:all .12s}
+.btn-sheet:hover{background:#dbeafe;border-color:#93c5fd}
+.btn-sheet:disabled{opacity:.6;cursor:wait}
 
 /* ── Upload button ── */
 .upload-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border:1.5px solid #d2d2d2;border-radius:8px;cursor:pointer;font-size:18px;flex-shrink:0;transition:border-color .12s;background:#fff}
@@ -279,6 +282,7 @@ input:checked+.slider:before{transform:translateX(16px)}
             <input type="file" accept=".csv,.xlsx,.xls" hidden onchange="handleImport(this)">
           </label>
           <button class="btn-tmpl" onclick="dlTemplate()" title="Tải file mẫu CSV">Tải mẫu CSV</button>
+          <button class="btn-sheet" onclick="syncFromSheet()" title="Đồng bộ từ Google Sheet kho hàng">🔗 Đồng bộ Google Sheet</button>
           <button class="btn-primary" onclick="openProductModal()">+ Thêm sản phẩm</button>
         </div>
       </div>
@@ -794,12 +798,15 @@ async function handleImport(input) {
   }
 }
 
-function showImportPreview() {
+function showImportPreview(opts = {}) {
   const preview5 = importRows.slice(0, 5)
   const errRows  = importRows.filter(r => !r.name || !r.price)
+  const sourceLabel = opts.source === 'sheet' ? 'từ Google Sheet' : 'từ file'
   document.getElementById('importPreview').innerHTML = `
-    <div class="import-info">✅ Tìm thấy <strong>${importRows.length}</strong> sản phẩm hợp lệ. Xem trước 5 dòng đầu:</div>
-    ${errRows.length ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#c2410c">⚠️ Đã bỏ qua ${errRows.length} dòng thiếu tên hoặc giá</div>` : ''}
+    <div class="import-info">✅ Tìm thấy <strong>${importRows.length}</strong> sản phẩm hợp lệ ${sourceLabel}. Xem trước 5 dòng đầu:</div>
+    ${opts.skippedNote ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#c2410c">⚠️ ${opts.skippedNote}</div>` : ''}
+    ${!opts.skippedNote && errRows.length ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#c2410c">⚠️ Đã bỏ qua ${errRows.length} dòng thiếu tên hoặc giá</div>` : ''}
+    ${importRows.length > 2000 ? `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#1e40af">ℹ️ Số lượng lớn — quá trình nhập sẽ chạy theo từng lô, có thể mất vài phút. Đừng đóng trang trong khi đang nhập.</div>` : ''}
     <div style="overflow-x:auto">
       <table class="import-preview-table">
         <thead><tr><th>Tên sản phẩm</th><th>Giá</th><th>Tồn kho</th><th>Thương hiệu</th><th>Danh mục</th><th>Thông số</th></tr></thead>
@@ -843,15 +850,140 @@ async function confirmImport() {
     is_featured:   false,
   }))
 
-  const { error } = await db.from('products').insert(payload)
-  if (error) {
-    document.getElementById('importErrNote').textContent = '❌ ' + error.message
-    toast('❌ Nhập thất bại: ' + error.message, 'err'); return
+  const confirmBtn = document.querySelector('#importModal .btn-primary')
+  const oldLabel = confirmBtn.innerHTML
+  confirmBtn.disabled = true
+
+  const BATCH = 500
+  let inserted = 0
+  const errors = []
+
+  for (let i = 0; i < payload.length; i += BATCH) {
+    const chunk = payload.slice(i, i + BATCH)
+    confirmBtn.textContent = `⏳ Đang nhập ${Math.min(i + BATCH, payload.length)}/${payload.length}...`
+    const { error } = await db.from('products').insert(chunk)
+    if (error) errors.push(`Lô ${i / BATCH + 1}: ${error.message}`)
+    else inserted += chunk.length
   }
 
-  toast(`✅ Đã nhập ${payload.length} sản phẩm!`)
-  closeModal('importModal')
-  allP = []; await loadProducts(); loadDashboard()
+  confirmBtn.disabled = false
+  confirmBtn.innerHTML = oldLabel
+
+  if (errors.length) {
+    document.getElementById('importErrNote').textContent = `⚠️ Lỗi ở ${errors.length} lô — xem chi tiết trong console`
+    console.error('Import errors:', errors)
+    toast(`⚠️ Đã nhập ${inserted}/${payload.length} sản phẩm — một số lô bị lỗi`, 'err')
+  } else {
+    toast(`✅ Đã nhập ${inserted} sản phẩm!`)
+  }
+
+  if (inserted > 0) {
+    closeModal('importModal')
+    allP = []; await loadProducts(); loadDashboard()
+  }
+}
+
+// ── GOOGLE SHEET SYNC ─────────────────────────────────
+// Sheet "file-kho-admin" — tab "san-pham-da-map" (đã map đúng cột với form nhập)
+// Sheet phải ở chế độ chia sẻ "Anyone with the link – Viewer" để fetch CSV công khai.
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1cwEq5aNw4Q1IX_aFc5dq4qefrWzobjQWxRpOA9ubFug/export?format=csv&gid=1214637496'
+
+function parseCSV(text) {
+  // Parser CSV đơn giản có hỗ trợ field bọc trong dấu ngoặc kép (kể cả dấu phẩy/ngoặc kép bên trong)
+  const rows = []
+  let row = [], field = '', inQuotes = false
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i], next = text[i+1]
+    if (inQuotes) {
+      if (c === '"' && next === '"') { field += '"'; i++ }
+      else if (c === '"') { inQuotes = false }
+      else field += c
+    } else {
+      if (c === '"') inQuotes = true
+      else if (c === ',') { row.push(field); field = '' }
+      else if (c === '\n') { row.push(field); rows.push(row); row = []; field = '' }
+      else if (c === '\r') { /* skip */ }
+      else field += c
+    }
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row) }
+  return rows.filter(r => r.some(c => c !== ''))
+}
+
+function parseVNPrice(raw) {
+  // Sheet dùng dấu phẩy làm thập phân kiểu VN, ví dụ "325000,0" hoặc "4545,5"
+  if (!raw) return 0
+  const cleaned = String(raw).trim().replace(/\./g, '').replace(',', '.')
+  const n = parseFloat(cleaned)
+  return Number.isFinite(n) ? Math.round(n) : 0
+}
+
+async function syncFromSheet() {
+  const btn = document.querySelector('.btn-sheet')
+  const oldLabel = btn.textContent
+  btn.disabled = true; btn.textContent = '⏳ Đang tải từ Sheet...'
+
+  try {
+    const res = await fetch(SHEET_CSV_URL + '&t=' + Date.now())
+    if (!res.ok) throw new Error('Không tải được Sheet (mã ' + res.status + '). Kiểm tra quyền chia sẻ "Anyone with the link".')
+    const text = await res.text()
+    if (text.trim().startsWith('<')) throw new Error('Sheet chưa public hoặc link không đúng — nhận về HTML thay vì CSV.')
+
+    const rows = parseCSV(text)
+    if (rows.length < 2) { toast('⚠️ Sheet không có dữ liệu', 'err'); return }
+
+    const hdrs = rows[0].map(h => String(h).toLowerCase().trim())
+    const get  = (row, keys) => {
+      for (const k of keys) { const i = hdrs.indexOf(k); if (i > -1 && row[i] !== undefined && row[i] !== '') return String(row[i]).trim() }
+      return ''
+    }
+
+    const seenSlugs = {}
+    const skipped = { noName: 0, noPrice: 0 }
+
+    importRows = rows.slice(1).map(row => {
+      const name  = get(row, ['tên sản phẩm','tên','name'])
+      const price = parseVNPrice(get(row, ['giá','price','gia']))
+      return {
+        name, price,
+        slug:          get(row, ['slug']),
+        brand_name:    get(row, ['thương hiệu','brand','thuong hieu']),
+        category_name: get(row, ['danh mục','category','danh muc']),
+        stock_status:  get(row, ['trạng thái','stock_status','trang thai']) || 'in_stock',
+        stock_quantity:parseInt(get(row, ['số lượng','stock_quantity','so luong'])) || 0,
+        thumbnail_url: get(row, ['url ảnh','thumbnail_url','ảnh','hinh anh']) || null,
+        spec1:         get(row, ['thông số 1','spec1','thong so 1']),
+        spec2:         get(row, ['thông số 2','spec2','thong so 2']),
+        spec3:         get(row, ['thông số 3','spec3','thong so 3']),
+      }
+    }).filter(r => {
+      if (!r.name)      { skipped.noName++;  return false }
+      if (!r.price)     { skipped.noPrice++; return false }
+      return true
+    }).map(r => {
+      // Đảm bảo slug không trùng (Supabase products.slug là UNIQUE)
+      let slug = r.slug || toSlug(r.name)
+      if (!slug) slug = toSlug(r.name) || ('sp-' + Math.random().toString(36).slice(2, 8))
+      if (seenSlugs[slug] != null) {
+        seenSlugs[slug]++
+        slug = `${slug}-${seenSlugs[slug]}`
+      } else {
+        seenSlugs[slug] = 1
+      }
+      return { ...r, slug }
+    })
+
+    if (!importRows.length) { toast('⚠️ Không tìm thấy dữ liệu hợp lệ trong Sheet.', 'err'); return }
+
+    showImportPreview({
+      source: 'sheet',
+      skippedNote: `Đã bỏ qua ${skipped.noName} dòng thiếu tên và ${skipped.noPrice} dòng thiếu giá (tổng ${skipped.noName + skipped.noPrice} dòng).`
+    })
+  } catch (e) {
+    toast('❌ Đồng bộ thất bại: ' + e.message, 'err')
+  } finally {
+    btn.disabled = false; btn.textContent = oldLabel
+  }
 }
 
 function dlTemplate() {
