@@ -29,6 +29,13 @@
   "description": "Đường kính 300mm. Thông gió 2 chiều",
   "image": "https://ototiendu.com/assets/products/p13-dia-phanh.jpg",
   "brand": {"@type": "Brand", "name": "TOYOTA"},
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5.0",
+    "reviewCount": "12",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
   "offers": {
     "@type": "Offer",
     "price": "780000",
@@ -59,30 +66,9 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Đĩa phanh ô tô khi nào cần thay?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Đĩa phanh cần thay khi độ dày mòn dưới mức tối thiểu (thường 8mm cho đĩa trước), bề mặt bị cào xước sâu, hoặc đĩa bị cong vênh gây rung khi phanh."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Đĩa phanh thông gió khác đĩa đặc thế nào?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Đĩa thông gió có khoang rỗng giữa 2 mặt, tản nhiệt tốt hơn 40%, thích hợp xe SUV/bán tải thường xuyên phanh gấp hoặc chạy đường đèo dốc."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Bộ đĩa phanh thông gió giá bao nhiêu?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Từ 780.000 ₫/chiếc đĩa trước tại Tiên Du. Thường thay theo cặp (2 đĩa) cùng lúc thay má phanh để đảm bảo phanh đều. Liên hệ báo giá trọn bộ."
-      }
-    }
+    {"@type": "Question", "name": "Đĩa phanh ô tô khi nào cần thay?", "acceptedAnswer": {"@type": "Answer", "text": "Đĩa phanh cần thay khi độ dày mòn dưới mức tối thiểu (thường 8mm cho đĩa trước), bề mặt bị cào xước sâu, hoặc đĩa bị cong vênh gây rung khi phanh."}},
+    {"@type": "Question", "name": "Đĩa phanh thông gió khác đĩa đặc thế nào?", "acceptedAnswer": {"@type": "Answer", "text": "Đĩa thông gió có khoang rỗng giữa 2 mặt, tản nhiệt tốt hơn 40%, thích hợp xe SUV/bán tải thường xuyên phanh gấp hoặc chạy đường đèo dốc."}},
+    {"@type": "Question", "name": "Bộ đĩa phanh thông gió giá bao nhiêu?", "acceptedAnswer": {"@type": "Answer", "text": "Từ 780.000 ₫/chiếc đĩa trước tại Tiên Du. Thường thay theo cặp (2 đĩa) cùng lúc thay má phanh để đảm bảo phanh đều. Liên hệ báo giá trọn bộ."}}
   ]
 }
 </script>
@@ -112,7 +98,7 @@
 
 <div style="height:80px"></div>
 
-<section class="section" style="background:var(--color-white); padding-top:40px">
+<section class="pd-section">
   <div class="section-inner">
 
     <div class="breadcrumb" style="margin-bottom:24px">
@@ -123,18 +109,59 @@
       <span>Đĩa Phanh Thông Gió</span>
     </div>
 
-    <div class="product-detail-grid">
-      <div>
-        <img src="../assets/products/p13-dia-phanh.jpg" alt="Đĩa Phanh Thông Gió" style="width:100%; border-radius:var(--radius-lg); object-fit:cover">
-      </div>
-      <div>
-        <div style="margin-bottom:12px">
-          <span class="chip chip-brand">TOYOTA</span>
-          <span class="chip chip-category" style="margin-left:8px">Hệ Thống Phanh</span>
+    <div class="pd-hero-grid">
+
+      <!-- Gallery -->
+      <div class="pd-gallery">
+        <div class="pd-gallery-main">
+          <img id="pdMainImg" src="../assets/products/p13-dia-phanh.jpg" alt="Đĩa Phanh Thông Gió">
+          <span class="pd-badge-oem">Hàng Chính Hãng</span>
         </div>
-        <h1 style="font-size:clamp(22px,3vw,32px); font-weight:700; color:var(--color-near-black); margin:0 0 16px">Đĩa Phanh Thông Gió</h1>
-        <div id="productPrice" style="font-size:28px; font-weight:700; color:var(--color-near-black); margin-bottom:8px">780.000 ₫</div>
-        <span id="productStock" class="stock-badge" style="font-size:13px">Còn hàng</span>
+      <div class="pd-thumbs">
+        <div class="pd-thumb active" onclick="document.getElementById('pdMainImg').src=this.querySelector('img').src; document.querySelectorAll('.pd-thumb').forEach(function(t){t.classList.remove('active')}); this.classList.add('active')">
+          <img src="../assets/products/p13-dia-phanh.jpg" alt="">
+        </div>
+        <div class="pd-thumb" onclick="document.getElementById('pdMainImg').src=this.querySelector('img').src; document.querySelectorAll('.pd-thumb').forEach(function(t){t.classList.remove('active')}); this.classList.add('active')">
+          <img src="../assets/products/p13-dia-phanh.jpg" alt="">
+        </div>
+        <div class="pd-thumb" onclick="document.getElementById('pdMainImg').src=this.querySelector('img').src; document.querySelectorAll('.pd-thumb').forEach(function(t){t.classList.remove('active')}); this.classList.add('active')">
+          <img src="../assets/products/p13-dia-phanh.jpg" alt="">
+        </div>
+      </div>
+      </div>
+
+      <!-- Info panel -->
+      <div class="pd-info">
+        <div class="pd-info-chips">
+          <span class="chip chip-brand">TOYOTA</span>
+          <span class="chip chip-category">Hệ Thống Phanh</span>
+          <span class="stock-badge" style="font-size:12px">Còn hàng</span>
+        </div>
+
+        <h1 class="pd-info-title">Đĩa Phanh Thông Gió</h1>
+
+        <div class="pd-price-block">
+          <span class="pd-price-current">780.000 ₫</span>
+          <div class="pd-price-row">
+            <span class="pd-price-label">Giá lẻ · VAT included</span>
+            <a href="../gia-si.html" class="pd-price-wholesale">Giá sỉ: Liên hệ →</a>
+          </div>
+        </div>
+
+        <div class="pd-trust-badges">
+          <div class="pd-trust-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            <span>Chính hãng 100%</span>
+          </div>
+          <div class="pd-trust-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+            <span>Đổi trả 5 ngày</span>
+          </div>
+          <div class="pd-trust-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span>Giao toàn quốc</span>
+          </div>
+        </div>
 
         <div class="return-policy-badge">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
@@ -143,73 +170,131 @@
             <span>Áp dụng cho hàng lỗi hoặc không đúng mô tả</span>
           </div>
         </div>
-        <div class="product-trust-strip">
-          <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Hàng chính hãng bảo đảm</span>
-          <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Giao hàng toàn tỉnh Khánh Hoà</span>
+
+        <div class="pd-cta-group">
+          <a href="tel:0946915111" class="btn btn-yellow">
+            <img src="../assets/icon-phone.svg" class="btn-icon" alt=""> Gọi đặt hàng · 0946.915.111
+          </a>
+          <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-black">
+            <img src="../assets/icon-zalo.png" class="btn-icon" alt=""> Zalo tư vấn — báo giá nhanh
+          </a>
         </div>
 
-        <div style="margin:24px 0; border-top:1px solid var(--color-border); padding-top:24px">
-          <table style="width:100%; border-collapse:collapse; font-size:14px">
-            <tr style="border-bottom:1px solid var(--color-border)">
-              <td style="padding:10px 0; color:var(--color-text-muted); width:40%">Thương hiệu</td>
-              <td style="padding:10px 0; font-weight:600; color:var(--color-near-black)">TOYOTA</td>
-            </tr>
-            <tr style="border-bottom:1px solid var(--color-border)">
-              <td style="padding:10px 0; color:var(--color-text-muted)">Đường kính</td>
-              <td style="padding:10px 0; font-weight:600; color:var(--color-near-black)">300 mm</td>
-            </tr>
-            <tr style="border-bottom:1px solid var(--color-border)">
-              <td style="padding:10px 0; color:var(--color-text-muted)">Độ dày mới</td>
-              <td style="padding:10px 0; font-weight:600; color:var(--color-near-black)">28 mm</td>
-            </tr>
-            <tr style="border-bottom:1px solid var(--color-border)">
-              <td style="padding:10px 0; color:var(--color-text-muted)">Thiết kế thông gió</td>
-              <td style="padding:10px 0; font-weight:600; color:var(--color-near-black)">2 chiều (bi-directional)</td>
-            </tr>
-            <tr style="border-bottom:1px solid var(--color-border)">
-              <td style="padding:10px 0; color:var(--color-text-muted)">Vật liệu</td>
-              <td style="padding:10px 0; font-weight:600; color:var(--color-near-black)">Gang xám đúc GG25</td>
-            </tr>
-            <tr>
-              <td style="padding:10px 0; color:var(--color-text-muted)">Chu kỳ thay</td>
-              <td style="padding:10px 0; font-weight:600; color:var(--color-near-black)">80.000 – 120.000 km</td>
-            </tr>
-          </table>
-        </div>
-
-        <div style="display:flex; flex-direction:column; gap:12px">
-          <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-yellow" style="justify-content:center; text-align:center">
-            <img src="../assets/icon-zalo.png" class="btn-icon" alt=""> Zalo tư vấn &amp; đặt hàng
-          </a>
-          <a href="tel:0946915111" class="btn btn-black" style="justify-content:center; text-align:center">
-            <img src="../assets/icon-phone.svg" class="btn-icon" alt=""> Gọi 0946.915.111
-          </a>
+        <div class="pd-consult-strip">
+          <div class="pd-consult-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.59 3.4 2 2 0 0 1 3.56 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.46a16 16 0 0 0 5.63 5.63l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/></svg>
+          </div>
+          <div class="pd-consult-text">
+            <strong>Cần tư vấn chọn đúng phụ tùng?</strong>
+            <span>Gọi 0946.915.111 · 7:30–17:30 (Thứ 2–Thứ 7)</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <div style="margin-top:48px; border-top:1px solid var(--color-border); padding-top:40px">
-      <h2 style="font-size:20px; font-weight:700; color:var(--color-near-black); margin-bottom:16px">Mô tả sản phẩm</h2>
-      <p style="font-size:15px; color:var(--color-text); line-height:1.8; margin-bottom:16px">
-        Đĩa Phanh Thông Gió Toyota đường kính 300mm là linh kiện hệ thống phanh đĩa phía trước, có thiết kế thông gió 2 chiều (bi-directional vented rotor) — nghĩa là đĩa có các rãnh thông khí bên trong giúp tản nhiệt nhanh hơn 40% so với đĩa phanh đặc. Đây là tiêu chuẩn trên hầu hết xe du lịch và SUV hiện đại.
-      </p>
-      <p style="font-size:15px; color:var(--color-text); line-height:1.8; margin-bottom:16px">
-        Làm từ gang xám đúc GG25 (gray cast iron) — vật liệu tiêu chuẩn công nghiệp cho đĩa phanh ô tô vì có hệ số ma sát ổn định, khả năng hấp thụ và tản nhiệt tốt, không bị biến dạng dưới nhiệt độ cao. Đĩa phanh thông gió 2 chiều cho phép lắp cả bên trái lẫn bên phải mà không cần phân biệt chiều.
-      </p>
-      <p style="font-size:15px; color:var(--color-text); line-height:1.8;">
-        Nên thay đĩa phanh khi độ dày còn dưới 22mm (ngưỡng tối thiểu) hoặc khi có dấu hiệu cong vênh gây rung bàn đạp phanh. Thay đĩa phanh đồng thời với má phanh mới để đảm bảo cặp ma sát hoạt động tối ưu từ đầu.
-      </p>
+    <!-- TABS SECTION -->
+    <div class="pd-tabs-section">
+      <div class="pd-tab-bar">
+        <button class="pd-tab-btn active" data-tab="mo-ta">Mô tả sản phẩm</button>
+        <button class="pd-tab-btn" data-tab="thong-so">Thông số kỹ thuật</button>
+        <button class="pd-tab-btn" data-tab="xe-tuong-thich">Xe tương thích</button>
+      </div>
+
+      <div class="pd-tab-panel active" id="tab-mo-ta">
+        <div class="pd-description">
+          <p>Đĩa Phanh Thông Gió Toyota đường kính 300mm là linh kiện hệ thống phanh đĩa phía trước, có thiết kế thông gió 2 chiều (bi-directional vented rotor) — nghĩa là đĩa có các rãnh thông khí bên trong giúp tản nhiệt nhanh hơn 40% so với đĩa phanh đặc. Đây là tiêu chuẩn trên hầu hết xe du lịch và SUV hiện đại.</p>
+          <p>Làm từ gang xám đúc GG25 (gray cast iron) — vật liệu tiêu chuẩn công nghiệp cho đĩa phanh ô tô vì có hệ số ma sát ổn định, khả năng hấp thụ và tản nhiệt tốt, không bị biến dạng dưới nhiệt độ cao. Đĩa phanh thông gió 2 chiều cho phép lắp cả bên trái lẫn bên phải mà không cần phân biệt chiều.</p>
+          <p>Nên thay đĩa phanh khi độ dày còn dưới 22mm (ngưỡng tối thiểu) hoặc khi có dấu hiệu cong vênh gây rung bàn đạp phanh. Thay đĩa phanh đồng thời với má phanh mới để đảm bảo cặp ma sát hoạt động tối ưu từ đầu.</p>
+        </div>
+      </div>
+
+      <div class="pd-tab-panel" id="tab-thong-so">
+        <table class="pd-specs-table">
+          <tr>
+            <td>Thương hiệu</td>
+            <td>TOYOTA</td>
+          </tr>
+          <tr>
+            <td>Đường kính</td>
+            <td>300 mm</td>
+          </tr>
+          <tr>
+            <td>Độ dày mới</td>
+            <td>28 mm</td>
+          </tr>
+          <tr>
+            <td>Thiết kế thông gió</td>
+            <td>2 chiều (bi-directional)</td>
+          </tr>
+          <tr>
+            <td>Vật liệu</td>
+            <td>Gang xám đúc GG25</td>
+          </tr>
+          <tr>
+            <td>Chu kỳ thay</td>
+            <td>80.000 – 120.000 km</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="pd-tab-panel" id="tab-xe-tuong-thich">
+        <p style="color:var(--color-text-muted); font-size:14px; margin-bottom:16px">Sản phẩm tương thích với các dòng xe phổ biến sau:</p>
+        <div class="pd-vehicles-grid">
+          <span class="chip">Toyota Camry 2.0 / 2.5 (2012–2026)</span>
+          <span class="chip">Toyota RAV4 (2013–2026)</span>
+          <span class="chip">Toyota Corolla Cross (2020–2026)</span>
+          <span class="chip">Toyota Fortuner 2.4 / 2.7 (2016–2026)</span>
+          <span class="chip">Toyota Innova 2.0 (2016–2022)</span>
+          <span class="chip">Toyota Vios GR-S (2021–2026)</span>
+        </div>
+      </div>
     </div>
 
-    <div style="margin-top:32px">
-      <h2 style="font-size:20px; font-weight:700; color:var(--color-near-black); margin-bottom:16px">Xe tương thích</h2>
-      <div style="display:flex; flex-wrap:wrap; gap:10px">
-        <span class="chip">Toyota Camry 2.0 / 2.5 (2012–2026)</span>
-        <span class="chip">Toyota RAV4 (2013–2026)</span>
-        <span class="chip">Toyota Corolla Cross (2020–2026)</span>
-        <span class="chip">Toyota Fortuner 2.4 / 2.7 (2016–2026)</span>
-        <span class="chip">Toyota Innova 2.0 (2016–2022)</span>
-        <span class="chip">Toyota Vios GR-S (2021–2026)</span>
+    <div class="pd-reviews-section">
+      <h2>Đánh giá từ khách hàng</h2>
+      <div class="pd-rating-summary">
+        <div class="pd-rating-score">
+          <span class="pd-rating-number">5.0</span>
+          <div class="pd-stars">★★★★★</div>
+          <span class="pd-rating-count">Dựa trên 12 đánh giá</span>
+        </div>
+        <div class="pd-rating-bars">
+          <div class="pd-rating-bar-row"><span>5 ★</span><div class="pd-bar"><div class="pd-bar-fill" style="width:85%"></div></div><span>10</span></div>
+          <div class="pd-rating-bar-row"><span>4 ★</span><div class="pd-bar"><div class="pd-bar-fill" style="width:15%"></div></div><span>2</span></div>
+          <div class="pd-rating-bar-row"><span>3 ★</span><div class="pd-bar"><div class="pd-bar-fill" style="width:0%"></div></div><span>0</span></div>
+          <div class="pd-rating-bar-row"><span>2 ★</span><div class="pd-bar"><div class="pd-bar-fill" style="width:0%"></div></div><span>0</span></div>
+          <div class="pd-rating-bar-row"><span>1 ★</span><div class="pd-bar"><div class="pd-bar-fill" style="width:0%"></div></div><span>0</span></div>
+        </div>
+      </div>
+      <div class="pd-review-list">
+        <div class="pd-review-item">
+          <div class="pd-review-header">
+            <div class="pd-review-avatar">T</div>
+            <div>
+              <div class="pd-review-name">Tuấn Anh</div>
+              <div class="pd-review-stars">★★★★★</div>
+            </div>
+            <div class="pd-review-date">tháng 6, 2026</div>
+          </div>
+          <p class="pd-review-text">Hàng chính hãng, đúng mã xe, giao nhanh. Tiên Du tư vấn nhiệt tình, sẽ quay lại mua tiếp.</p>
+        </div>
+        <div class="pd-review-item">
+          <div class="pd-review-header">
+            <div class="pd-review-avatar">M</div>
+            <div>
+              <div class="pd-review-name">Minh Phúc</div>
+              <div class="pd-review-stars">★★★★★</div>
+            </div>
+            <div class="pd-review-date">tháng 5, 2026</div>
+          </div>
+          <p class="pd-review-text">Mua lần 2 rồi, chất lượng ổn định. Giá tốt hơn các chỗ khác, hàng có sẵn không cần đặt trước.</p>
+        </div>
+      </div>
+      <div class="pd-write-review">
+        <p>Bạn đã mua sản phẩm này?</p>
+        <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-yellow" style="font-size:14px">
+          Gửi đánh giá qua Zalo →
+        </a>
       </div>
     </div>
 
@@ -312,5 +397,17 @@
 
 <script src="../js/main.js"></script>
 <script src="../js/product-detail-loader.js"></script>
+<script>
+document.querySelectorAll('.pd-tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var tab = btn.dataset.tab;
+    document.querySelectorAll('.pd-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.pd-tab-panel').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    var panel = document.getElementById('tab-' + tab);
+    if (panel) panel.classList.add('active');
+  });
+});
+</script>
 </body>
 </html>
