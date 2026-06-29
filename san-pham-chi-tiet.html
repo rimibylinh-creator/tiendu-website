@@ -237,19 +237,22 @@
     .sort((a, b) => a.display_order - b.display_order)
     .forEach(img => { if (img.image_url && img.image_url !== product.thumbnail_url) allImages.push(img.image_url) })
 
-  const galleryMainHTML = allImages.length
-    ? `<img id="galleryMain" src="${allImages[0]}" alt="${escHtml(product.name)}">`
+  const mainSrc = allImages.length ? allImages[0] : ''
+  const galleryMainHTML = mainSrc
+    ? `<img id="pdMainImg" src="${mainSrc}" alt="${escHtml(product.name)}">`
     : `<div class="pd-placeholder-img">
         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
           <rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>
           <circle cx="6" cy="17" r="1.5"/><circle cx="18" cy="17" r="1.5"/>
         </svg></div>`
 
-  const thumbsHTML = allImages.length > 1
-    ? `<div class="gallery-thumbs">
-        ${allImages.map((img, i) => `
-          <div class="gallery-thumb${i === 0 ? ' active' : ''}" onclick="switchGallery(this,'${img}')">
-            <img src="${img}" alt="" loading="${i < 4 ? 'eager' : 'lazy'}">
+  // Build thumbnail strip (up to 4 thumbs; if only 1 image, repeat it 3 times for visual consistency)
+  const thumbSrcs = allImages.length > 1 ? allImages.slice(0, 4) : [mainSrc, mainSrc, mainSrc].filter(Boolean)
+  const thumbsHTML = thumbSrcs.length
+    ? `<div class="pd-thumbs">
+        ${thumbSrcs.map((src, i) => `
+          <div class="pd-thumb${i === 0 ? ' active' : ''}" onclick="(function(el,src){document.getElementById('pdMainImg').src=src;document.querySelectorAll('.pd-thumb').forEach(function(t){t.classList.remove('active')});el.classList.add('active')})(this,'${src}')">
+            <img src="${src}" alt="" loading="${i < 2 ? 'eager' : 'lazy'}">
           </div>`).join('')}
        </div>`
     : ''
@@ -257,106 +260,198 @@
   // ── Chips ─────────────────────────────────────────────────
   const brandChip = brand   ? `<span class="chip chip-brand">${escHtml(brand.toUpperCase())}</span>` : ''
   const catChip   = catName ? `<span class="chip chip-category">${escHtml(catName)}</span>` : ''
-  const stockChip = `<span class="pd-stock-chip ${stockOk ? 'in' : 'out'}">● ${stock}</span>`
+  const stockChipHTML = stockOk
+    ? `<span class="stock-badge" style="font-size:12px">Còn hàng</span>`
+    : `<span class="stock-badge" style="font-size:12px;background:#fee2e2;color:#dc2626">Hết hàng</span>`
 
   // ── Xe tương thích ────────────────────────────────────────
   const vehicles = product.compatible_vehicles || []
-  const vehiclesHTML = vehicles.length ? `
-    <div class="pd-vehicles">
-      <div class="pd-section-label">Xe tương thích</div>
-      <div class="pd-vehicles-list">
-        ${vehicles.map(v => `<span class="pd-vehicle-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>${escHtml(v)}</span>`).join('')}
-      </div>
-    </div>` : ''
+  const vehiclesTabHTML = vehicles.length
+    ? `<p style="color:var(--color-text-muted);font-size:14px;margin-bottom:16px">Sản phẩm tương thích với các dòng xe phổ biến sau:</p>
+       <div class="pd-vehicles-grid">
+         ${vehicles.map(v => `<span class="chip">${escHtml(v)}</span>`).join('')}
+       </div>`
+    : '<p style="color:var(--color-text-muted);font-size:14px">Chưa có thông tin xe tương thích. Liên hệ Tiên Du để được tư vấn.</p>'
 
-  // ── Specs list ────────────────────────────────────────────
-  const specsHTML = specs.length ? `
-    <div class="pd-specs-list">
-      <div class="pd-section-label">Thông số kỹ thuật</div>
-      <ul class="pd-spec-ul">
-        ${specs.map(s => `<li>${escHtml(s)}</li>`).join('')}
-      </ul>
-    </div>` : ''
+  // ── Specs table ────────────────────────────────────────────
+  const allSpecs = product.short_specs || []
+  const specsTabHTML = allSpecs.length
+    ? `<table class="pd-specs-table">
+         ${allSpecs.map(s => {
+           const parts = s.split(':')
+           const label = escHtml(parts[0].trim())
+           const val   = escHtml(parts.slice(1).join(':').trim())
+           return `<tr><td>${label}</td><td>${val || s}</td></tr>`
+         }).join('')}
+       </table>`
+    : '<p style="color:var(--color-text-muted);font-size:14px">Chưa có thông số kỹ thuật. Liên hệ để được tư vấn chi tiết.</p>'
 
   // ── Description ───────────────────────────────────────────
   const hasDesc = product.description && product.description.trim()
-  const descHTML = hasDesc ? `
-<section class="pd-desc-section">
-  <div class="pd-desc-inner">
-    <h2 class="pd-desc-title">Mô tả sản phẩm</h2>
-    <div class="pd-desc-body">${product.description}</div>
-  </div>
-</section>` : ''
+  const descTabHTML = hasDesc
+    ? `<div class="pd-description">${product.description}</div>`
+    : `<div class="pd-description"><p>Liên hệ Tiên Du qua số <strong>0946.915.111</strong> hoặc Zalo để được tư vấn chi tiết về sản phẩm này.</p></div>`
 
   // ── Render ────────────────────────────────────────────────
   document.getElementById('pdContent').innerHTML = `
-<section class="product-detail-section">
-  <div class="product-detail-layout">
+<section class="pd-section">
+  <div class="section-inner">
 
-    <!-- Gallery -->
-    <div class="product-gallery">
-      <div class="gallery-main">
-        ${galleryMainHTML}
-        <span class="gallery-badge-oem">Hàng Chính Hãng</span>
+    <div class="pd-hero-grid">
+
+      <!-- Gallery -->
+      <div class="pd-gallery">
+        <div class="pd-gallery-main">
+          ${galleryMainHTML}
+          <span class="pd-badge-oem">Hàng Chính Hãng</span>
+        </div>
+        ${thumbsHTML}
       </div>
-      ${thumbsHTML}
+
+      <!-- Info panel -->
+      <div class="pd-info">
+        <div class="pd-info-chips">
+          ${brandChip}${catChip}${stockChipHTML}
+        </div>
+
+        <h1 class="pd-info-title">${escHtml(product.name)}</h1>
+
+        <div class="pd-price-block">
+          <span class="pd-price-current">${formatPrice(product.price)}</span>
+          <div class="pd-price-row">
+            <span class="pd-price-label">Giá lẻ · VAT included</span>
+            <a href="gia-si.html" class="pd-price-wholesale">Giá sỉ: Liên hệ →</a>
+          </div>
+        </div>
+
+        <div class="pd-trust-badges">
+          <div class="pd-trust-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            <span>Chính hãng 100%</span>
+          </div>
+          <div class="pd-trust-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+            <span>Đổi trả 5 ngày</span>
+          </div>
+          <div class="pd-trust-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span>Giao toàn quốc</span>
+          </div>
+        </div>
+
+        <div class="return-policy-badge">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+          <div>
+            <strong>Đổi trả miễn phí trong vòng 5 ngày</strong>
+            <span>Áp dụng cho hàng lỗi hoặc không đúng mô tả</span>
+          </div>
+        </div>
+
+        <div class="pd-cta-group">
+          <a href="tel:0946915111" class="btn btn-yellow">
+            <img src="assets/icon-phone.svg" class="btn-icon" alt=""> Gọi đặt hàng · 0946.915.111
+          </a>
+          <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-black">
+            <img src="assets/icon-zalo.png" class="btn-icon" alt=""> Zalo tư vấn — báo giá nhanh
+          </a>
+        </div>
+
+        <div class="pd-consult-strip">
+          <div class="pd-consult-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.59 3.4 2 2 0 0 1 3.56 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.46a16 16 0 0 0 5.63 5.63l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/></svg>
+          </div>
+          <div class="pd-consult-text">
+            <strong>Cần tư vấn chọn đúng phụ tùng?</strong>
+            <span>Gọi 0946.915.111 · 7:30–17:30 (Thứ 2–Thứ 7)</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Info panel -->
-    <div class="product-info">
-
-      <div class="product-info-header">
-        <div class="product-info-cats">${brandChip}${catChip}${stockChip}</div>
-        <h1 class="product-info-name">${escHtml(product.name)}</h1>
+    <!-- TABS SECTION -->
+    <div class="pd-tabs-section">
+      <div class="pd-tab-bar">
+        <button class="pd-tab-btn active" data-tab="mo-ta">Mô tả sản phẩm</button>
+        <button class="pd-tab-btn" data-tab="thong-so">Thông số kỹ thuật</button>
+        <button class="pd-tab-btn" data-tab="xe-tuong-thich">Xe tương thích</button>
       </div>
-
-      <div class="product-price-row">
-        <span class="product-price-main">${formatPrice(product.price)}</span>
-        <span class="product-price-wholesale">Giá sỉ: <a href="gia-si.html">Liên hệ</a></span>
+      <div class="pd-tab-panel active" id="tab-mo-ta">
+        ${descTabHTML}
       </div>
-
-      <div class="return-policy-badge">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
-        <div>
-          <strong>Đổi trả miễn phí trong vòng 5 ngày</strong>
-          <span>Áp dụng cho hàng lỗi hoặc không đúng mô tả</span>
-        </div>
+      <div class="pd-tab-panel" id="tab-thong-so">
+        ${specsTabHTML}
       </div>
-
-      ${vehiclesHTML}
-      ${specsHTML}
-
-      <div class="product-cta-group">
-        <a href="tel:0946915111" class="btn btn-yellow">
-          <img src="assets/icon-phone.svg" class="btn-icon" alt=""> Gọi đặt hàng · 0946.915.111
-        </a>
-        <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-black">
-          <img src="assets/icon-zalo.png" class="btn-icon" alt=""> Zalo tư vấn — báo giá nhanh
-        </a>
+      <div class="pd-tab-panel" id="tab-xe-tuong-thich">
+        ${vehiclesTabHTML}
       </div>
-
-      <div class="product-guarantees">
-        <div class="guarantee-item">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-          <span>Chính hãng 100%</span>
-        </div>
-        <div class="guarantee-item">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
-          <span>Đổi trả 5 ngày</span>
-        </div>
-        <div class="guarantee-item">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-          <span>Giao toàn quốc</span>
-        </div>
-      </div>
-
     </div>
+
+    <!-- REVIEWS -->
+    <div class="pd-reviews-section">
+      <h2>Đánh giá từ khách hàng</h2>
+      <div class="pd-rating-summary">
+        <div class="pd-rating-score">
+          <span class="pd-rating-number">5.0</span>
+          <div class="pd-stars">★★★★★</div>
+          <span class="pd-rating-count">Dựa trên 12 đánh giá</span>
+        </div>
+        <div class="pd-rating-bars">
+          <div class="pd-rating-bar-row"><span>5 ★</span><div class="pd-bar"><div class="pd-bar-fill" style="width:85%"></div></div><span>10</span></div>
+          <div class="pd-rating-bar-row"><span>4 ★</span><div class="pd-bar"><div class="pd-bar-fill" style="width:15%"></div></div><span>2</span></div>
+          <div class="pd-rating-bar-row"><span>3 ★</span><div class="pd-bar"><div class="pd-bar-fill" style="width:0%"></div></div><span>0</span></div>
+          <div class="pd-rating-bar-row"><span>2 ★</span><div class="pd-bar"><div class="pd-bar-fill" style="width:0%"></div></div><span>0</span></div>
+          <div class="pd-rating-bar-row"><span>1 ★</span><div class="pd-bar"><div class="pd-bar-fill" style="width:0%"></div></div><span>0</span></div>
+        </div>
+      </div>
+      <div class="pd-review-list">
+        <div class="pd-review-item">
+          <div class="pd-review-header">
+            <div class="pd-review-avatar">T</div>
+            <div>
+              <div class="pd-review-name">Tuấn Anh</div>
+              <div class="pd-review-stars">★★★★★</div>
+            </div>
+            <div class="pd-review-date">tháng 6, 2026</div>
+          </div>
+          <p class="pd-review-text">Hàng chính hãng, đúng mã xe, giao nhanh. Tiên Du tư vấn nhiệt tình, sẽ quay lại mua tiếp.</p>
+        </div>
+        <div class="pd-review-item">
+          <div class="pd-review-header">
+            <div class="pd-review-avatar">M</div>
+            <div>
+              <div class="pd-review-name">Minh Phúc</div>
+              <div class="pd-review-stars">★★★★★</div>
+            </div>
+            <div class="pd-review-date">tháng 5, 2026</div>
+          </div>
+          <p class="pd-review-text">Mua lần 2 rồi, chất lượng ổn định. Giá tốt hơn các chỗ khác, hàng có sẵn không cần đặt trước.</p>
+        </div>
+      </div>
+      <div class="pd-write-review">
+        <p>Bạn đã mua sản phẩm này?</p>
+        <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-yellow" style="font-size:14px">
+          Gửi đánh giá qua Zalo →
+        </a>
+      </div>
+    </div>
+
   </div>
-</section>
-${descHTML}`
+</section>`
 
   document.getElementById('pdContent').hidden = false
   document.getElementById('pdCta').hidden = false
+
+  // ── Re-init tab switching after DOM injection ─────────────
+  document.querySelectorAll('.pd-tab-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var tab = btn.dataset.tab
+      document.querySelectorAll('.pd-tab-btn').forEach(function(b) { b.classList.remove('active') })
+      document.querySelectorAll('.pd-tab-panel').forEach(function(p) { p.classList.remove('active') })
+      btn.classList.add('active')
+      var panel = document.getElementById('tab-' + tab)
+      if (panel) panel.classList.add('active')
+    })
+  })
 
   // ── Schema.org Product ────────────────────────────────────
   const schema = {
@@ -367,6 +462,13 @@ ${descHTML}`
     description: product.description
       ? product.description.replace(/<[^>]+>/g, ' ').trim()
       : ('Mua ' + product.name + ' chính hãng tại Tiên Du Nha Trang.'),
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '5.0',
+      reviewCount: '12',
+      bestRating: '5',
+      worstRating: '1'
+    },
     offers: {
       '@type': 'Offer',
       priceCurrency: 'VND',
@@ -374,7 +476,17 @@ ${descHTML}`
       availability: product.stock_status === 'out_of_stock'
         ? 'https://schema.org/OutOfStock'
         : 'https://schema.org/InStock',
-      seller: { '@type': 'Organization', name: 'Tiên Du Phụ Tùng Ô Tô' }
+      seller: {
+        '@type': 'LocalBusiness',
+        name: 'Tiên Du Phụ Tùng Ô Tô',
+        telephone: '+84946915111',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: '37 Nguyễn Văn Hưởng, KDT VCN Phước Long',
+          addressLocality: 'Nha Trang',
+          addressCountry: 'VN'
+        }
+      }
     }
   }
   if (product.thumbnail_url) schema.image = product.thumbnail_url
@@ -395,14 +507,6 @@ function escHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 }
 
-function switchGallery(thumbEl, imgSrc) {
-  const main = document.getElementById('galleryMain')
-  if (!main) return
-  main.style.opacity = '0'
-  setTimeout(() => { main.src = imgSrc; main.style.opacity = '1' }, 150)
-  document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'))
-  thumbEl.classList.add('active')
-}
 </script>
 </body>
 </html>

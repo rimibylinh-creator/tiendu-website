@@ -359,6 +359,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ============================================================
+   PRODUCT DETAIL PAGE — TAB SWITCHING
+   ============================================================ */
+(function () {
+  document.querySelectorAll('.pd-tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const tab = btn.dataset.tab;
+      document.querySelectorAll('.pd-tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.querySelectorAll('.pd-tab-panel').forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      var panel = document.getElementById('tab-' + tab);
+      if (panel) panel.classList.add('active');
+    });
+  });
+})();
+
+/* ============================================================
    FAQ ACCORDION
    ============================================================ */
 (function () {
