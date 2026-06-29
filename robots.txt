@@ -1,3 +1,122 @@
+# ============================================================
+# robots.txt — ototiendu.com
+# Cập nhật: 2026-06-27
+#
+# CHIẾN LƯỢC: Cho phép TẤT CẢ crawler (search engine truyền thống
+# + AI search/citation bot + AI training bot) — tối đa khả năng
+# hiển thị trên Google, ChatGPT, Claude, Perplexity, Gemini...
+#
+# Website chỉ chứa thông tin sản phẩm/cửa hàng công khai, không có
+# nội dung độc quyền cần bảo vệ khỏi AI training — nên ưu tiên
+# độ hiển diện tối đa thay vì kiểm soát chặt.
+#
+# Nếu sau này muốn đổi sang "chặn training, chỉ cho search" (để
+# bảo vệ nội dung không bị dùng huấn luyện model), chỉ cần đổi
+# "Allow: /" thành "Disallow: /" ở khối tương ứng — đã chia rõ
+# 2 nhóm theo comment bên dưới để dễ chỉnh sau này.
+# ============================================================
+
+
+# ------------------------------------------------------------
+# NHÓM 1 — AI SEARCH / CITATION BOTS
+# Các bot này lấy nội dung để TRẢ LỜI TRỰC TIẾP người dùng khi họ
+# hỏi (vd: "phụ tùng ô tô Nha Trang ở đâu uy tín?"). Đây là nhóm
+# quan trọng nhất cho GEO — quyết định Tiên Du có được AI nhắc tên
+# và trích dẫn hay không.
+# ------------------------------------------------------------
+
+# OpenAI — ChatGPT search & user-triggered browsing
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic — Claude search & user-triggered fetch
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+# Perplexity — AI search engine
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Google — AI Overview / Gemini-powered search (không phải Googlebot)
+User-agent: Google-CloudVertexBot
+Allow: /
+
+# Apple Intelligence (Siri, Spotlight search trên iOS/macOS)
+User-agent: Applebot
+Allow: /
+
+# You.com AI search
+User-agent: YouBot
+Allow: /
+
+# DuckDuckGo AI Assist
+User-agent: DuckAssistBot
+Allow: /
+
+
+# ------------------------------------------------------------
+# NHÓM 2 — AI TRAINING BOTS
+# Các bot này thu thập nội dung để đưa vào dữ liệu huấn luyện
+# model AI (không trả lời tức thời). Quyết định hiện tại: CHO PHÉP
+# — chấp nhận đổi lấy độ hiển diện thương hiệu rộng hơn về lâu dài.
+# ------------------------------------------------------------
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+
+# ------------------------------------------------------------
+# NHÓM 3 — SEARCH ENGINE TRUYỀN THỐNG (SEO)
+# ------------------------------------------------------------
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: bingbot
+Allow: /
+
+
+# ------------------------------------------------------------
+# MẶC ĐỊNH — mọi crawler khác không được nêu tên ở trên
+# ------------------------------------------------------------
+
 User-agent: *
 Allow: /
+
 Sitemap: https://ototiendu.com/sitemap.xml
