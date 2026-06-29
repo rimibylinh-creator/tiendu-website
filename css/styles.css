@@ -2258,7 +2258,7 @@ p { margin: 0; }
 }
 
 /* ── Product Detail page layout ───────────────── */
-.pd-section { background: var(--color-white); padding: 56px 0 48px; }
+.pd-section { background: var(--color-white); padding: 56px var(--container-pad) 48px; }
 
 /* Gallery */
 .pd-gallery { display: flex; flex-direction: column; gap: 12px; }
