@@ -5,6 +5,90 @@ const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 const { createClient } = supabase
 const db = createClient(SUPABASE_URL, SUPABASE_ANON)
 
+// ── Nguyên lý 3: Cache (SessionStorage, TTL tính bằng giây) ───
+const TienduCache = {
+  set(key, data, ttl = 300) {
+    try {
+      sessionStorage.setItem('td_' + key, JSON.stringify({ data, exp: Date.now() + ttl * 1000 }))
+    } catch(e) {}
+  },
+  get(key) {
+    try {
+      const raw = sessionStorage.getItem('td_' + key)
+      if (!raw) return null
+      const { data, exp } = JSON.parse(raw)
+      if (Date.now() > exp) { sessionStorage.removeItem('td_' + key); return null }
+      return data
+    } catch(e) { return null }
+  }
+}
+
+// Nguyên lý 4: Chuẩn hóa tiếng Việt phía client (khớp với hàm SQL)
+function normalizeVietnamese(str) {
+  return (str || '').toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')  // xóa dấu thanh và dấu phụ
+    .replace(/đ/g, 'd').replace(/Đ/g, 'd')
+}
+
+// ── Lookup maps cho brand/category (lazy-load, cache trong memory) ──
+let _brandsMap = null     // { "Toyota": "uuid-..." }
+let _catsMap   = null     // { "phanh": "uuid-..." }
+
+async function getBrandsMap() {
+  if (_brandsMap) return _brandsMap
+  const { data } = await db.from('brands').select('id, name')
+  _brandsMap = {}
+  ;(data || []).forEach(b => { _brandsMap[b.name] = b.id })
+  return _brandsMap
+}
+
+async function getCatsMap() {
+  if (_catsMap) return _catsMap
+  const { data } = await db.from('categories').select('id, slug')
+  _catsMap = {}
+  ;(data || []).forEach(c => { _catsMap[c.slug] = c.id })
+  return _catsMap
+}
+
+// ── Nguyên lý 2: Phân trang — chỉ load PAGE_SIZE sản phẩm mỗi lần ──
+const PAGE_SIZE = 24
+
+async function getProductsPaged({ page = 0, categorySlug = '', brandName = '', search = '' } = {}) {
+  const from = page * PAGE_SIZE
+  const to   = from + PAGE_SIZE - 1
+
+  let q = db
+    .from('products')
+    .select('id, slug, name, price, stock_status, short_specs, thumbnail_url, brands(name, slug), categories(name, slug)', { count: 'exact' })
+    .eq('is_published', true)
+    .order('created_at', { ascending: false })
+    .range(from, to)      // ← Phân trang: chỉ lấy dòng [from, to]
+
+  // Lọc danh mục (tra bảng categories lấy UUID, rồi filter theo category_id)
+  if (categorySlug && categorySlug !== 'all') {
+    const catMap = await getCatsMap()
+    const catId  = catMap[categorySlug]
+    if (catId) q = q.eq('category_id', catId)
+  }
+
+  // Lọc hãng xe
+  if (brandName) {
+    const brandMap = await getBrandsMap()
+    const brandId  = brandMap[brandName]
+    if (brandId) q = q.eq('brand_id', brandId)
+  }
+
+  // Nguyên lý 4: Tìm kiếm không dấu trên cột name_normalized
+  if (search.trim()) {
+    q = q.ilike('name_normalized', '%' + normalizeVietnamese(search) + '%')
+  }
+
+  const { data, error, count } = await q
+  if (error) { console.error('getProductsPaged:', error); return { data: [], count: 0 } }
+  return { data: data || [], count: count || 0 }
+}
+
 // ── Fetch ──────────────────────────────────────────────────────
 
 async function getProductBySlug(slug) {
@@ -45,6 +129,10 @@ async function getProducts({ limit } = {}) {
 }
 
 async function getFeaturedProducts() {
+  // Nguyên lý 3: Dùng cache 5 phút — load lại trang không gọi API
+  const cached = TienduCache.get('featured')
+  if (cached) return cached
+
   const { data, error } = await db
     .from('products')
     .select('id, slug, name, price, stock_status, short_specs, thumbnail_url, brands(name, slug), categories(name, slug)')
@@ -52,7 +140,9 @@ async function getFeaturedProducts() {
     .eq('is_featured', true)
     .order('created_at', { ascending: false })
   if (error) console.error('getFeaturedProducts:', error)
-  return data || []
+  const result = data || []
+  TienduCache.set('featured', result, 300)   // lưu cache 5 phút
+  return result
 }
 
 async function getPosts({ limit } = {}) {
@@ -98,7 +188,7 @@ function renderProductCard(p, baseHref) {
   return `
 <article class="product-card" data-category="${catSlug}">
   <div class="product-card-image">
-    <img src="${p.thumbnail_url}" alt="${p.name}" loading="lazy">
+    <img src="${p.thumbnail_url || 'assets/no-image.svg'}" alt="${p.name}" loading="lazy" onerror="this.src='assets/no-image.svg'">
     <div class="product-tags">
       <div class="tag-group"><span class="chip chip-brand">${brand.toUpperCase()}</span></div>
       <span class="chip chip-category">${catName}</span>
