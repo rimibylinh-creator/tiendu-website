@@ -159,6 +159,14 @@ input:checked+.slider:before{transform:translateX(16px)}
 .img-prev{width:76px;height:76px;object-fit:cover;border-radius:8px;border:1px solid #ebebeb;display:none;margin-top:4px}
 .img-prev.on{display:block}
 
+/* ── Gallery ── */
+.gallery-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.gallery-item{position:relative;width:84px;height:84px;border-radius:8px;overflow:hidden;border:1.5px solid #e8e8e8;flex-shrink:0}
+.gallery-img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-rm{position:absolute!important;top:3px!important;right:3px!important;width:20px!important;height:20px!important;font-size:12px!important;border-radius:4px!important;background:rgba(220,38,38,.85)!important;color:#fff!important;padding:0!important}
+.gallery-upload-label{display:block;cursor:pointer}
+.gallery-upload-label input{display:none}
+
 /* ── Quill editor ── */
 .quill-wrap{border:1.5px solid #d2d2d2;border-radius:8px;overflow:hidden;margin-top:4px}
 .quill-wrap .ql-toolbar{border:none;border-bottom:1.5px solid #e8e8e8;background:#fafafa;font-family:inherit}
@@ -167,6 +175,24 @@ input:checked+.slider:before{transform:translateX(16px)}
 .quill-wrap .ql-editor img{max-width:100%;border-radius:6px}
 .quill-wrap .ql-editor p{margin-bottom:8px}
 .quill-wrap:focus-within{border-color:#fecd27}
+
+/* ── Product modal sections + tabs ── */
+.pm-section{padding:20px 24px;border-bottom:1px solid #f0f0f0}
+.pm-section-alt{background:#fafafa}
+.pm-section:last-child{border-bottom:none}
+.pm-section-head{margin-bottom:14px}
+.pm-section-label{display:block;font-size:13px;font-weight:700;color:#252b42;margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px}
+.pm-section-hint{display:block;font-size:12px;color:#737373}
+.pm-tab-bar{display:flex;gap:0;border-bottom:1.5px solid #e8e8e8;margin-bottom:16px}
+.pm-tab-btn{padding:9px 18px;font-size:13px;font-weight:500;color:#737373;border:none;background:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:all .15s}
+.pm-tab-btn.active{color:#101010;border-bottom-color:#fecd27;font-weight:600}
+.pm-tab-btn:hover:not(.active){color:#252b42;background:#f7f7f7}
+.pm-tab-panel{display:none}
+.pm-tab-panel.active{display:block}
+.dspec-row{display:flex;gap:8px;margin-bottom:7px;align-items:center}
+.dspec-row input{flex:1;border:1.5px solid #d2d2d2;border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;transition:border-color .12s}
+.dspec-row input:focus{border-color:#fecd27}
+.dspec-row input:first-child{flex:0.6;color:#737373}
 
 /* ── Import preview ── */
 .import-preview-table{width:100%;border-collapse:collapse;font-size:13px}
@@ -282,8 +308,9 @@ input:checked+.slider:before{transform:translateX(16px)}
             <input type="file" accept=".csv,.xlsx,.xls" hidden onchange="handleImport(this)">
           </label>
           <button class="btn-tmpl" onclick="dlTemplate()" title="Tải file mẫu CSV">Tải mẫu CSV</button>
-          <button class="btn-sheet" onclick="syncFromSheet()" title="Đồng bộ từ Google Sheet kho hàng">🔗 Đồng bộ Google Sheet</button>
-          <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/1cwEq5aNw4Q1IX_aFc5dq4qefrWzobjQWxRpOA9ubFug/edit" target="_blank" rel="noopener" title="Mở file Google Sheet kho hàng" style="text-decoration:none">📄 Mở Google Sheet</a>
+          <button id="btnSyncSheet" class="btn-sheet" onclick="syncFromSheet()" title="Nhập sản phẩm từ Google Sheet vào hệ thống">📥 Sheet → Admin</button>
+          <button id="btnPushSheet" class="btn-sheet" onclick="pushToSheet()" title="Đẩy tất cả sản phẩm từ Admin lên Google Sheet" style="background:#f0fdf4;border-color:#bbf7d0;color:#15803d">📤 Admin → Sheet</button>
+          <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/1cwEq5aNw4Q1IX_aFc5dq4qefrWzobjQWxRpOA9ubFug/edit" target="_blank" rel="noopener" title="Mở file Google Sheet kho hàng" style="text-decoration:none">📄 Mở Sheet</a>
           <button class="btn-primary" onclick="openProductModal()">+ Thêm sản phẩm</button>
         </div>
       </div>
@@ -336,72 +363,134 @@ input:checked+.slider:before{transform:translateX(16px)}
 
 <!-- ── PRODUCT MODAL ───────────────────── -->
 <div class="modal-overlay" id="productModal" style="display:none" onclick="bkClose(event,'productModal')">
-<div class="modal-box">
+<div class="modal-box xl">
   <div class="modal-head">
     <span class="modal-title" id="pMTitle">Thêm sản phẩm</span>
     <button class="modal-close" onclick="closeModal('productModal')">✕</button>
   </div>
-  <div class="modal-body">
-    <div class="fgrid">
-      <div class="fg">
-        <label class="flabel">Tên sản phẩm *</label>
-        <input class="finput" id="p_name" placeholder="Má Phanh Gốm Cao Cấp" oninput="autoSlug('p_name','p_slug')">
-      </div>
-      <div class="fg">
-        <label class="flabel">Slug (URL) *</label>
-        <input class="finput" id="p_slug" placeholder="ma-phanh-gom-cao-cap">
-        <span class="fnote">Tự động tạo từ tên</span>
-      </div>
-      <div class="fg">
-        <label class="flabel">Thương hiệu</label>
-        <select class="fsel" id="p_brand"></select>
-      </div>
-      <div class="fg">
-        <label class="flabel">Danh mục</label>
-        <select class="fsel" id="p_cat"></select>
-      </div>
-      <div class="fg">
-        <label class="flabel">Giá (₫) *</label>
-        <input class="finput" type="number" id="p_price" placeholder="450000" step="1000" min="0">
-      </div>
-      <div class="fg">
-        <label class="flabel">Trạng thái kho</label>
-        <select class="fsel" id="p_status">
-          <option value="in_stock">✅ Còn hàng</option>
-          <option value="out_of_stock">❌ Hết hàng</option>
-          <option value="preorder">⏳ Đặt trước</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label class="flabel">Số lượng tồn kho</label>
-        <input class="finput" type="number" id="p_qty" placeholder="50" min="0">
-      </div>
-      <div class="fg">
-        <label class="flabel">Ảnh sản phẩm</label>
-        <div class="finput-row">
-          <input class="finput" id="p_thumb" placeholder="URL ảnh hoặc upload bên cạnh →" oninput="prevImg('p_thumb','p_prev')">
-          <label class="upload-btn" title="Tải ảnh lên từ máy tính">
-            📷
-            <input type="file" accept="image/*" hidden onchange="uploadProductImg(this)">
-          </label>
+  <div class="modal-body" style="padding:0">
+
+    <!-- ── THÔNG TIN CƠ BẢN ──────────────────────────────── -->
+    <div class="pm-section">
+      <div class="fgrid">
+        <div class="fg">
+          <label class="flabel">Tên sản phẩm *</label>
+          <input class="finput" id="p_name" placeholder="Má Phanh Gốm Cao Cấp" oninput="autoSlug('p_name','p_slug')">
         </div>
-        <span class="fnote upload-progress" id="p_upload_note"></span>
-        <img class="img-prev" id="p_prev" alt="Xem trước ảnh">
-      </div>
-      <div class="fg s2">
-        <label class="flabel">Thông số kỹ thuật <span style="text-transform:none;font-weight:400">(hiện trên card, tối đa 3 dòng)</span></label>
-        <div id="specsList" style="margin-top:4px"></div>
-        <button class="btn-add-spec" type="button" onclick="addSpec()">+ Thêm thông số</button>
-      </div>
-      <div class="fg">
-        <label class="flabel">Nổi bật trang chủ</label>
-        <label class="toggle" style="margin-top:6px"><input type="checkbox" id="p_feat"><span class="slider"></span></label>
-      </div>
-      <div class="fg">
-        <label class="flabel">Hiển thị trên website</label>
-        <label class="toggle" style="margin-top:6px"><input type="checkbox" id="p_pub" checked><span class="slider"></span></label>
+        <div class="fg">
+          <label class="flabel">Slug (URL) *</label>
+          <input class="finput" id="p_slug" placeholder="ma-phanh-gom-cao-cap">
+          <span class="fnote">Tự động tạo từ tên</span>
+        </div>
+        <div class="fg">
+          <label class="flabel">Thương hiệu</label>
+          <select class="fsel" id="p_brand"></select>
+        </div>
+        <div class="fg">
+          <label class="flabel">Danh mục</label>
+          <select class="fsel" id="p_cat"></select>
+        </div>
+        <div class="fg">
+          <label class="flabel">Giá (₫) *</label>
+          <input class="finput" type="number" id="p_price" placeholder="450000" step="1000" min="0">
+        </div>
+        <div class="fg">
+          <label class="flabel">Trạng thái kho</label>
+          <select class="fsel" id="p_status">
+            <option value="in_stock">✅ Còn hàng</option>
+            <option value="out_of_stock">❌ Hết hàng</option>
+            <option value="preorder">⏳ Đặt trước</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="flabel">Số lượng tồn kho</label>
+          <input class="finput" type="number" id="p_qty" placeholder="50" min="0">
+        </div>
+        <div class="fg">
+          <label class="flabel">Ảnh sản phẩm</label>
+          <div class="finput-row">
+            <input class="finput" id="p_thumb" placeholder="URL ảnh hoặc upload →" oninput="prevImg('p_thumb','p_prev')">
+            <label class="upload-btn" title="Tải ảnh lên">📷<input type="file" accept="image/*" hidden onchange="uploadProductImg(this)"></label>
+          </div>
+          <span class="fnote upload-progress" id="p_upload_note"></span>
+          <img class="img-prev" id="p_prev" alt="Xem trước ảnh">
+        </div>
+        <div class="fg s2">
+          <label class="flabel">Thư viện ảnh <span style="text-transform:none;font-weight:400">(ảnh bổ sung trang chi tiết)</span></label>
+          <div id="galleryList" class="gallery-grid"></div>
+          <label class="gallery-upload-label btn-add-spec" style="margin-top:8px">
+            + Thêm ảnh vào thư viện
+            <input type="file" accept="image/*" multiple onchange="uploadGalleryImgs(this)">
+          </label>
+          <span id="gallery_note" class="fnote"></span>
+        </div>
+        <div class="fg">
+          <label class="flabel">Nổi bật trang chủ</label>
+          <label class="toggle" style="margin-top:6px"><input type="checkbox" id="p_feat"><span class="slider"></span></label>
+        </div>
+        <div class="fg">
+          <label class="flabel">Hiển thị trên website</label>
+          <label class="toggle" style="margin-top:6px"><input type="checkbox" id="p_pub" checked><span class="slider"></span></label>
+        </div>
       </div>
     </div>
+
+    <!-- ── TỔNG QUAN ─────────────────────────────────────── -->
+    <div class="pm-section pm-section-alt">
+      <div class="pm-section-head">
+        <span class="pm-section-label">Tổng quan sản phẩm</span>
+        <span class="pm-section-hint">Hiển thị ở đầu trang chi tiết — mô tả ngắn + điểm nổi bật trên card</span>
+      </div>
+      <div class="fgrid">
+        <div class="fg s2">
+          <label class="flabel">Mô tả ngắn <span style="text-transform:none;font-weight:400">(1–2 câu, hiện dưới tên sản phẩm)</span></label>
+          <textarea class="finput" id="p_overview" rows="2" placeholder="Má phanh gốm ceramic cao cấp — bền gấp 3x, ít bụi, phù hợp Toyota Camry, Vios, Fortuner..."></textarea>
+        </div>
+        <div class="fg s2">
+          <label class="flabel">Điểm nổi bật trên card <span style="text-transform:none;font-weight:400">(tối đa 3 dòng, hiện ngay dưới ảnh)</span></label>
+          <div id="specsList" style="margin-top:4px"></div>
+          <button class="btn-add-spec" type="button" onclick="addSpec()">+ Thêm điểm nổi bật</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3 TABS NỘI DUNG ───────────────────────────────── -->
+    <div class="pm-section">
+      <div class="pm-section-head">
+        <span class="pm-section-label">Nội dung trang chi tiết sản phẩm</span>
+        <span class="pm-section-hint">Tương ứng với 3 tab trên trang ototiendu.com/san-pham/...</span>
+      </div>
+
+      <!-- Tab bar -->
+      <div class="pm-tab-bar">
+        <button class="pm-tab-btn active" onclick="switchPTab(this,'pt-mo-ta')">Mô tả sản phẩm</button>
+        <button class="pm-tab-btn" onclick="switchPTab(this,'pt-thong-so')">Thông số kỹ thuật</button>
+        <button class="pm-tab-btn" onclick="switchPTab(this,'pt-xe')">Xe tương thích</button>
+      </div>
+
+      <!-- Tab 1: Mô tả -->
+      <div class="pm-tab-panel active" id="pt-mo-ta">
+        <div class="quill-wrap">
+          <div id="quillProductDesc"></div>
+        </div>
+        <span class="fnote" style="margin-top:6px">Hỗ trợ định dạng đầy đủ · Click 🖼 để chèn ảnh</span>
+      </div>
+
+      <!-- Tab 2: Thông số kỹ thuật -->
+      <div class="pm-tab-panel" id="pt-thong-so">
+        <span class="fnote" style="display:block;margin-bottom:8px">Mỗi hàng là 1 thông số — "Tên thông số" và "Giá trị" sẽ hiện thành bảng trên trang chi tiết</span>
+        <div id="detailedSpecsList"></div>
+        <button class="btn-add-spec" type="button" onclick="addDetailedSpec()" style="margin-top:6px">+ Thêm thông số</button>
+      </div>
+
+      <!-- Tab 3: Xe tương thích -->
+      <div class="pm-tab-panel" id="pt-xe">
+        <span class="fnote" style="display:block;margin-bottom:8px">Mỗi dòng là 1 dòng xe — vd: "Toyota Camry (2012–2026)". Hiện dạng chip trên trang chi tiết.</span>
+        <div id="vehiclesList" style="margin-top:4px"></div>
+        <button class="btn-add-spec" type="button" onclick="addVehicle()">+ Thêm xe</button>
+      </div>
+    </div>
+
   </div>
   <div class="modal-foot">
     <button class="btn-outline" onclick="closeModal('productModal')">Hủy</button>
@@ -523,7 +612,10 @@ const pF = { q: '', cat: '', stock: '' }
 let editPId = null, editPoId = null
 let delTarget = {}
 let importRows = []
-let quillEditor = null
+let quillEditor = null        // bài viết
+let quillProductEditor = null // mô tả sản phẩm
+
+const APPS_SCRIPT_KEY = 'td_apps_script_url'
 
 // ── AUTH ─────────────────────────────────────────────
 
@@ -586,18 +678,27 @@ async function loadPostCats() {
 // ── DASHBOARD ─────────────────────────────────────────
 
 async function loadDashboard() {
-  const [{ data: ps }, { data: pos }] = await Promise.all([
-    db.from('products').select('id,name,stock_status,stock_quantity,is_published'),
-    db.from('posts').select('id').eq('is_published', true)
+  const [
+    { count: total },
+    { count: inStock },
+    { count: outStock },
+    { count: postCount },
+    { data: low }
+  ] = await Promise.all([
+    db.from('products').select('id', { count: 'exact', head: true }),
+    db.from('products').select('id', { count: 'exact', head: true }).eq('stock_status', 'in_stock'),
+    db.from('products').select('id', { count: 'exact', head: true }).eq('stock_status', 'out_of_stock'),
+    db.from('posts').select('id', { count: 'exact', head: true }).eq('is_published', true),
+    db.from('products').select('id,name,stock_quantity,stock_status')
+      .eq('stock_status', 'in_stock').lt('stock_quantity', 10).limit(20)
   ])
-  document.getElementById('s-total').textContent = ps?.length || 0
-  document.getElementById('s-in').textContent    = ps?.filter(p => p.stock_status === 'in_stock').length || 0
-  document.getElementById('s-out').textContent   = ps?.filter(p => p.stock_status === 'out_of_stock').length || 0
-  document.getElementById('s-posts').textContent = pos?.length || 0
+  document.getElementById('s-total').textContent = total || 0
+  document.getElementById('s-in').textContent    = inStock || 0
+  document.getElementById('s-out').textContent   = outStock || 0
+  document.getElementById('s-posts').textContent = postCount || 0
 
-  const low = ps?.filter(p => (p.stock_quantity || 0) < 10 && p.stock_status === 'in_stock') || []
   const wrap = document.getElementById('lowWrap')
-  wrap.innerHTML = !low.length
+  wrap.innerHTML = !low?.length
     ? '<div class="empty"><div class="empty-icon">✅</div><p>Tất cả sản phẩm đều đủ hàng!</p></div>'
     : `<table><thead><tr><th>Sản phẩm</th><th>Số lượng</th><th></th></tr></thead><tbody>
       ${low.map(p => `<tr><td><span class="rname">${p.name}</span></td>
@@ -611,16 +712,23 @@ async function loadDashboard() {
 
 async function loadProducts() {
   document.getElementById('pCount').textContent = 'Đang tải...'
-  const { data } = await db.from('products')
-    .select('*,brands(id,name),categories(id,name,slug)')
-    .order('created_at', { ascending: false })
+  const [{ count: total }, { data }] = await Promise.all([
+    db.from('products').select('id', { count: 'exact', head: true }),
+    db.from('products')
+      .select('*,brands(id,name),categories(id,name,slug)')
+      .order('created_at', { ascending: false })
+      .limit(500)
+  ])
   allP = data || []
   allP.forEach(p => pStore[p.id] = p)
-  renderP(allP)
+  renderP(allP, total ?? allP.length)
 }
 
-function renderP(list) {
-  document.getElementById('pCount').textContent = `${list.length} sản phẩm`
+function renderP(list, total) {
+  const t = total ?? list.length
+  document.getElementById('pCount').textContent = t > list.length
+    ? `${list.length} / ${t} sản phẩm (dùng ô tìm kiếm để lọc thêm)`
+    : `${list.length} sản phẩm`
   const tbody = document.getElementById('pBody')
   if (!list.length) {
     tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-icon">📦</div><p>Không có sản phẩm</p></div></td></tr>'
@@ -648,13 +756,26 @@ function renderP(list) {
   }).join('')
 }
 
+let pFilterTimer = null
 function pFilter(val, key) {
   pF[key] = val.toLowerCase()
-  let list = allP
-  if (pF.q)     list = list.filter(p => p.name.toLowerCase().includes(pF.q))
-  if (pF.cat)   list = list.filter(p => p.categories?.slug === pF.cat)
-  if (pF.stock) list = list.filter(p => p.stock_status === pF.stock)
-  renderP(list)
+  clearTimeout(pFilterTimer)
+  pFilterTimer = setTimeout(async () => {
+    const hasFilter = pF.q || pF.cat || pF.stock
+    if (!hasFilter) { renderP(allP, null); return }
+
+    let q = db.from('products')
+      .select('*,brands(id,name),categories(id,name,slug)')
+      .order('created_at', { ascending: false })
+    if (pF.q)     q = q.ilike('name', `%${pF.q}%`)
+    if (pF.cat) {
+      const catId = cats.find(c => c.slug === pF.cat)?.id
+      if (catId) q = q.eq('category_id', catId)
+    }
+    if (pF.stock) q = q.eq('stock_status', pF.stock)
+    const { data } = await q.limit(200)
+    renderP(data || [])
+  }, 300)
 }
 
 async function qSet(table, field, val, id) {
@@ -666,7 +787,7 @@ async function qSet(table, field, val, id) {
   if (row) { row[field] = val; if (table === 'products') pStore[id] = { ...pStore[id], [field]: val } }
 }
 
-function openProductModal(p = null) {
+async function openProductModal(p = null) {
   editPId = p?.id || null
   document.getElementById('pMTitle').textContent = p ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm'
 
@@ -684,12 +805,34 @@ function openProductModal(p = null) {
   if (p?.brands?.id)     bSel.value = p.brands.id
   if (p?.categories?.id) cSel.value = p.categories.id
 
+  sv('p_overview', p?.overview || '')
+
   document.getElementById('specsList').innerHTML = ''
   const specs = p?.short_specs || []
   specs.length ? specs.forEach(s => addSpec(s)) : addSpec()
 
+  document.getElementById('detailedSpecsList').innerHTML = ''
+  const dspecs = p?.detailed_specs || []
+  dspecs.length ? dspecs.forEach(r => addDetailedSpec(r.key, r.value)) : addDetailedSpec()
+
+  document.getElementById('vehiclesList').innerHTML = ''
+  ;(p?.compatible_vehicles || []).forEach(v => addVehicle(v))
+
+  document.getElementById('galleryList').innerHTML = ''
+  document.getElementById('gallery_note').textContent = ''
+  if (p?.id) {
+    const { data: imgs } = await db.from('product_images')
+      .select('id,image_url,display_order').eq('product_id', p.id).order('display_order')
+    ;(imgs || []).forEach(img => addGalleryItem(img.image_url, img.id))
+  }
+
+  if (quillProductEditor) {
+    quillProductEditor.root.innerHTML = p?.description || ''
+  }
+
   prevImg('p_thumb', 'p_prev')
   document.getElementById('productModal').style.display = 'flex'
+  setTimeout(() => quillProductEditor?.focus && null, 100)
 }
 
 async function saveProduct() {
@@ -698,26 +841,59 @@ async function saveProduct() {
   const price = parseInt(gv('p_price'))
   if (!name || !slug || !price) { toast('⚠️ Nhập đầy đủ tên, slug và giá', 'err'); return }
 
-  const specs = [...document.querySelectorAll('#specsList .spec-item input')]
-    .map(i => i.value.trim()).filter(Boolean)
+  const specs    = [...document.querySelectorAll('#specsList .spec-item input')].map(i => i.value.trim()).filter(Boolean)
+  const vehicles = [...document.querySelectorAll('#vehiclesList .spec-item input')].map(i => i.value.trim()).filter(Boolean)
+
+  const descHtml = quillProductEditor?.root.innerHTML || ''
+  const descClean = descHtml === '<p><br></p>' ? null : descHtml || null
+
+  const dspecRows = [...document.querySelectorAll('#detailedSpecsList .dspec-row')]
+  const detailedSpecs = dspecRows
+    .map(row => { const ins = row.querySelectorAll('input'); return { key: ins[0]?.value.trim(), value: ins[1]?.value.trim() } })
+    .filter(r => r.key || r.value)
 
   const payload = {
     name, slug, price,
-    brand_id:       document.getElementById('p_brand').value || null,
-    category_id:    document.getElementById('p_cat').value   || null,
-    stock_status:   gv('p_status'),
-    stock_quantity: parseInt(gv('p_qty')) || 0,
-    thumbnail_url:  gv('p_thumb').trim() || null,
-    short_specs:    specs,
-    is_featured:    document.getElementById('p_feat').checked,
-    is_published:   document.getElementById('p_pub').checked,
+    brand_id:              document.getElementById('p_brand').value || null,
+    category_id:           document.getElementById('p_cat').value   || null,
+    stock_status:          gv('p_status'),
+    stock_quantity:        parseInt(gv('p_qty')) || 0,
+    thumbnail_url:         gv('p_thumb').trim() || null,
+    overview:              gv('p_overview').trim() || null,
+    short_specs:           specs,
+    detailed_specs:        detailedSpecs.length ? detailedSpecs : null,
+    compatible_vehicles:   vehicles.length ? vehicles : null,
+    description:           descClean,
+    is_featured:           document.getElementById('p_feat').checked,
+    is_published:          document.getElementById('p_pub').checked,
   }
 
-  const { error } = editPId
-    ? await db.from('products').update(payload).eq('id', editPId)
-    : await db.from('products').insert(payload)
+  let productId = editPId
+  if (editPId) {
+    const { error } = await db.from('products').update(payload).eq('id', editPId)
+    if (error) { toast('❌ ' + error.message, 'err'); return }
+  } else {
+    const { data, error } = await db.from('products').insert(payload).select('id').single()
+    if (error) { toast('❌ ' + error.message, 'err'); return }
+    productId = data.id
+  }
 
-  if (error) { toast('❌ ' + error.message, 'err'); return }
+  // Đồng bộ thư viện ảnh — xóa cũ rồi chèn lại theo thứ tự hiện tại
+  const { error: delImgErr } = await db.from('product_images').delete().eq('product_id', productId)
+  if (delImgErr) {
+    console.error('❌ [Admin] Lỗi xóa ảnh cũ (product_images):', { code: delImgErr.code, message: delImgErr.message })
+    if (delImgErr.code === '42501') console.error('→ Thiếu RLS policy DELETE cho product_images. Cần thêm policy cho authenticated role.')
+  }
+  const galleryItems = [...document.querySelectorAll('#galleryList .gallery-item')]
+    .map((el, idx) => ({ product_id: productId, image_url: el.dataset.url, display_order: idx }))
+  if (galleryItems.length) {
+    const { error: insImgErr } = await db.from('product_images').insert(galleryItems)
+    if (insImgErr) {
+      console.error('❌ [Admin] Lỗi lưu ảnh gallery (product_images):', { code: insImgErr.code, message: insImgErr.message })
+      toast('⚠️ Sản phẩm đã lưu nhưng ảnh gallery bị lỗi — xem Console (F12)', 'err')
+    }
+  }
+
   toast(editPId ? '✅ Đã cập nhật sản phẩm!' : '✅ Đã thêm sản phẩm mới!')
   closeModal('productModal')
   allP = []; await loadProducts(); loadDashboard()
@@ -847,6 +1023,7 @@ async function confirmImport() {
     stock_quantity:r.stock_quantity,
     thumbnail_url: r.thumbnail_url || null,
     short_specs:   [r.spec1,r.spec2,r.spec3].filter(Boolean),
+    description:   r.description || null,
     is_published:  true,
     is_featured:   false,
   }))
@@ -855,27 +1032,69 @@ async function confirmImport() {
   const oldLabel = confirmBtn.innerHTML
   confirmBtn.disabled = true
 
-  const BATCH = 500
+  const BATCH = 100
   let inserted = 0
   const errors = []
 
+  // Kiểm tra kết nối + phiên đăng nhập trước khi nhập
+  const { data: { session: sess } } = await db.auth.getSession()
+  if (!sess) {
+    console.error('❌ [Admin] CHƯA ĐĂNG NHẬP: Phiên Supabase đã hết hạn. Hãy đăng xuất và đăng nhập lại.')
+    toast('❌ Phiên đăng nhập hết hạn — vui lòng đăng xuất và đăng nhập lại', 'err')
+    confirmBtn.disabled = false; confirmBtn.innerHTML = oldLabel
+    return
+  }
+  console.log('✅ [Admin] Phiên đăng nhập hợp lệ:', sess.user.email, '| Role:', sess.user.role)
+
   for (let i = 0; i < payload.length; i += BATCH) {
     const chunk = payload.slice(i, i + BATCH)
-    confirmBtn.textContent = `⏳ Đang nhập ${Math.min(i + BATCH, payload.length)}/${payload.length}...`
-    const { error } = await db.from('products').insert(chunk)
-    if (error) errors.push(`Lô ${i / BATCH + 1}: ${error.message}`)
-    else inserted += chunk.length
+    const batNum = Math.floor(i / BATCH) + 1
+    const toIdx  = Math.min(i + BATCH, payload.length)
+    confirmBtn.textContent = `⏳ Đang nhập ${toIdx}/${payload.length}...`
+    const { error } = await db.from('products').upsert(chunk, { onConflict: 'slug', ignoreDuplicates: false })
+    if (error) {
+      // ── GIẢI THÍCH LỖI SUPABASE BẰNG TIẾNG VIỆT ──────────────────
+      let giaithich = ''
+      if (error.code === '42501')
+        giaithich = '⛔ LỖI QUYỀN (RLS/42501): Tài khoản không có quyền ghi vào bảng "products".\n  → Vào Supabase Dashboard > Authentication > Policies > products, kiểm tra policy "admin insert products" có tồn tại không.'
+      else if (error.code === '23505')
+        giaithich = `⚠️ LỖI TRÙNG DỮ LIỆU (23505): Cột UNIQUE bị trùng.\n  → Chi tiết: ${error.details}\n  → Kiểm tra cột "slug" có bị trùng trong file Sheet không.`
+      else if (error.code === '23502')
+        giaithich = `⚠️ LỖI THIẾU GIÁ TRỊ BẮT BUỘC (23502): Một cột NOT NULL đang để trống.\n  → Chi tiết: ${error.details || error.message}`
+      else if (error.code === '22P02')
+        giaithich = `⚠️ LỖI KIỂU DỮ LIỆU (22P02): Giá trị không đúng định dạng cột.\n  → Chi tiết: ${error.details || error.message}\n  → Kiểm tra cột Giá có phải số không, cột trạng thái kho chỉ nhận: in_stock / out_of_stock / preorder.`
+      else if (error.code === 'PGRST301' || error.message?.includes('JWT'))
+        giaithich = '⛔ LỖI XÁC THỰC (JWT): Token đăng nhập không hợp lệ hoặc hết hạn.\n  → Hãy đăng xuất và đăng nhập lại.'
+      else if (!navigator.onLine)
+        giaithich = '🌐 LỖI MẠNG: Máy tính không có kết nối internet.'
+      else if (error.message?.toLowerCase().includes('fetch'))
+        giaithich = '🌐 LỖI KẾT NỐI SUPABASE: Không gọi được API. Thử lại sau vài giây.'
+      else
+        giaithich = `Mã lỗi chưa biết: ${error.code || 'không có'} — Xem dòng "Lỗi đầy đủ" bên dưới.`
+
+      console.group(`❌ [Admin] Lỗi nhập lô ${batNum} (dòng ${i + 1}–${toIdx})`)
+      console.error('🇻🇳 Giải thích:', giaithich)
+      console.error('📋 Lỗi đầy đủ từ Supabase:', { code: error.code, message: error.message, details: error.details, hint: error.hint })
+      console.error('📦 Mẫu dòng đầu lô bị lỗi:', chunk[0])
+      console.groupEnd()
+
+      const detail = `Lô ${batNum} (dòng ${i + 1}–${toIdx}): ${error.code ? '[' + error.code + '] ' : ''}${error.message}`
+      errors.push(detail)
+    } else {
+      inserted += chunk.length
+      console.log(`✅ [Admin] Lô ${batNum} OK — nhập ${chunk.length} sản phẩm`)
+    }
   }
 
   confirmBtn.disabled = false
   confirmBtn.innerHTML = oldLabel
 
   if (errors.length) {
-    document.getElementById('importErrNote').textContent = `⚠️ Lỗi ở ${errors.length} lô — xem chi tiết trong console`
-    console.error('Import errors:', errors)
-    toast(`⚠️ Đã nhập ${inserted}/${payload.length} sản phẩm — một số lô bị lỗi`, 'err')
+    document.getElementById('importErrNote').innerHTML = errors.map(e => `⚠️ ${e}`).join('<br>')
+    console.error('Tất cả lỗi:', errors)
+    toast(`⚠️ Đã nhập ${inserted}/${payload.length} — ${errors.length} lô lỗi (xem chi tiết bên dưới)`, 'err')
   } else {
-    toast(`✅ Đã nhập ${inserted} sản phẩm!`)
+    toast(`✅ Đã nhập/cập nhật ${inserted} sản phẩm!`)
   }
 
   if (inserted > 0) {
@@ -920,7 +1139,7 @@ function parseVNPrice(raw) {
 }
 
 async function syncFromSheet() {
-  const btn = document.querySelector('.btn-sheet')
+  const btn = document.getElementById('btnSyncSheet')
   const oldLabel = btn.textContent
   btn.disabled = true; btn.textContent = '⏳ Đang tải từ Sheet...'
 
@@ -933,11 +1152,29 @@ async function syncFromSheet() {
     const rows = parseCSV(text)
     if (rows.length < 2) { toast('⚠️ Sheet không có dữ liệu', 'err'); return }
 
-    const hdrs = rows[0].map(h => String(h).toLowerCase().trim())
-    const get  = (row, keys) => {
-      for (const k of keys) { const i = hdrs.indexOf(k); if (i > -1 && row[i] !== undefined && row[i] !== '') return String(row[i]).trim() }
-      return ''
+    // Chuẩn hoá header: xóa BOM, NFC, lowercase, trim, rồi strip dấu tiếng Việt để match linh hoạt hơn
+    const normHdr = h => String(h).replace(/^﻿/, '').normalize('NFC').toLowerCase().trim()
+    const stripVI = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g,'d').replace(/Đ/g,'d')
+    const hdrs     = rows[0].map(normHdr)
+    const hdrsAscii = hdrs.map(stripVI)    // phiên bản không dấu để match fallback
+
+    // Tìm index cột: thử exact match trước, sau đó không dấu
+    const colIdx = keys => {
+      for (const k of keys) {
+        let i = hdrs.indexOf(k)
+        if (i > -1) return i
+        const kAscii = stripVI(k)
+        i = hdrsAscii.indexOf(kAscii)
+        if (i > -1) return i
+      }
+      return -1
     }
+    const get = (row, keys) => {
+      const i = colIdx(keys)
+      return (i > -1 && row[i] !== undefined && row[i] !== '') ? String(row[i]).trim() : ''
+    }
+
+    console.log('[Sheet Sync] Headers phát hiện:', hdrs)
 
     const seenSlugs = {}
     const skipped = { noName: 0, noPrice: 0 }
@@ -956,6 +1193,7 @@ async function syncFromSheet() {
         spec1:         get(row, ['thông số 1','spec1','thong so 1']),
         spec2:         get(row, ['thông số 2','spec2','thong so 2']),
         spec3:         get(row, ['thông số 3','spec3','thong so 3']),
+        description:   get(row, ['mô tả','mo ta','description','nội dung','noi dung']) || null,
       }
     }).filter(r => {
       if (!r.name)      { skipped.noName++;  return false }
@@ -974,14 +1212,20 @@ async function syncFromSheet() {
       return { ...r, slug }
     })
 
-    if (!importRows.length) { toast('⚠️ Không tìm thấy dữ liệu hợp lệ trong Sheet.', 'err'); return }
+    if (!importRows.length) {
+      const detected = hdrs.filter(Boolean).join(', ') || '(không có)'
+      toast(`⚠️ Không tìm thấy dữ liệu hợp lệ. Cột Sheet: [${detected}]. Cần có: "Tên sản phẩm", "Giá"`, 'err')
+      console.warn('[Sheet Sync] Headers phát hiện:', hdrs)
+      return
+    }
 
-    showImportPreview({
-      source: 'sheet',
-      skippedNote: `Đã bỏ qua ${skipped.noName} dòng thiếu tên và ${skipped.noPrice} dòng thiếu giá (tổng ${skipped.noName + skipped.noPrice} dòng).`
-    })
+    const skippedMsg = (skipped.noName + skipped.noPrice) > 0
+      ? `Bỏ qua ${skipped.noName} dòng thiếu tên, ${skipped.noPrice} dòng thiếu giá.`
+      : ''
+    showImportPreview({ source: 'sheet', skippedNote: skippedMsg })
   } catch (e) {
     toast('❌ Đồng bộ thất bại: ' + e.message, 'err')
+    console.error('[Sheet Sync] Lỗi:', e)
   } finally {
     btn.disabled = false; btn.textContent = oldLabel
   }
@@ -996,6 +1240,65 @@ function dlTemplate() {
   const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8' })
   const a    = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'mau-nhap-san-pham.csv' })
   a.click()
+}
+
+// ── PUSH ADMIN → GOOGLE SHEET ────────────────────────
+
+async function pushToSheet() {
+  let url = localStorage.getItem(APPS_SCRIPT_KEY) || ''
+  if (!url) {
+    url = (prompt('Nhập URL của Google Apps Script Web App để đẩy dữ liệu lên Sheet:\n\n(Vào Apps Script → Deploy → Manage deployments → copy URL)') || '').trim()
+    if (!url) return
+    localStorage.setItem(APPS_SCRIPT_KEY, url)
+  }
+
+  const btn = document.getElementById('btnPushSheet')
+  const oldLabel = btn.textContent
+  btn.disabled = true; btn.textContent = '⏳ Đang đẩy lên Sheet...'
+
+  try {
+    // Lấy đầy đủ dữ liệu sản phẩm
+    const { data, error } = await db.from('products')
+      .select('*,brands(name),categories(name)')
+      .order('created_at', { ascending: true })
+    if (error) throw new Error(error.message)
+
+    const rows = (data || []).map(p => ({
+      id:          p.id,
+      name:        p.name,
+      category:    p.categories?.name || '',
+      brand:       p.brands?.name || '',
+      oem:         '',
+      code:        p.slug,
+      price:       p.price,
+      wholesale:   '',
+      stock:       p.stock_quantity ?? 0,
+      image:       p.thumbnail_url || '',
+      description: p.description ? p.description.replace(/<[^>]+>/g, ' ').trim() : '',
+      aftermarket: '',
+      year:        (p.compatible_vehicles || []).join('; '),
+    }))
+
+    // Dùng text/plain + no-cors để tránh CORS preflight — Apps Script vẫn nhận được body
+    await fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'updateProducts', data: rows }),
+    })
+    // no-cors luôn trả về opaque response (không đọc được) nhưng request đã đến server
+    toast(`✅ Đã đẩy ${rows.length} sản phẩm lên Google Sheet!`)
+  } catch (e) {
+    const msg = e.message || ''
+    toast('❌ Lỗi gửi lên Sheet: ' + msg, 'err')
+    if (msg.includes('404') || msg.includes('script.google')) {
+      if (confirm('URL Apps Script có vẻ sai. Muốn nhập lại không?')) {
+        localStorage.removeItem(APPS_SCRIPT_KEY)
+      }
+    }
+  } finally {
+    btn.disabled = false; btn.textContent = oldLabel
+  }
 }
 
 // ── POSTS ─────────────────────────────────────────────
@@ -1101,10 +1404,8 @@ async function savePost() {
 
 // ── QUILL EDITOR ──────────────────────────────────────
 
-function initQuill() {
-  if (quillEditor || !window.Quill) return
-
-  const toolbarOptions = {
+function makeToolbar(imgHandler) {
+  return {
     container: [
       [{ header: [2, 3, 4, false] }],
       ['bold', 'italic', 'underline', 'strike'],
@@ -1114,14 +1415,28 @@ function initQuill() {
       ['link', 'image'],
       ['clean']
     ],
-    handlers: { image: quillImgHandler }
+    handlers: { image: imgHandler }
+  }
+}
+
+function initQuill() {
+  if (!window.Quill) return
+
+  if (!quillEditor) {
+    quillEditor = new Quill('#quillEditor', {
+      theme: 'snow',
+      placeholder: 'Bắt đầu viết nội dung bài viết... Nhấn biểu tượng ảnh trong toolbar để chèn hình.',
+      modules: { toolbar: makeToolbar(quillImgHandler) }
+    })
   }
 
-  quillEditor = new Quill('#quillEditor', {
-    theme: 'snow',
-    placeholder: 'Bắt đầu viết nội dung bài viết... Nhấn biểu tượng ảnh trong toolbar để chèn hình.',
-    modules: { toolbar: toolbarOptions }
-  })
+  if (!quillProductEditor) {
+    quillProductEditor = new Quill('#quillProductDesc', {
+      theme: 'snow',
+      placeholder: 'Mô tả chi tiết sản phẩm: tính năng, ưu điểm, hướng dẫn lắp đặt...',
+      modules: { toolbar: makeToolbar(quillProductImgHandler) }
+    })
+  }
 }
 
 async function quillImgHandler() {
@@ -1138,6 +1453,25 @@ async function quillImgHandler() {
     const range = quillEditor.getSelection() || { index: quillEditor.getLength() }
     quillEditor.insertEmbed(range.index, 'image', publicUrl)
     quillEditor.setSelection(range.index + 1)
+    toast('✅ Đã chèn ảnh!')
+  }
+  input.click()
+}
+
+async function quillProductImgHandler() {
+  const input = document.createElement('input')
+  input.type = 'file'; input.accept = 'image/*'
+  input.onchange = async () => {
+    const file = input.files[0]
+    if (!file) return
+    toast('⏳ Đang tải ảnh lên...')
+    const path = `products/desc-${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi,'-')}`
+    const { data, error } = await db.storage.from('product-images').upload(path, file, { upsert: false })
+    if (error) { toast('❌ Upload thất bại: ' + error.message, 'err'); return }
+    const { data: { publicUrl } } = db.storage.from('product-images').getPublicUrl(data.path)
+    const range = quillProductEditor.getSelection() || { index: quillProductEditor.getLength() }
+    quillProductEditor.insertEmbed(range.index, 'image', publicUrl)
+    quillProductEditor.setSelection(range.index + 1)
     toast('✅ Đã chèn ảnh!')
   }
   input.click()
@@ -1170,6 +1504,58 @@ function addSpec(val = '') {
   document.getElementById('specsList').appendChild(div)
 }
 
+function addVehicle(val = '') {
+  const div = document.createElement('div')
+  div.className = 'spec-item'
+  div.innerHTML = `<input type="text" value="${esc(val)}" placeholder="VD: Toyota Camry 2019-2024">
+    <button class="btn-rm" type="button" onclick="this.parentElement.remove()" title="Xoá">×</button>`
+  document.getElementById('vehiclesList').appendChild(div)
+}
+
+function addDetailedSpec(key = '', value = '') {
+  const div = document.createElement('div')
+  div.className = 'dspec-row'
+  div.innerHTML = `
+    <input type="text" value="${esc(key)}"   placeholder="Tên thông số (VD: Vật liệu)">
+    <input type="text" value="${esc(value)}" placeholder="Giá trị (VD: Gốm ceramic cao cấp)">
+    <button class="btn-rm" type="button" onclick="this.parentElement.remove()" title="Xoá">×</button>`
+  document.getElementById('detailedSpecsList').appendChild(div)
+}
+
+function switchPTab(btn, panelId) {
+  btn.closest('.pm-section').querySelectorAll('.pm-tab-btn').forEach(b => b.classList.remove('active'))
+  btn.closest('.pm-section').querySelectorAll('.pm-tab-panel').forEach(p => p.classList.remove('active'))
+  btn.classList.add('active')
+  document.getElementById(panelId).classList.add('active')
+}
+
+function addGalleryItem(url, id = null) {
+  const div = document.createElement('div')
+  div.className = 'gallery-item'
+  div.dataset.url = url
+  if (id) div.dataset.id = id
+  div.innerHTML = `<img class="gallery-img" src="${url}" alt="" onerror="this.style.opacity='.3'">
+    <button class="btn-rm gallery-rm" type="button" onclick="this.parentElement.remove()" title="Xoá">×</button>`
+  document.getElementById('galleryList').appendChild(div)
+}
+
+async function uploadGalleryImgs(input) {
+  const files = [...input.files]; input.value = ''
+  if (!files.length) return
+  const note = document.getElementById('gallery_note')
+  note.textContent = `⏳ Đang tải ${files.length} ảnh...`
+  let uploaded = 0
+  for (const file of files) {
+    const path = `products/${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '-')}`
+    const { data, error } = await db.storage.from('product-images').upload(path, file, { upsert: false })
+    if (error) { note.textContent = '❌ ' + error.message; continue }
+    const { data: { publicUrl } } = db.storage.from('product-images').getPublicUrl(data.path)
+    addGalleryItem(publicUrl)
+    uploaded++
+  }
+  note.textContent = uploaded === files.length ? `✅ Đã tải lên ${uploaded} ảnh` : `⚠️ Tải lên ${uploaded}/${files.length} ảnh`
+}
+
 // ── MODAL ─────────────────────────────────────────────
 
 function closeModal(id) { document.getElementById(id).style.display = 'none' }
@@ -1200,6 +1586,50 @@ function prevImg(inputId, imgId) {
   const img = document.getElementById(imgId)
   if (url) { img.src = url; img.classList.add('on') } else img.classList.remove('on')
 }
+
+// ── DEBUG: gõ testConnection() trong Console trình duyệt để kiểm tra ──
+window.testConnection = async function () {
+  console.group('🔍 [Admin] Kiểm tra kết nối Supabase')
+
+  // 1. Kiểm tra phiên đăng nhập
+  const { data: { session } } = await db.auth.getSession()
+  if (!session) {
+    console.error('❌ CHƯA ĐĂNG NHẬP — Không có session Supabase. Hãy đăng nhập trước.')
+    console.groupEnd(); return
+  }
+  console.log('✅ Đã đăng nhập:', session.user.email, '| Hết hạn:', new Date(session.expires_at * 1000).toLocaleString('vi-VN'))
+
+  // 2. Thử đọc bảng products
+  const { count, error: readErr } = await db.from('products').select('id', { count: 'exact', head: true })
+  if (readErr) console.error('❌ Đọc bảng products lỗi:', readErr.code, readErr.message)
+  else         console.log('✅ Đọc bảng products OK —', count, 'sản phẩm')
+
+  // 3. Thử INSERT thật vào products (rồi xóa ngay — chỉ để test quyền)
+  const testSlug = '__test_' + Date.now()
+  const { error: insErr } = await db.from('products').insert({ name: '__TEST__', slug: testSlug, price: 1 })
+  if (insErr) {
+    console.error('❌ INSERT vào products THẤT BẠI:', insErr.code, insErr.message)
+    if (insErr.code === '42501') console.error('  → Lỗi RLS: Policy "admin insert products" chưa đúng hoặc chưa đăng nhập đúng.')
+  } else {
+    console.log('✅ INSERT vào products OK — đang xóa dòng test...')
+    await db.from('products').delete().eq('slug', testSlug)
+    console.log('✅ Đã xóa dòng test')
+  }
+
+  // 4. Thử INSERT product_images
+  const { error: imgErr } = await db.from('product_images').insert({ product_id: '00000000-0000-0000-0000-000000000000', image_url: '__test__' })
+  if (imgErr && imgErr.code === '42501')
+    console.error('❌ INSERT vào product_images THẤT BẠI (RLS): Policy "admin insert product_images" chưa có.')
+  else if (imgErr && imgErr.code === '23503')
+    console.log('✅ INSERT product_images có quyền (lỗi FK là bình thường khi test với UUID giả)')
+  else if (imgErr)
+    console.warn('⚠️ product_images:', imgErr.code, imgErr.message)
+
+  console.log('─────────────────────────────────────────')
+  console.log('Hướng dẫn: Nếu thấy ❌ RLS ở bước 3 → vào Supabase Dashboard > Authentication > Policies > products > kiểm tra policy "admin insert products"')
+  console.groupEnd()
+}
+console.log('💡 Gõ testConnection() trong Console này để kiểm tra kết nối Supabase')
 
 // ── UTILS ─────────────────────────────────────────────
 
