@@ -14,3 +14,8 @@ ALTER TABLE products
 -- Format: ["Toyota Camry (2012–2026)", "Toyota Vios (2014–2026)"]
 ALTER TABLE products
   ADD COLUMN IF NOT EXISTS compatible_vehicles text[];
+
+-- Mã sản phẩm / SKU nội bộ (không hiển thị trên website, chỉ dùng trong admin)
+-- Ví dụ: "OEM-BP001", "TD-MG-002" — lấy từ cột "Mã" trong file-kho-admin
+ALTER TABLE products
+  ADD COLUMN IF NOT EXISTS sku text;

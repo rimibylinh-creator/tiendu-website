@@ -284,6 +284,11 @@ input:checked+.slider:before{transform:translateX(16px)}
         <div><div class="ph-title">Dashboard</div><div class="ph-sub">Tổng quan hệ thống</div></div>
         <button class="btn-outline" onclick="loadDashboard()">↻ Làm mới</button>
       </div>
+      <div style="position:relative;margin-bottom:20px">
+        <input id="dashSearch" class="search-input" style="width:100%;font-size:14px;padding:11px 16px 11px 42px" placeholder="Tìm nhanh sản phẩm hoặc bài viết..." oninput="runDashSearch(this.value)" autocomplete="off" onkeydown="if(event.key==='Escape')closeDashSearch()">
+        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">🔍</span>
+        <div id="dashSearchDrop" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:200;background:#fff;border:1.5px solid #e0e0e0;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.14);max-height:380px;overflow-y:auto;margin-top:4px"></div>
+      </div>
       <div class="stats">
         <div class="stat"><div class="stat-label">Tổng sản phẩm</div><div class="stat-val" id="s-total">—</div><div class="stat-note">đang quản lý</div></div>
         <div class="stat green"><div class="stat-label">Còn hàng</div><div class="stat-val" id="s-in">—</div><div class="stat-note">sản phẩm</div></div>
@@ -329,7 +334,7 @@ input:checked+.slider:before{transform:translateX(16px)}
       <div class="tcard">
         <table>
           <thead><tr>
-            <th></th><th>Sản phẩm</th><th>Giá</th><th>Kho</th><th>Tồn</th>
+            <th></th><th>Sản phẩm</th><th>Mã SP</th><th>Giá</th><th>Kho</th><th>Tồn</th>
             <th>Nổi bật</th><th>Hiển thị</th><th style="text-align:right">Thao tác</th>
           </tr></thead>
           <tbody id="pBody"></tbody>
@@ -381,6 +386,10 @@ input:checked+.slider:before{transform:translateX(16px)}
           <label class="flabel">Slug (URL) *</label>
           <input class="finput" id="p_slug" placeholder="ma-phanh-gom-cao-cap">
           <span class="fnote">Tự động tạo từ tên</span>
+        </div>
+        <div class="fg">
+          <label class="flabel">Mã sản phẩm / SKU <span style="text-transform:none;font-weight:400">(nội bộ, không hiện website)</span></label>
+          <input class="finput" id="p_sku" placeholder="VD: OEM-12345 hoặc TD-MP-001">
         </div>
         <div class="fg">
           <label class="flabel">Thương hiệu</label>
@@ -731,7 +740,7 @@ function renderP(list, total) {
     : `${list.length} sản phẩm`
   const tbody = document.getElementById('pBody')
   if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-icon">📦</div><p>Không có sản phẩm</p></div></td></tr>'
+    tbody.innerHTML = '<tr><td colspan="9"><div class="empty"><div class="empty-icon">📦</div><p>Không có sản phẩm</p></div></td></tr>'
     return
   }
   tbody.innerHTML = list.map(p => {
@@ -743,6 +752,7 @@ function renderP(list, total) {
       <td><div class="rname">${p.name}</div>
         <div class="rmeta">${p.brands?.name?`<span class="chip">${p.brands.name}</span>`:''}${p.categories?.name?`<span class="chip">${p.categories.name}</span>`:''}</div>
       </td>
+      <td style="font-family:monospace;font-size:12px;color:#737373;white-space:nowrap">${p.sku||'—'}</td>
       <td style="white-space:nowrap"><strong>${fmtP(p.price)}</strong></td>
       <td>${sb}</td>
       <td><span class="badge b-blue">${p.stock_quantity??0}</span></td>
@@ -797,6 +807,7 @@ async function openProductModal(p = null) {
   cSel.innerHTML = '<option value="">— Chọn danh mục —</option>'   + cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('')
 
   sv('p_name', p?.name || ''); sv('p_slug', p?.slug || '')
+  sv('p_sku', p?.sku || '')
   sv('p_price', p?.price || ''); sv('p_qty', p?.stock_quantity ?? '')
   sv('p_thumb', p?.thumbnail_url || ''); sv('p_status', p?.stock_status || 'in_stock')
   document.getElementById('p_feat').checked = !!p?.is_featured
@@ -854,6 +865,7 @@ async function saveProduct() {
 
   const payload = {
     name, slug, price,
+    sku:                   gv('p_sku').trim() || null,
     brand_id:              document.getElementById('p_brand').value || null,
     category_id:           document.getElementById('p_cat').value   || null,
     stock_status:          gv('p_status'),
@@ -961,6 +973,7 @@ async function handleImport(input) {
         stock_status:  get(row, ['trạng thái','stock_status','trang thai']) || 'in_stock',
         stock_quantity:parseInt(get(row, ['số lượng','stock_quantity','so luong'])) || 0,
         thumbnail_url: get(row, ['url ảnh','thumbnail_url','ảnh','hinh anh']) || null,
+        sku:           get(row, ['mã','ma','mã sp','ma sp','sku','oem','oem code']),
         spec1:         get(row, ['thông số 1','spec1','thong so 1']),
         spec2:         get(row, ['thông số 2','spec2','thong so 2']),
         spec3:         get(row, ['thông số 3','spec3','thong so 3']),
@@ -1016,6 +1029,7 @@ async function confirmImport() {
   const payload = importRows.map(r => ({
     name:          r.name,
     slug:          r.slug || toSlug(r.name),
+    sku:           r.sku || null,
     price:         r.price,
     brand_id:      brandMap[r.brand_name?.toLowerCase()] || null,
     category_id:   catMap[r.category_name?.toLowerCase()] || null,
@@ -1190,6 +1204,7 @@ async function syncFromSheet() {
         stock_status:  get(row, ['trạng thái','stock_status','trang thai']) || 'in_stock',
         stock_quantity:parseInt(get(row, ['số lượng','stock_quantity','so luong'])) || 0,
         thumbnail_url: get(row, ['url ảnh','thumbnail_url','ảnh','hinh anh']) || null,
+        sku:           get(row, ['mã','ma','mã sp','ma sp','sku','mã sản phẩm','oem','oem code']),
         spec1:         get(row, ['thông số 1','spec1','thong so 1']),
         spec2:         get(row, ['thông số 2','spec2','thong so 2']),
         spec3:         get(row, ['thông số 3','spec3','thong so 3']),
@@ -1233,9 +1248,9 @@ async function syncFromSheet() {
 
 function dlTemplate() {
   const bom = '﻿'
-  const hdrs = ['Tên sản phẩm','Slug','Giá','Thương hiệu','Danh mục','Trạng thái','Số lượng','URL ảnh','Thông số 1','Thông số 2','Thông số 3']
-  const ex1  = ['Má Phanh Gốm Cao Cấp','ma-phanh-gom-cao-cap','450000','Toyota','Hệ thống phanh','in_stock','30','','Phanh trước / sau','Độ bền cao gấp 3x','']
-  const ex2  = ['Bugi Iridium','bugi-iridium','275000','Toyota','Phụ tùng động cơ','in_stock','60','','Đầu điện cực Iridium','Tuổi thọ 100.000 km','']
+  const hdrs = ['Tên sản phẩm','Slug','Mã','Giá','Thương hiệu','Danh mục','Trạng thái','Số lượng','URL ảnh','Thông số 1','Thông số 2','Thông số 3']
+  const ex1  = ['Má Phanh Gốm Cao Cấp','ma-phanh-gom-cao-cap','OEM-BP001','450000','Toyota','Hệ thống phanh','in_stock','30','','Phanh trước / sau','Độ bền cao gấp 3x','']
+  const ex2  = ['Bugi Iridium','bugi-iridium','TD-BG-001','275000','Toyota','Phụ tùng động cơ','in_stock','60','','Đầu điện cực Iridium','Tuổi thọ 100.000 km','']
   const csv  = [hdrs, ex1, ex2].map(r => r.map(c => `"${c}"`).join(',')).join('\n')
   const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8' })
   const a    = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'mau-nhap-san-pham.csv' })
@@ -1268,7 +1283,7 @@ async function pushToSheet() {
       name:        p.name,
       category:    p.categories?.name || '',
       brand:       p.brands?.name || '',
-      oem:         '',
+      oem:         p.sku || '',
       code:        p.slug,
       price:       p.price,
       wholesale:   '',
@@ -1334,6 +1349,7 @@ function renderPo(list) {
       <td style="color:#a0a0a0;white-space:nowrap">${dt}</td>
       <td><label class="toggle"><input type="checkbox" ${p.is_published?'checked':''} onchange="qSet('posts','is_published',this.checked,'${p.id}')"><span class="slider"></span></label></td>
       <td style="text-align:right;white-space:nowrap">
+        <a class="btn-ghost" href="https://ototiendu.com/tin-tuc-chi-tiet.html?slug=${p.slug}" target="_blank" title="Xem trang">🔗</a>
         <button class="btn-ghost" onclick="openPostModal(poStore['${p.id}'])" title="Sửa">✏️</button>
         <button class="btn-del"   onclick="confirmDel('posts','${p.id}','${esc(p.title)}')" title="Xoá">🗑️</button>
       </td>
@@ -1630,6 +1646,109 @@ window.testConnection = async function () {
   console.groupEnd()
 }
 console.log('💡 Gõ testConnection() trong Console này để kiểm tra kết nối Supabase')
+
+// ── DASHBOARD SEARCH ──────────────────────────────────
+
+let _dashTimer = null
+async function runDashSearch(q) {
+  const drop = document.getElementById('dashSearchDrop')
+  clearTimeout(_dashTimer)
+  if (!q || q.length < 2) { drop.style.display = 'none'; return }
+
+  _dashTimer = setTimeout(async () => {
+    // Search products: local first, else live DB
+    let pResults = allP.filter(p => p.name.toLowerCase().includes(q.toLowerCase())).slice(0, 5)
+    if (!pResults.length) {
+      const { data } = await db.from('products')
+        .select('id,name,price,sku,stock_status,brands(name),categories(name,slug)')
+        .ilike('name', `%${q}%`).limit(5)
+      pResults = data || []
+      pResults.forEach(p => { if (!pStore[p.id]) pStore[p.id] = p })
+    }
+
+    // Search posts: local first, else live DB
+    let poResults = allPo.filter(p => p.title.toLowerCase().includes(q.toLowerCase())).slice(0, 3)
+    if (!poResults.length) {
+      const { data } = await db.from('posts')
+        .select('id,title,slug,post_categories(name)')
+        .ilike('title', `%${q}%`).limit(3)
+      poResults = data || []
+      poResults.forEach(p => { if (!poStore[p.id]) poStore[p.id] = p })
+    }
+
+    let html = ''
+    if (pResults.length) {
+      html += `<div style="padding:8px 14px 4px;font-size:10px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #f5f5f5">📦 Sản phẩm</div>`
+      html += pResults.map(p => `
+        <div onclick="openFromDashSearch('products','${p.id}')"
+          style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;border-bottom:1px solid #f9f9f9;transition:background .1s"
+          onmouseover="this.style.background='#fffef2'" onmouseout="this.style.background=''">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:13px;color:#101010;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div>
+            <div style="font-size:11px;color:#a0a0a0;margin-top:2px">${p.brands?.name||''}${p.sku?` · <span style="font-family:monospace">${p.sku}</span>`:''} · ${fmtP(p.price)}</div>
+          </div>
+          <span style="font-size:11px;color:#c0c0c0">Sửa →</span>
+        </div>`).join('')
+    }
+    if (poResults.length) {
+      html += `<div style="padding:8px 14px 4px;font-size:10px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #f5f5f5;border-top:${pResults.length?'1px solid #f0f0f0':'none'}">📝 Bài viết</div>`
+      html += poResults.map(p => `
+        <div onclick="openFromDashSearch('posts','${p.id}')"
+          style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:background .1s"
+          onmouseover="this.style.background='#fffef2'" onmouseout="this.style.background=''">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:13px;color:#101010;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.title}</div>
+            <div style="font-size:11px;color:#a0a0a0;margin-top:2px">${p.post_categories?.name||'Tin tức'}</div>
+          </div>
+          <span style="font-size:11px;color:#c0c0c0">Sửa →</span>
+        </div>`).join('')
+    }
+    if (!html) {
+      html = `<div style="padding:24px;text-align:center;color:#c0c0c0;font-size:13px">Không tìm thấy kết quả cho "<strong style="color:#737373">${q}</strong>"</div>`
+    }
+
+    drop.innerHTML = html
+    drop.style.display = 'block'
+  }, 220)
+
+  // Click outside to close
+  document.addEventListener('click', _dashClickOutside)
+}
+
+function _dashClickOutside(e) {
+  if (!document.getElementById('dashSearch')?.parentElement?.contains(e.target)) {
+    closeDashSearch()
+    document.removeEventListener('click', _dashClickOutside)
+  }
+}
+
+function closeDashSearch() {
+  const drop = document.getElementById('dashSearchDrop')
+  if (drop) drop.style.display = 'none'
+}
+
+async function openFromDashSearch(tab, id) {
+  closeDashSearch()
+  document.getElementById('dashSearch').value = ''
+  showTab(tab)
+  // Wait for tab content to load
+  await new Promise(r => setTimeout(r, 350))
+  if (tab === 'products') {
+    const p = pStore[id]
+    if (p) openProductModal(p)
+    else {
+      const { data } = await db.from('products').select('*,brands(id,name),categories(id,name,slug)').eq('id', id).single()
+      if (data) { pStore[data.id] = data; openProductModal(data) }
+    }
+  } else if (tab === 'posts') {
+    const p = poStore[id]
+    if (p) openPostModal(p)
+    else {
+      const { data } = await db.from('posts').select('*,post_categories(id,name)').eq('id', id).single()
+      if (data) { poStore[data.id] = data; openPostModal(data) }
+    }
+  }
+}
 
 // ── UTILS ─────────────────────────────────────────────
 

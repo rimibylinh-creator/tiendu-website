@@ -157,6 +157,17 @@ async function getPosts({ limit } = {}) {
   return data || []
 }
 
+async function getPostBySlug(slug) {
+  const { data, error } = await db
+    .from('posts')
+    .select('*, post_categories(name, slug)')
+    .eq('slug', slug)
+    .eq('is_published', true)
+    .single()
+  if (error) console.error('getPostBySlug:', error)
+  return data || null
+}
+
 // ── Helpers ────────────────────────────────────────────────────
 
 function formatPrice(price) {
@@ -210,7 +221,7 @@ function renderProductCard(p, baseHref) {
 function renderBlogCard(p, baseHref) {
   const catName = p.post_categories?.name || ''
   const catSlug = p.post_categories?.slug || ''
-  const href    = (baseHref || 'tin-tuc/') + p.slug + '.html'
+  const href    = 'tin-tuc-chi-tiet.html?slug=' + p.slug
   return `
 <article class="blog-card" data-blog-cat="${catSlug}">
   <div class="blog-card-img">
@@ -244,10 +255,10 @@ function renderFeaturedBlog(p) {
       <span class="blog-date">${formatDate(p.published_at)}</span>
     </div>
     <h2 class="blog-title" style="font-size:30px">
-      <a href="tin-tuc/${p.slug}.html">${p.title}</a>
+      <a href="tin-tuc-chi-tiet.html?slug=${p.slug}">${p.title}</a>
     </h2>
     <p class="blog-excerpt">${p.excerpt || ''}</p>
-    <a href="tin-tuc/${p.slug}.html" class="blog-read-more">Đọc tiếp →</a>
+    <a href="tin-tuc-chi-tiet.html?slug=${p.slug}" class="blog-read-more">Đọc tiếp →</a>
   </div>
 </div>`
 }
