@@ -331,14 +331,16 @@ input:checked+.slider:before{transform:translateX(16px)}
           <option value="preorder">⏳ Đặt trước</option>
         </select>
       </div>
-      <div class="tcard">
+      <div class="tcard" style="overflow:visible">
+        <div style="overflow-x:auto">
         <table>
           <thead><tr>
-            <th></th><th>Sản phẩm</th><th>Mã SP</th><th>Giá</th><th>Kho</th><th>Tồn</th>
+            <th></th><th>Sản phẩm</th><th style="width:96px">Mã SP</th><th>Giá</th><th>Kho</th><th>Tồn</th>
             <th>Nổi bật</th><th>Hiển thị</th><th style="text-align:right">Thao tác</th>
           </tr></thead>
           <tbody id="pBody"></tbody>
         </table>
+        </div>
       </div>
     </div>
 
@@ -752,7 +754,7 @@ function renderP(list, total) {
       <td><div class="rname">${p.name}</div>
         <div class="rmeta">${p.brands?.name?`<span class="chip">${p.brands.name}</span>`:''}${p.categories?.name?`<span class="chip">${p.categories.name}</span>`:''}</div>
       </td>
-      <td style="font-family:monospace;font-size:12px;color:#737373;white-space:nowrap">${p.sku||'—'}</td>
+      <td style="font-family:monospace;font-size:12px;color:#737373;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.sku||'—'}</td>
       <td style="white-space:nowrap"><strong>${fmtP(p.price)}</strong></td>
       <td>${sb}</td>
       <td><span class="badge b-blue">${p.stock_quantity??0}</span></td>
