@@ -4,12 +4,296 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tra Cứu Phụ Tùng Theo Xe — Tiên Du Nha Trang</title>
-<meta http-equiv="refresh" content="0; url=san-pham.html">
-<link rel="canonical" href="https://ototiendu.com/san-pham.html">
-<meta name="robots" content="noindex">
-<script>location.replace('san-pham.html' + location.search + location.hash);</script>
+<meta name="description" content="Tra cứu chu kỳ thay phụ tùng, mã OEM và hãng thay thế cho xe Toyota, Honda, Mazda, Hyundai, Kia và các hãng châu Á. Cẩm nang bảo dưỡng từ Tiên Du Nha Trang.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ototiendu.com/tra-cuu.html">
+<meta property="og:title" content="Tra Cứu Phụ Tùng Theo Xe — Tiên Du Nha Trang">
+<meta property="og:description" content="Tra cứu chu kỳ thay phụ tùng, mã OEM và hãng thay thế cho xe châu Á. Cẩm nang bảo dưỡng từ Tiên Du Nha Trang.">
+<meta property="og:image" content="https://ototiendu.com/assets/hero-bg.jpg">
+<meta property="og:locale" content="vi_VN">
+<meta property="og:site_name" content="Tiên Du Phụ Tùng Ô Tô">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="canonical" href="https://ototiendu.com/tra-cuu.html">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<p>Trang tra cứu xe đã được gộp vào <a href="san-pham.html">trang Sản phẩm</a>.</p>
+
+<!-- ============ PAGE HEADER ============ -->
+<header class="page-header">
+  <nav class="site-nav">
+  <div class="container">
+    <a href="index.html" class="nav-logo-link"><img src="assets/nav-logo.png" alt="Tiên Du" class="nav-logo-img"></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a class="nav-link" href="san-pham.html">SẢN PHẨM</a></li>
+      <li><a class="nav-link" href="tra-cuu.html" style="color:#fecd27">TRA CỨU XE</a></li>
+      <li><a class="nav-link" href="tin-tuc.html">TIN TỨC</a></li>
+      <li><a class="nav-link" href="gioi-thieu.html">GIỚI THIỆU</a></li>
+    </ul>
+    <a href="tel:0946915111" class="btn btn-yellow nav-call-btn">
+      <img src="assets/icon-phone.svg" class="btn-icon" alt=""> Gọi 0946.915.111
+    </a>
+    <button class="nav-burger" aria-label="Mở menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  </nav>
+  <div class="page-hero-content">
+    <div class="breadcrumb">
+      <a href="index.html">Trang chủ</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>Tra cứu phụ tùng</span>
+    </div>
+    <h1 class="page-hero-title">Tra Cứu Phụ Tùng Theo Xe</h1>
+    <p class="page-hero-sub">Chu kỳ thay thế · Thông số kỹ thuật · Mã OEM · Hãng phụ tùng thay thế</p>
+  </div>
+</header>
+
+<!-- ============ BRAND PICKER ============ -->
+<section class="section" id="pickerSection" style="background:var(--color-white)">
+  <div class="section-inner">
+    <h2 style="font-size:22px;font-weight:700;margin:0 0 8px;color:var(--color-near-black)">Chọn hãng xe của bạn</h2>
+    <p style="color:var(--color-text-muted);font-size:14px;margin:0 0 28px">Chúng tôi sẽ hiển thị chu kỳ bảo dưỡng và mã phụ tùng phù hợp cho từng hãng.</p>
+    <div class="brand-pick-grid" id="brandGrid"></div>
+  </div>
+</section>
+
+<!-- ============ LOOKUP RESULTS ============ -->
+<section class="section" id="resultsSection" style="display:none;background:var(--color-bg-soft)">
+  <div class="section-inner">
+
+    <!-- Selected brand bar -->
+    <div class="brand-selected-bar">
+      <span style="font-size:24px" id="resIcon"></span>
+      <span class="brand-selected-name" id="resBrandName"></span>
+      <button class="brand-change-btn" onclick="changeBrand()">← Đổi hãng</button>
+    </div>
+
+    <!-- OEM warning note -->
+    <div class="oem-warning">
+      ⚠️ <strong>Lưu ý báo giá:</strong> Mã OEM gồm 2 loại —
+      <span style="background:#dcfce7;color:#166534;font-weight:700;padding:1px 6px;border-radius:3px;font-size:11px">✓ ĐÃ KIỂM CHỨNG</span> dùng được ngay,
+      và <span style="background:#fef9c3;color:#854d0e;font-weight:700;padding:1px 6px;border-radius:3px;font-size:11px">○ THAM KHẢO</span> cần đối chiếu VIN / đời máy với catalog chính hãng
+      (Amayama, Partsouq, 7zap) <strong>trước khi báo giá</strong>. Cùng một dòng xe nhưng khác dung tích hoặc đời facelift có thể dùng mã khác nhau.
+    </div>
+
+    <div id="resultsBody">
+      <div class="lookup-loading">Đang tải dữ liệu...</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta-banner-wrap">
+  <div class="cta-banner">
+    <h2 class="cta-banner-title">Không tìm thấy phụ tùng cần tìm?<br>Liên hệ ngay để được tư vấn!</h2>
+    <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-black">
+      <img src="assets/cta-banner-zalo.png" alt=""> Zalo tư vấn ngay
+    </a>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="assets/footer-logo.png" alt="Tiên Du">
+      <p class="footer-brand-name">TIÊN DU</p>
+      <p class="footer-brand-desc">Tiên Du Nha Trang cung cấp các giải pháp vận tải và phụ tùng ô tô cao cấp hàng đầu Việt Nam.</p>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <p class="footer-col-title">SẢN PHẨM</p>
+        <a href="san-pham.html">Phụ tùng động cơ</a>
+        <a href="san-pham.html">Hệ thống phanh</a>
+        <a href="san-pham.html">Hệ thống treo &amp; lái</a>
+        <a href="san-pham.html">Điện &amp; điện tử</a>
+        <a href="san-pham.html">Thân vỏ &amp; nội thất</a>
+        <a href="san-pham.html">Lốp &amp; La-zăng</a>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">THÔNG TIN</p>
+        <a href="gioi-thieu.html">Giới thiệu Tiên Du</a>
+        <a href="gia-si.html">Chính sách giá sỉ</a>
+        <a href="tin-tuc.html">Tin tức &amp; mẹo xe</a>
+        <a href="tra-cuu.html">Tra cứu phụ tùng</a>
+        <a href="lien-he.html">Liên hệ &amp; tư vấn</a>
+      </div>
+      <div class="footer-col footer-contact">
+        <p class="footer-col-title">LIÊN HỆ</p>
+        <span>37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Nam Nha Trang, TP Nha Trang</span>
+        <a href="tel:0946915111">0946.915.111</a>
+        <span>Zalo: tiendu.nhatrang</span>
+        <a href="mailto:tienduoto@gmail.com">tienduoto@gmail.com</a>
+        <span>7:30 - 17:30 (Thứ 2 - Thứ 7)</span>
+      </div>
+    </div>
+  </div>
+  <div class="footer-divider"></div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2026 Tiên Du Nha Trang · Địa chỉ: 37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Nam Nha Trang, TP Nha Trang</p>
+    <div class="footer-social">
+      <a href="#">Facebook</a>
+      <a href="https://zalo.me/0946915111" target="_blank" rel="noopener">Zalo</a>
+      <a href="#">TikTok</a>
+    </div>
+  </div>
+</footer>
+
+<div class="floating-zalo">
+  <div class="floating-call">
+    <a href="tel:0946915111" aria-label="Gọi ngay">
+      <img src="assets/icon-phone.svg" alt="">
+    </a>
+  </div>
+  <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" aria-label="Kết bạn Zalo">
+    <img src="assets/icon-zalo.png" alt="Zalo">
+  </a>
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/supabase-client.js"></script>
+<script>
+const CAR_BRANDS = [
+  { name: 'Toyota',     icon: '🚗' },
+  { name: 'Honda',      icon: '🚗' },
+  { name: 'Mazda',      icon: '🚗' },
+  { name: 'Mitsubishi', icon: '🚙' },
+  { name: 'Nissan',     icon: '🚙' },
+  { name: 'Suzuki',     icon: '🚗' },
+  { name: 'Isuzu',      icon: '🚛' },
+  { name: 'Hyundai',    icon: '🚗' },
+  { name: 'Kia',        icon: '🚗' },
+  { name: 'Daewoo',     icon: '🚗' },
+]
+
+let allPartTypes = []
+let allBrands    = []
+
+function renderBrandPicker() {
+  document.getElementById('brandGrid').innerHTML = CAR_BRANDS.map(b => `
+    <button class="brand-pick-btn" data-brand="${b.name}" onclick="selectBrand('${b.name}','${b.icon}')">
+      <span class="brand-pick-icon">${b.icon}</span>
+      <span>${b.name}</span>
+    </button>`).join('')
+}
+
+async function selectBrand(brand, icon) {
+  document.querySelectorAll('.brand-pick-btn').forEach(btn =>
+    btn.classList.toggle('selected', btn.dataset.brand === brand))
+
+  document.getElementById('resultsSection').style.display = ''
+  document.getElementById('resIcon').textContent = icon
+  document.getElementById('resBrandName').textContent = brand
+  document.getElementById('resultsBody').innerHTML = '<div class="lookup-loading">Đang tải dữ liệu...</div>'
+  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+  const needBase = !allPartTypes.length
+  const [partsRes, brandsRes, oemRes, noteRes] = await Promise.all([
+    needBase ? db.from('part_types').select('*').order('sort_order') : Promise.resolve(null),
+    needBase ? db.from('part_aftermarket_brands').select('*').order('sort_order') : Promise.resolve(null),
+    db.from('oem_refs').select('*').eq('car_brand', brand).order('sort_order'),
+    db.from('car_brand_notes').select('note').eq('car_brand', brand).maybeSingle(),
+  ])
+
+  if (partsRes && !partsRes.error)  allPartTypes = partsRes.data  || []
+  if (brandsRes && !brandsRes.error) allBrands   = brandsRes.data || []
+
+  renderResults(brand, oemRes?.data || [], noteRes?.data?.note || '')
+}
+
+function changeBrand() {
+  document.querySelectorAll('.brand-pick-btn').forEach(b => b.classList.remove('selected'))
+  document.getElementById('resultsSection').style.display = 'none'
+  document.getElementById('pickerSection').scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function renderResults(brand, oemRefs, brandNote) {
+  const oemByPart = {}
+  oemRefs.forEach(r => { (oemByPart[r.part_type_key] = oemByPart[r.part_type_key] || []).push(r) })
+
+  const brandsByPart = {}
+  allBrands.forEach(b => { (brandsByPart[b.part_type_key] = brandsByPart[b.part_type_key] || []).push(b) })
+
+  // Group by group_key, preserving insertion order
+  const groupOrder = []
+  const groups = {}
+  allPartTypes.forEach(pt => {
+    if (!groups[pt.group_key]) { groupOrder.push(pt.group_key); groups[pt.group_key] = { label: pt.group_label, items: [] } }
+    groups[pt.group_key].items.push(pt)
+  })
+
+  let html = ''
+  groupOrder.forEach(gk => {
+    const g = groups[gk]
+    html += `<p class="part-group-title">${esc(g.label)}</p>`
+    g.items.forEach(pt => {
+      const oems   = oemByPart[pt.key]   || []
+      const brands = brandsByPart[pt.key] || []
+
+      let oemHtml = ''
+      if (oems.length) {
+        const rows = oems.map(o => `
+          <div class="oem-row">
+            <span class="oem-code">${esc(o.part_number)}</span>
+            <span class="oem-fit">${esc(o.fitment || '')}</span>
+            <span class="oem-verified ${o.verified ? 'yes' : 'no'}">${o.verified ? '✓ Đã KT' : '○ TK'}</span>
+          </div>`).join('')
+        oemHtml = `<div class="oem-block">
+          <div class="oem-block-title">Mã OEM — ${esc(brand)}</div>
+          ${rows}
+        </div>`
+      }
+
+      let brandsHtml = ''
+      if (brands.length) {
+        const tiers = [
+          { key: 'oe',      label: 'OE' },
+          { key: 'premium', label: 'Premium' },
+          { key: 'value',   label: 'Value' },
+        ]
+        const rows = tiers.map(({ key, label }) => {
+          const list = brands.filter(b => b.tier === key)
+          if (!list.length) return ''
+          const items = list.map(b =>
+            `<span class="brand-entry">${esc(b.brand)}${b.note ? ` <span class="brand-note-inline">(${esc(b.note)})</span>` : ''}</span>`
+          ).join('')
+          return `<div class="brands-tier"><span class="tier-label ${key}">${label}</span><span class="brands-list">${items}</span></div>`
+        }).join('')
+        brandsHtml = `<div class="brands-block">${rows}</div>`
+      }
+
+      html += `<div class="part-item">
+        <div class="part-item-header">
+          <span class="part-item-name">${esc(pt.name)}</span>
+          <span class="interval-badge">🔧 ${esc(pt.replacement_interval || '')}</span>
+        </div>
+        <p class="part-item-spec">${esc(pt.spec || '')}</p>
+        ${oemHtml}
+        ${brandsHtml}
+      </div>`
+    })
+  })
+
+  if (brandNote) {
+    html += `<div class="oem-block" style="margin-top:4px">
+      <div class="oem-block-title">Quy luật đánh số OEM — ${esc(brand)}</div>
+      <p style="font-size:13px;color:var(--color-text);margin:0">📌 ${esc(brandNote)}</p>
+    </div>`
+  }
+
+  document.getElementById('resultsBody').innerHTML = html || '<p style="color:var(--color-text-muted);padding:24px 0">Chưa có dữ liệu cho hãng này.</p>'
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+renderBrandPicker()
+</script>
 </body>
 </html>

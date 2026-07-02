@@ -123,14 +123,6 @@ const AFTERMARKET_BRANDS = {
     { brand: 'Bosch',   country: 'Đức',  tier: 'premium', note: '' },
     { brand: 'Delphi',  country: 'Mỹ',   tier: 'premium', note: '' },
   ],
-  'ac-quy': [ // Ắc quy (bình điện)
-    { brand: 'GS',             country: 'Nhật/VN',    tier: 'oe',      note: 'Sản xuất tại VN, phổ biến nhất thị trường' },
-    { brand: 'Panasonic',      country: 'Nhật',       tier: 'premium', note: '' },
-    { brand: 'Varta',          country: 'Đức',        tier: 'premium', note: '' },
-    { brand: 'Bosch',          country: 'Đức',        tier: 'premium', note: '' },
-    { brand: 'Amaron',         country: 'Ấn Độ',     tier: 'value',   note: 'Bền, phổ biến tại VN' },
-    { brand: 'Đồng Nai / Pinaco', country: 'VN',     tier: 'value',   note: 'Nội địa, giá tốt' },
-  ],
 }
 
 // ── CATALOGUE TRA CỨU CHÍNH THỨC CỦA CÁC HÃNG PHỤ TÙNG THAY THẾ ──────────────
@@ -291,11 +283,6 @@ const PART_CATALOG = {
   'dien': { // Điện - điện tử
     label: 'Điện - điện tử',
     items: [
-      {
-        key: 'ac-quy', name: 'Ắc quy (bình điện)', group: 'dien',
-        interval: 'Thay mỗi 2–4 năm (ắc quy nước/khô). Xe start-stop dùng ắc quy AGM riêng.',
-        spec: 'Dung lượng phổ biến: xe nhỏ 35–45Ah · sedan 45–60Ah · SUV/bán tải 60–80Ah. Điện áp 12V. Chú ý cọc (+/-) trái/phải & kích thước.',
-      },
       {
         key: 'bobine-cam-bien', name: 'Bobine đánh lửa & Cảm biến', group: 'dien',
         interval: 'Thay khi hỏng (không định kỳ). Bobine thường theo cụm mỗi xy-lanh.',
