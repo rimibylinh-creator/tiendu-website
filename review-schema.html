@@ -1,0 +1,168 @@
+<!--
+  ⚠️ CẢNH BÁO QUAN TRỌNG TRƯỚC KHI DÙNG FILE NÀY
+  ================================================
+  Mình đã kiểm tra mã nguồn thật của 5 testimonial trên trang chủ.
+  Cả 5 review đều dùng đúng 1 bộ icon lặp lại:
+
+    star-full-1.svg, star-full-2.svg, star-full-3.svg,
+    star-full-4.svg, star-full-4.svg   (lặp icon số 4 hai lần — là BUG)
+
+  Đây là LỖI HIỂN THỊ trong code, không phải dữ liệu rating thật của
+  khách hàng. Website hiện KHÔNG lưu số sao thật mà mỗi khách đã chấm.
+
+  ĐIỀU NÀY NGHĨA LÀ: nếu publish Review schema với ratingValue: 5 cho
+  toàn bộ 5 review, đó là khai báo SAI SỰ THẬT (vì không ai biết khách
+  thực sự chấm bao nhiêu sao) — vi phạm chính sách "Sai lệch nội dung"
+  (misrepresentation) của Google structured data, có thể bị Google
+  loại bỏ rich snippet hoặc phạt thủ công (manual action).
+
+  → BẠN CẦN LÀM TRƯỚC KHI DÙNG SCHEMA NÀY:
+  1. Sửa lỗi code hiển thị sao (dùng đúng icon star-full-1 đến
+     star-full-5 theo số sao thật, không lặp star-full-4)
+  2. Tìm lại số sao THẬT mà từng khách đã chấm — nếu testimonials này
+     lấy từ Facebook/Zalo/Google, vào xem lại số sao gốc tại nguồn
+  3. Nếu không có dữ liệu sao gốc, an toàn nhất là HIỂN THỊ TEXT
+     review không kèm sao, hoặc chỉ dùng Review schema KHÔNG có
+     reviewRating, để tránh khai báo sai
+
+  Dưới đây là 2 phương án code mẫu — bạn chọn 1 dùng tuỳ tình huống.
+-->
+
+
+<!-- ============================================================
+     PHƯƠNG ÁN A — Dùng nếu bạn XÁC NHẬN ĐƯỢC số sao thật
+     (sau khi đã tìm lại nguồn gốc và sửa lỗi hiển thị)
+     Đây CHỈ LÀ VÍ DỤ với số liệu giả định — PHẢI thay bằng số thật.
+     ============================================================ -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AutoPartsStore",
+  "@id": "https://ototiendu.com/#business",
+  "name": "Tiên Du - Phụ Tùng Ô Tô",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "5",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "review": [
+    {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "Cường Phạm Tuấn" },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5"
+      },
+      "reviewBody": "Mua đồ yên tâm. Giá chuẩn! Nhiệt tình hỗ trợ khách hàng nói chung rất ok."
+    },
+    {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "Kiều Nguyễn" },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5"
+      },
+      "reviewBody": "Phụ tùng chú này bán chuẩn nè, đã mua hàng rất nhiều lần, tư vấn và giao hàng nhanh, chế độ hậu mãi tốt. Nên mua nha."
+    },
+    {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "Hào Dĩ Lê" },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5"
+      },
+      "reviewBody": "Nhân viên bán hàng tư vấn nhiệt tình, vui vẻ, hàng chất lượng tốt, sẽ ủng hộ dài dài."
+    },
+    {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "TF" },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5"
+      },
+      "reviewBody": "Cửa hàng nhiều phụ tùng, nhiệt tình tìm dù phụ tùng rất nhỏ như nắp bình rửa kính."
+    },
+    {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "Chí Khôi Bùi" },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5"
+      },
+      "reviewBody": "Bán hàng có tâm. Cho đổi trả hàng và hướng dẫn khách nhiệt tình."
+    }
+  ]
+}
+</script>
+
+
+<!-- ============================================================
+     PHƯƠNG ÁN B — AN TOÀN HƠN, dùng khi CHƯA xác nhận số sao thật
+     Review vẫn được khai báo (vì nội dung text là thật), nhưng
+     KHÔNG kèm reviewRating/aggregateRating để tránh khai sai mức sao.
+     Google vẫn có thể hiển thị review text trong một số kết quả,
+     nhưng sẽ không có sao ★★★★★ kèm theo.
+     ============================================================ -->
+
+<!--
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AutoPartsStore",
+  "@id": "https://ototiendu.com/#business",
+  "name": "Tiên Du - Phụ Tùng Ô Tô",
+  "review": [
+    {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "Cường Phạm Tuấn" },
+      "reviewBody": "Mua đồ yên tâm. Giá chuẩn! Nhiệt tình hỗ trợ khách hàng nói chung rất ok."
+    },
+    {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "Kiều Nguyễn" },
+      "reviewBody": "Phụ tùng chú này bán chuẩn nè, đã mua hàng rất nhiều lần, tư vấn và giao hàng nhanh, chế độ hậu mãi tốt. Nên mua nha."
+    },
+    {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "Hào Dĩ Lê" },
+      "reviewBody": "Nhân viên bán hàng tư vấn nhiệt tình, vui vẻ, hàng chất lượng tốt, sẽ ủng hộ dài dài."
+    },
+    {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "TF" },
+      "reviewBody": "Cửa hàng nhiều phụ tùng, nhiệt tình tìm dù phụ tùng rất nhỏ như nắp bình rửa kính."
+    },
+    {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "Chí Khôi Bùi" },
+      "reviewBody": "Bán hàng có tâm. Cho đổi trả hàng và hướng dẫn khách nhiệt tình."
+    }
+  ]
+}
+</script>
+-->
+
+
+<!-- ============================================================
+     KHUYẾN NGHỊ THỰC TẾ TỐT NHẤT
+     ============================================================
+     Thay vì cố gắng tái tạo rating từ 5 testimonial chọn lọc trên
+     website (luôn có rủi ro bị xem là "cherry-picked"), cách bền
+     vững nhất là:
+
+     1. Dùng aggregateRating LẤY TRỰC TIẾP từ Google Business Profile
+        thật (số sao + số lượng review thật trên Google Maps)
+     2. Đồng bộ số liệu này định kỳ (thủ công hoặc qua Google Places
+        API) để ratingValue trên website luôn khớp với Google
+     3. Khi đó Review/AggregateRating schema mới đáng tin & nhất quán
+        giữa các nguồn — đúng tinh thần GEO (AI đối chiếu nhiều nguồn
+        và ưu tiên nội dung nhất quán, có thể kiểm chứng)
+-->

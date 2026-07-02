@@ -30,7 +30,6 @@
     <a href="index.html" class="nav-logo-link"><img src="assets/nav-logo.png" alt="Tiên Du" class="nav-logo-img"></a>
     <ul class="nav-links" id="navLinks">
       <li><a class="nav-link" href="san-pham.html">SẢN PHẨM</a></li>
-      <li><a class="nav-link" href="tra-cuu.html">TRA CỨU XE</a></li>
       <li><a class="nav-link" href="tim-vin.html" style="color:#fecd27">TÌM SỐ VIN</a></li>
       <li><a class="nav-link" href="tin-tuc.html">TIN TỨC</a></li>
       <li><a class="nav-link" href="gioi-thieu.html">GIỚI THIỆU</a></li>
@@ -50,7 +49,7 @@
   <div class="breadcrumb" style="justify-content:center;margin-bottom:20px">
     <a href="index.html" style="color:rgba(255,255,255,0.4)">Trang chủ</a>
     <span class="breadcrumb-sep">/</span>
-    <a href="tra-cuu.html" style="color:rgba(255,255,255,0.4)">Tra cứu xe</a>
+    <a href="san-pham.html" style="color:rgba(255,255,255,0.4)">Sản phẩm</a>
     <span class="breadcrumb-sep">/</span>
     <span style="color:var(--color-primary)">Tìm theo số VIN</span>
   </div>
@@ -283,7 +282,7 @@
         <a href="gia-si.html">Chính sách giá sỉ</a>
         <a href="tin-tuc.html">Tin tức &amp; mẹo xe</a>
         <a href="#">Chính sách đổi trả</a>
-        <a href="tra-cuu.html">Tra cứu theo xe</a>
+        <a href="san-pham.html">Tra cứu theo xe</a>
         <a href="tim-vin.html">Tra cứu theo VIN</a>
       </div>
       <div class="footer-col footer-contact">
@@ -362,6 +361,59 @@ const MAINTENANCE_TABLE = [
   { item: 'Dầu trợ lực lái (nếu có)', interval: '80.000 km hoặc 4 năm', note: 'Xe trợ lực điện (EPS): không cần thay' },
   { item: 'Kiểm tra lốp xe', interval: 'Mỗi 6 tháng', note: 'Thay khi mòn đến giới hạn 1.6mm hoặc sau 5 năm' },
 ];
+
+// Bảng WMI cho xe Châu Á — dùng khi NHTSA không trả về dữ liệu
+const WMI_ASIA = {
+  // Nhật Bản — Toyota / Lexus
+  'JTD':'Toyota','JTE':'Toyota','JTF':'Toyota','JTG':'Toyota','JTH':'Toyota (Lexus)',
+  'JTJ':'Toyota (Lexus)','JTK':'Toyota','JTL':'Toyota','JTM':'Toyota','JTN':'Toyota',
+  'JTP':'Toyota','JTR':'Toyota','JTS':'Toyota',
+  // Nhật Bản — Honda
+  'JHM':'Honda','JH4':'Honda','JH6':'Honda','JHG':'Honda',
+  // Nhật Bản — Mitsubishi
+  'JA3':'Mitsubishi','JA4':'Mitsubishi','JA6':'Mitsubishi','JMB':'Mitsubishi',
+  // Nhật Bản — Nissan / Infiniti
+  'JN1':'Nissan','JN6':'Nissan','JNA':'Nissan','JNB':'Nissan','JNK':'Nissan (Infiniti)',
+  // Nhật Bản — Mazda
+  'JM1':'Mazda','JM6':'Mazda','JM7':'Mazda',
+  // Nhật Bản — Suzuki
+  'JS1':'Suzuki','JS2':'Suzuki','JS3':'Suzuki','JS4':'Suzuki',
+  // Nhật Bản — Subaru
+  'JF1':'Subaru','JF2':'Subaru','JF3':'Subaru',
+  // Nhật Bản — Isuzu
+  'JAA':'Isuzu','JAB':'Isuzu','JAC':'Isuzu',
+  // Nhật Bản — Daihatsu
+  'JD1':'Daihatsu',
+  // Hàn Quốc — Hyundai
+  'KMH':'Hyundai','KMF':'Hyundai','KMJ':'Hyundai','KMU':'Hyundai',
+  // Hàn Quốc — Kia
+  'KNA':'Kia','KNB':'Kia','KND':'Kia','KNE':'Kia','KNF':'Kia',
+  // Hàn Quốc — GM / Chevrolet
+  'KL4':'Chevrolet (Hàn Quốc)','KLA':'Chevrolet (Hàn Quốc)','KLU':'Chevrolet (Hàn Quốc)',
+  // Thái Lan — Toyota / Honda / Mazda
+  'MMT':'Toyota (Thái Lan)','MNB':'Toyota (Thái Lan)','MNC':'Toyota (Thái Lan)',
+  'MHL':'Honda (Thái Lan)','MHR':'Honda (Thái Lan)','MNA':'Honda (Thái Lan)',
+  'MM8':'Mazda (Thái Lan)',
+  // Indonesia — Toyota / Honda
+  'MHF':'Toyota (Indonesia)','MRH':'Toyota (Indonesia)',
+  'MHK':'Honda (Indonesia)','MHH':'Honda (Indonesia)',
+  // Ấn Độ
+  'MA3':'Suzuki (Ấn Độ)','MA1':'Mercedes-Benz (Ấn Độ)','MBJ':'Toyota (Ấn Độ)',
+  // Việt Nam
+  'ME1':'Việt Nam',
+  // Trung Quốc
+  'LGB':'Geely','LTV':'BYD','LSG':'Buick (Trung Quốc)','LMN':'FAW','LFP':'FAW',
+};
+
+// Giải mã năm từ ký tự thứ 10 của VIN
+function decodeVinYear(ch) {
+  const m = {
+    'A':2010,'B':2011,'C':2012,'D':2013,'E':2014,'F':2015,'G':2016,'H':2017,
+    'J':2018,'K':2019,'L':2020,'M':2021,'N':2022,'P':2023,'R':2024,'S':2025,'T':2026,
+    '1':2001,'2':2002,'3':2003,'4':2004,'5':2005,'6':2006,'7':2007,'8':2008,'9':2009,
+  };
+  return m[ch?.toUpperCase()] || null;
+}
 
 function getField(results, varName) {
   const item = results.find(r => r.Variable === varName);
@@ -512,7 +564,27 @@ async function handleVinSearch(e) {
     const seats       = getField(results, 'Number of Seat Rows');
 
     if (!make && !model) {
-      showError('Không nhận diện được xe', 'Cơ sở dữ liệu không có thông tin cho số VIN này. Thử kiểm tra lại từng ký tự hoặc liên hệ Tiên Du để được hỗ trợ.');
+      // Thử tra WMI cục bộ cho xe Châu Á
+      const wmi = raw.substring(0, 3).toUpperCase();
+      const wmiMake = WMI_ASIA[wmi];
+      if (wmiMake) {
+        const wmiYear = year || decodeVinYear(raw[9]);
+        document.getElementById('vcMake').textContent = wmiMake;
+        document.getElementById('vcYear').textContent = wmiYear || '—';
+        document.getElementById('vcBadges').innerHTML = `<span class="vin-badge">WMI: ${wmi}</span>`;
+        buildSpecsGrid([
+          { label: 'Hãng xe', value: wmiMake },
+          { label: 'Năm sản xuất', value: wmiYear ? String(wmiYear) : null, highlight: true },
+          { label: 'Mã WMI', value: wmi },
+        ]);
+        document.getElementById('vcOrigin').innerHTML =
+          `<span class="vin-origin-flag">⚠️</span> <span>Dữ liệu từ bảng WMI nội bộ — NHTSA chưa có thông tin đầy đủ cho VIN này. Liên hệ Tiên Du để xác nhận chính xác.</span>`;
+        buildVinDigits(raw);
+        buildPartsSection(null, wmiMake);
+        showState('card');
+      } else {
+        showError('Không nhận diện được xe', 'Cơ sở dữ liệu không có thông tin cho số VIN này. Thử kiểm tra lại từng ký tự hoặc liên hệ Tiên Du để được hỗ trợ.');
+      }
       return;
     }
 

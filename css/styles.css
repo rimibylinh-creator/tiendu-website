@@ -2347,18 +2347,19 @@ p { margin: 0; }
 /* 3 trust badges horizontal */
 .pd-trust-badges {
   display: grid; grid-template-columns: repeat(3,1fr);
-  gap: 8px; margin-bottom: 16px;
+  margin-bottom: 20px;
   border: 1px solid var(--color-border); border-radius: var(--radius-md);
   overflow: hidden;
 }
 .pd-trust-item {
   display: flex; flex-direction: column; align-items: center;
-  gap: 6px; padding: 14px 8px; text-align: center;
+  gap: 8px; padding: 16px 10px; text-align: center;
   background: var(--color-bg-soft);
 }
 .pd-trust-item + .pd-trust-item { border-left: 1px solid var(--color-border); }
 .pd-trust-item svg { color: var(--color-primary-dark); flex-shrink: 0; }
-.pd-trust-item span { font-size: 11px; font-weight: 600; color: var(--color-text); line-height: 1.4; }
+.pd-trust-title { font-size: 12px; font-weight: 700; color: var(--color-near-black); display: block; line-height: 1.3; }
+.pd-trust-sub { font-size: 11px; color: var(--color-text-muted); display: block; margin-top: 2px; line-height: 1.4; }
 
 /* CTA group */
 .pd-cta-group { display: flex; flex-direction: column; gap: 10px; margin: 20px 0 16px; }

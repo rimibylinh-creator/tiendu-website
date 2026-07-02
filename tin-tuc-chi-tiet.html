@@ -25,7 +25,7 @@
 <style>
 .post-hero {
   background: #101010;
-  padding: 80px var(--container-pad) 48px;
+  padding: 140px var(--container-pad) 56px;
   position: relative;
   overflow: hidden;
 }
@@ -135,9 +135,9 @@
 }
 .post-not-found h2 { font-size: 24px; color: #101010; margin-bottom: 8px }
 @media(max-width: 860px) {
-  .post-hero { padding: 56px 20px 36px }
+  .post-hero { padding: 100px 24px 40px }
   .post-title { font-size: 24px }
-  .post-body-wrap { padding-left: 20px; padding-right: 20px; padding-top: 32px }
+  .post-body-wrap { padding-left: 24px; padding-right: 24px; padding-top: 32px }
 }
 </style>
 </head>
@@ -151,7 +151,6 @@
   </a>
   <ul class="nav-links" id="navLinks">
     <li><a class="nav-link" href="san-pham.html">SẢN PHẨM</a></li>
-    <li><a class="nav-link" href="tra-cuu.html">TRA CỨU XE</a></li>
     <li class="nav-logo"><a href="index.html"><img src="assets/nav-logo.png" alt="Tiên Du"></a></li>
     <li><a class="nav-link active" href="tin-tuc.html">TIN TỨC</a></li>
     <li><a class="nav-link" href="gioi-thieu.html">GIỚI THIỆU</a></li>
@@ -217,57 +216,61 @@
   </div>
 </section>
 
-<footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-col footer-brand">
-      <img src="assets/footer-logo.png" alt="Tiên Du" class="footer-logo">
-      <p class="footer-tagline">Phân phối phụ tùng ô tô chính hãng tại Khánh Hoà — Giao hàng toàn quốc</p>
-      <div class="footer-contact">
-        <div class="contact-item"><img src="assets/icon-phone-footer.svg" alt=""><a href="tel:0946915111">0946.915.111</a></div>
-        <div class="contact-item"><img src="assets/icon-mail-footer.svg" alt=""><a href="mailto:tienduoto@gmail.com">tienduoto@gmail.com</a></div>
-        <div class="contact-item"><img src="assets/icon-map-footer.svg" alt=""><span>37 Nguyễn Văn Hưởng, KDT VCN Phước Long, Nam Nha Trang</span></div>
+<footer class="site-footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="assets/footer-logo.png" alt="Tiên Du">
+      <p class="footer-brand-name">TIÊN DU</p>
+      <p class="footer-brand-desc">Tiên Du Nha Trang cung cấp các giải pháp vận tải và phụ tùng ô tô cao cấp hàng đầu Việt Nam.</p>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <p class="footer-col-title">SẢN PHẨM</p>
+        <a href="san-pham.html?category=dong-co">Phụ tùng động cơ</a>
+        <a href="san-pham.html?category=phanh">Hệ thống phanh</a>
+        <a href="san-pham.html?category=treo">Hệ thống treo &amp; lái</a>
+        <a href="san-pham.html?category=dien">Điện &amp; điện tử</a>
+        <a href="san-pham.html?category=noi-that">Thân vỏ &amp; nội thất</a>
+        <a href="san-pham.html?category=lop">Lốp &amp; La-zăng</a>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">THÔNG TIN</p>
+        <a href="gioi-thieu.html">Giới thiệu Tiên Du</a>
+        <a href="gia-si.html">Chính sách giá sỉ</a>
+        <a href="tin-tuc.html">Tin tức &amp; mẹo xe</a>
+        <a href="#">Chính sách đổi trả</a>
+        <a href="san-pham.html">Tra cứu theo xe</a>
+        <a href="lien-he.html">Liên hệ &amp; tư vấn</a>
+      </div>
+      <div class="footer-col footer-contact">
+        <p class="footer-col-title">LIÊN HỆ</p>
+        <span>37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Nam Nha Trang, TP Nha Trang</span>
+        <a href="tel:0946915111">0946.915.111</a>
+        <span>Zalo: tiendu.nhatrang</span>
+        <a href="mailto:tienduoto@gmail.com">tienduoto@gmail.com</a>
+        <span>7:30 - 17:30 (Thứ 2 - Thứ 7)</span>
       </div>
     </div>
-    <div class="footer-col">
-      <h4 class="footer-col-title">Sản phẩm</h4>
-      <ul class="footer-links">
-        <li><a href="san-pham.html?category=dong-co">Phụ tùng động cơ</a></li>
-        <li><a href="san-pham.html?category=phanh">Hệ thống phanh</a></li>
-        <li><a href="san-pham.html?category=treo">Hệ thống treo & lái</a></li>
-        <li><a href="san-pham.html?category=loc">Bộ phận lọc</a></li>
-        <li><a href="san-pham.html?category=dien">Điện - điện tử</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4 class="footer-col-title">Dịch vụ</h4>
-      <ul class="footer-links">
-        <li><a href="gia-si.html">Giá sỉ & Đối tác</a></li>
-        <li><a href="tra-cuu.html">Tra cứu phụ tùng theo xe</a></li>
-        <li><a href="tin-tuc.html">Tin tức & Mẹo xe</a></li>
-        <li><a href="gioi-thieu.html">Giới thiệu Tiên Du</a></li>
-        <li><a href="lien-he.html">Liên hệ</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4 class="footer-col-title">Giờ làm việc</h4>
-      <ul class="footer-links">
-        <li>Thứ 2 – Thứ 7</li>
-        <li><strong>7:30 – 17:30</strong></li>
-        <li style="margin-top:12px"><a href="https://zalo.me/0946915111" target="_blank" rel="noopener">Zalo: tiendu.nhatrang</a></li>
-      </ul>
-    </div>
   </div>
+  <div class="footer-divider"></div>
   <div class="footer-bottom">
-    <p>© 2025 Tiên Du Phụ Tùng Ô Tô. Tất cả quyền được bảo lưu.</p>
+    <p class="footer-copy">© 2026 Tiên Du Nha Trang · Địa chỉ: 37 Nguyễn Văn Hưởng, KDT VCN Phước Long, phường Nam Nha Trang, TP Nha Trang</p>
+    <div class="footer-social">
+      <a href="#">Facebook</a>
+      <a href="https://zalo.me/0946915111" target="_blank" rel="noopener">Zalo</a>
+      <a href="#">TikTok</a>
+    </div>
   </div>
 </footer>
 
-<a href="tel:0946915111" class="floating-zalo" style="background:#fecd27" aria-label="Gọi điện">
-  <img src="assets/icon-phone.svg" alt="Gọi">
-</a>
-<a href="https://zalo.me/0946915111" class="floating-zalo" target="_blank" rel="noopener" aria-label="Zalo">
-  <img src="assets/icon-zalo.png" alt="Zalo">
-</a>
+<div class="floating-zalo">
+  <div class="floating-call">
+    <a href="tel:0946915111" aria-label="Gọi ngay"><img src="assets/icon-phone.svg" alt=""></a>
+  </div>
+  <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" aria-label="Kết bạn Zalo">
+    <img src="assets/icon-zalo.png" alt="Zalo">
+  </a>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>

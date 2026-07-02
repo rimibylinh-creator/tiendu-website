@@ -56,7 +56,6 @@
     <a href="index.html" class="nav-logo-link"><img src="assets/nav-logo.png" alt="Tiên Du" class="nav-logo-img"></a>
     <ul class="nav-links" id="navLinks">
       <li><a class="nav-link" href="san-pham.html" style="color:#fecd27">SẢN PHẨM</a></li>
-      <li><a class="nav-link" href="tra-cuu.html">TRA CỨU XE</a></li>
       <li><a class="nav-link" href="tim-vin.html">TÌM SỐ VIN</a></li>
       <li><a class="nav-link" href="tin-tuc.html">TIN TỨC</a></li>
       <li><a class="nav-link" href="gioi-thieu.html">GIỚI THIỆU</a></li>
@@ -77,7 +76,7 @@
       <span>Sản phẩm</span>
     </div>
     <h1 class="page-hero-title">Danh Mục Sản Phẩm</h1>
-    <p class="page-hero-sub">Phụ tùng ô tô chính hãng — lọc theo hãng xe, loại phụ tùng hoặc tìm theo mã số</p>
+    <p class="page-hero-sub">Phụ tùng ô tô chính hãng — chọn hãng xe, dòng xe, năm sản xuất hoặc tìm theo mã số</p>
   </div>
 </header>
 
@@ -95,15 +94,39 @@
           <option value="">Tất cả hãng</option>
           <option>Toyota</option>
           <option>Honda</option>
-          <option>BMW</option>
-          <option>Hyundai</option>
+          <option>Mazda</option>
           <option>Mitsubishi</option>
           <option>Nissan</option>
-          <option>Lexus</option>
-          <option>Mazda</option>
-          <option>Mercedes-Benz</option>
-          <option>Ford</option>
+          <option>Suzuki</option>
+          <option>Isuzu</option>
+          <option>Daihatsu</option>
+          <option>Subaru</option>
+          <option>Hyundai</option>
+          <option>Kia</option>
+          <option>VinFast</option>
+          <option>Daewoo</option>
           <option>Chevrolet</option>
+          <option>Ford</option>
+          <option>BMW</option>
+          <option>Mercedes-Benz</option>
+          <option>Lexus</option>
+          <option>Audi</option>
+          <option>Land Rover</option>
+          <option>Mini</option>
+          <option>Peugeot</option>
+          <option>Volkswagen</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Dòng xe</span>
+        <select class="filter-select" id="filterModel" disabled>
+          <option value="">— Chọn hãng trước —</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Năm xe</span>
+        <select class="filter-select" id="filterYear">
+          <option value="">Tất cả năm</option>
         </select>
       </div>
       <div class="filter-group">
@@ -147,8 +170,8 @@
       <p style="color:var(--color-text-muted);padding:24px 0">Đang tải sản phẩm...</p>
     </div>
 
-    <div class="cta-more-wrap">
-      <a href="#" class="btn btn-yellow">Tải thêm sản phẩm →</a>
+    <div class="cta-more-wrap" id="loadMoreWrap" style="display:none">
+      <button id="btnLoadMore" class="btn btn-yellow">Xem thêm sản phẩm →</button>
     </div>
   </div>
 </section>
@@ -187,7 +210,7 @@
         <a href="gia-si.html">Chính sách giá sỉ</a>
         <a href="tin-tuc.html">Tin tức &amp; mẹo xe</a>
         <a href="#">Chính sách đổi trả</a>
-        <a href="tra-cuu.html">Tra cứu theo xe</a>
+        <a href="san-pham.html">Tra cứu theo xe</a>
         <a href="lien-he.html">Liên hệ &amp; tư vấn</a>
       </div>
       <div class="footer-col footer-contact">
@@ -223,24 +246,181 @@
   </a>
 </div>
 
+<script src="js/vehicle-data.js"></script>
 <script src="js/supabase-client.js"></script>
 <script>
-(async function () {
-  const grid    = document.getElementById('productGrid')
-  const countEl = document.getElementById('productsCount')
+(function () {
+  // ── Trạng thái hiện tại ──────────────────────────────────────
+  let page     = 0
+  let loading  = false
+  let filters  = { category: '', orKeywords: [], search: '' }
+  let total    = 0
 
-  const products = await getProducts()
-  grid.innerHTML = products.map(p => renderProductCard(p, 'san-pham/')).join('')
-  if (countEl) countEl.textContent = 'Hiển thị ' + products.length + ' sản phẩm'
+  const grid       = document.getElementById('productGrid')
+  const countEl    = document.getElementById('productsCount')
+  const loadMoreWrap = document.getElementById('loadMoreWrap')
+  const btnMore    = document.getElementById('btnLoadMore')
 
-  reinitProductTabs('productGrid')
+  const selBrand = document.getElementById('filterBrand')
+  const selModel = document.getElementById('filterModel')
+  const selYear  = document.getElementById('filterYear')
 
-  // Lọc theo ?category= trên URL
-  const cat = new URLSearchParams(location.search).get('category')
-  if (cat) {
-    const btn = document.querySelector(`.tab-btn[data-filter="${cat}"]`)
-    if (btn) btn.click()
+  // ── Tải sản phẩm từ Supabase (có phân trang) ─────────────────
+  async function loadPage(reset) {
+    if (loading) return
+    loading = true
+
+    if (reset) {
+      page = 0
+      total = 0
+      grid.innerHTML = '<p style="color:var(--color-text-muted);padding:24px 0">Đang tải sản phẩm...</p>'
+      if (loadMoreWrap) loadMoreWrap.style.display = 'none'
+    }
+
+    const { data, count } = await getProductsPaged({
+      page,
+      categorySlug: filters.category,
+      orKeywords:   filters.orKeywords,
+      search:       filters.search
+    })
+
+    if (reset) grid.innerHTML = ''
+
+    if (data.length === 0 && page === 0) {
+      grid.innerHTML = '<p style="color:var(--color-text-muted);padding:24px 0">Không tìm thấy sản phẩm phù hợp. Thử bỏ bớt bộ lọc hoặc liên hệ Tiên Du để được tư vấn.</p>'
+    } else {
+      // Nguyên lý 5: loading="lazy" đã có trong renderProductCard
+      grid.insertAdjacentHTML('beforeend', data.map(p => renderProductCard(p, 'san-pham/')).join(''))
+      wireCardClicks()
+    }
+
+    total = count
+    page++
+
+    // Cập nhật đếm số lượng
+    const shown = Math.min(page * PAGE_SIZE, total)
+    if (countEl) countEl.textContent = `Hiển thị ${shown} / ${total} sản phẩm`
+
+    // Nút "Xem thêm": hiện nếu còn sản phẩm chưa load
+    if (loadMoreWrap) loadMoreWrap.style.display = shown < total ? '' : 'none'
+
+    loading = false
   }
+
+  // Click vào card → đi tới trang chi tiết
+  function wireCardClicks() {
+    grid.querySelectorAll('.product-card').forEach(card => {
+      if (card.dataset.wired) return
+      card.dataset.wired = '1'
+      const link = card.querySelector('.product-cta')
+      if (!link) return
+      card.addEventListener('click', e => {
+        if (!e.target.closest('a, button')) window.location.href = link.href
+      })
+    })
+  }
+
+  // ── Nút "Xem thêm" ───────────────────────────────────────────
+  btnMore?.addEventListener('click', () => loadPage(false))
+
+  // ── Dòng xe (Hãng xe → Dòng xe → Năm xe) ──────────────────────
+  function fillYears(list) {
+    selYear.innerHTML = '<option value="">Tất cả năm</option>' +
+      list.map(y => `<option value="${y}">${y}</option>`).join('')
+  }
+  fillYears(VEHICLE_YEARS_ALL) // 1990 → năm hiện tại, mặc định khi chưa chọn dòng xe
+
+  selBrand.addEventListener('change', () => {
+    const brand = selBrand.value
+    if (!brand) {
+      selModel.innerHTML = '<option value="">— Chọn hãng trước —</option>'
+      selModel.disabled = true
+    } else if (VEHICLE_MODELS[brand]) {
+      const models = Object.keys(VEHICLE_MODELS[brand])
+      selModel.innerHTML = '<option value="">Tất cả dòng xe</option>' +
+        models.map(m => `<option value="${m}">${m}</option>`).join('')
+      selModel.disabled = false
+    } else {
+      selModel.innerHTML = '<option value="">Tất cả dòng xe</option>'
+      selModel.disabled = false
+    }
+    fillYears(VEHICLE_YEARS_ALL)
+  })
+
+  selModel.addEventListener('change', () => {
+    const brand = selBrand.value
+    const model = selModel.value
+    const years = model && VEHICLE_MODELS[brand]?.[model]
+    fillYears(years || VEHICLE_YEARS_ALL)
+  })
+
+  // ── Tab lọc danh mục (server-side, reset trang) ──────────────
+  document.querySelectorAll('.tab-btn[data-filter]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn[data-filter]').forEach(t => t.classList.remove('active'))
+      tab.classList.add('active')
+      filters.category   = tab.dataset.filter === 'all' ? '' : tab.dataset.filter
+      filters.orKeywords = []
+      filters.search      = ''
+      selBrand.value = ''; selModel.innerHTML = '<option value="">— Chọn hãng trước —</option>'; selModel.disabled = true
+      fillYears(VEHICLE_YEARS_ALL)
+      document.getElementById('filterSearch').value = ''
+      loadPage(true)
+    })
+  })
+
+  // ── Nút "Lọc kết quả" (Hãng xe / Dòng xe / Năm xe / Loại phụ tùng / Tìm kiếm) ─────
+  document.getElementById('btnApplyFilter')?.addEventListener('click', () => {
+    const brand  = selBrand.value
+    const model  = selModel.value
+    const year   = selYear.value
+    const typed  = document.getElementById('filterSearch').value.trim()
+
+    filters.category = document.getElementById('filterCat').value
+
+    if (model) {
+      // Đã chọn dòng xe cụ thể → tìm theo tên dòng xe + năm (khớp chuỗi con trong tên sản phẩm)
+      filters.orKeywords = []
+      filters.search = [typed, model, year].filter(Boolean).join(' ')
+    } else if (brand && VEHICLE_MODELS[brand]) {
+      // Chỉ chọn hãng xe → tìm theo TẤT CẢ dòng xe của hãng đó (OR), cộng thêm năm nếu có
+      filters.orKeywords = Object.keys(VEHICLE_MODELS[brand])
+      filters.search = [typed, year].filter(Boolean).join(' ')
+    } else {
+      filters.orKeywords = []
+      filters.search = [typed, year].filter(Boolean).join(' ')
+    }
+
+    // Bỏ active tab khi dùng dropdown
+    document.querySelectorAll('.tab-btn[data-filter]').forEach(t => t.classList.remove('active'))
+    const matchTab = document.querySelector(`.tab-btn[data-filter="${filters.category || 'all'}"]`)
+    if (matchTab) matchTab.classList.add('active')
+    loadPage(true)
+  })
+
+  // ── Ô tìm kiếm: debounce 350ms, tìm server-side ─────────────
+  let searchTimer
+  document.getElementById('filterSearch')?.addEventListener('input', e => {
+    clearTimeout(searchTimer)
+    searchTimer = setTimeout(() => {
+      filters.orKeywords = []
+      filters.search = e.target.value
+      loadPage(true)
+    }, 350)
+  })
+
+  // ── Khởi động: đọc ?category= từ URL nếu có ─────────────────
+  const urlCat = new URLSearchParams(location.search).get('category')
+  if (urlCat) {
+    filters.category = urlCat
+    const matchTab = document.querySelector(`.tab-btn[data-filter="${urlCat}"]`)
+    if (matchTab) matchTab.classList.add('active')
+    else document.querySelector('.tab-btn[data-filter="all"]')?.classList.add('active')
+  } else {
+    document.querySelector('.tab-btn[data-filter="all"]')?.classList.add('active')
+  }
+
+  loadPage(true)
 })()
 </script>
 <script src="js/main.js"></script>

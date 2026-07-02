@@ -1,0 +1,402 @@
+<!--
+  PRODUCT SCHEMA — 12 sản phẩm trên trang chủ Tiên Du
+  ====================================================
+  ⚠️ ĐIỀU KIỆN BẮT BUỘC TRƯỚC KHI DÙNG FILE NÀY:
+  
+  Audit kỹ thuật xác nhận: hiện tại CẢ 12 sản phẩm đang trỏ về CÙNG
+  MỘT URL tĩnh "san-pham-chi-tiet.html" (kiểm tra bằng cách gọi
+  server với nhiều query param khác nhau, server luôn trả về y
+  nguyên 1 trang, không có routing theo sản phẩm).
+
+  → Nghĩa là các URL "offers.url" trong schema dưới đây
+    (ví dụ /san-pham/ma-phanh-gom-cao-cap.html) là ĐỀ XUẤT, CHƯA
+    PHẢI URL THẬT. Bạn/dev cần:
+    
+    1. Tạo route/trang thật cho từng sản phẩm theo đúng slug đề xuất
+       (hoặc đổi slug theo cấu trúc URL bạn muốn dùng — chỉ cần nhất
+       quán giữa link hiển thị trên trang và URL khai trong schema)
+    2. Cập nhật lại link "Xem chi tiết →" trên trang chủ/san-pham.html
+       để mỗi sản phẩm trỏ đúng trang riêng của nó
+    3. Đặt đoạn schema TƯƠNG ỨNG vào ĐÚNG trang chi tiết của sản phẩm
+       đó (KHÔNG đặt tất cả 12 schema này chung vào 1 trang — Google
+       sẽ hiểu là 1 trang bán 12 sản phẩm, làm loãng signal)
+
+  Nếu sản phẩm chưa có trang riêng, có 2 lựa chọn:
+    A) Tạm hoãn dùng Product schema cho tới khi có trang riêng
+       (an toàn nhất)
+    B) Nếu BẮT BUỘC dùng ngay trên 1 trang chung, dùng @type
+       "ItemList" chứa các Product mà KHÔNG có "offers.url" riêng
+       — nhưng phương án này hiệu quả AEO/GEO thấp hơn nhiều, vì
+       AI/Google không tách được sản phẩm ra để trích dẫn độc lập.
+
+  ⚠️ GHI CHÚ DỮ LIỆU: Sản phẩm "Bộ Lọc Không Khí Dòng Cao" (SKU P01)
+  hiện ghi năm "2004" trong khi 11 sản phẩm khác đều ghi "2026" —
+  khả năng cao đây là dữ liệu mẫu/placeholder chưa cập nhật. Xác
+  nhận lại năm/đời xe phù hợp thật trước khi publish, vì khai báo
+  sai compatibility có thể gây nhầm lẫn cho khách và bị Google Merge
+  Center từ chối nếu sau này bạn dùng Google Shopping.
+
+  CÁCH DÙNG: mỗi block <script> dưới đây dán vào ĐÚNG 1 trang sản
+  phẩm tương ứng (đã ghi rõ SKU và tên ở comment phía trên mỗi block).
+-->
+
+
+<!-- SKU: p01 | Sản phẩm: Bộ Lọc Không Khí Dòng Cao | Dán vào trang: /san-pham/bo-loc-khong-khi-dong-cao.html -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Bộ Lọc Không Khí Dòng Cao",
+  "image": "https://ototiendu.com/assets/products/p01-loc-khong-khi.jpg",
+  "description": "Động cơ 2.0L – 2.5L Tiêu chuẩn OEM.",
+  "sku": "P01",
+  "brand": {
+    "@type": "Brand",
+    "name": "Toyota"
+  },
+  "category": "Động Cơ",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://ototiendu.com/san-pham/bo-loc-khong-khi-dong-cao.html",
+    "priceCurrency": "VND",
+    "price": 185000,
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "Organization",
+      "name": "Tiên Du - Phụ Tùng Ô Tô"
+    }
+  }
+}
+</script>
+
+
+<!-- SKU: p02 | Sản phẩm: Má Phanh Gốm Cao Cấp | Dán vào trang: /san-pham/ma-phanh-gom-cao-cap.html -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Má Phanh Gốm Cao Cấp",
+  "image": "https://ototiendu.com/assets/products/p02-ma-phanh.jpg",
+  "description": "Phanh trước / sau Độ bền cao gấp 3x.",
+  "sku": "P02",
+  "brand": {
+    "@type": "Brand",
+    "name": "Toyota"
+  },
+  "category": "Hệ Thống Phanh",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://ototiendu.com/san-pham/ma-phanh-gom-cao-cap.html",
+    "priceCurrency": "VND",
+    "price": 450000,
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "Organization",
+      "name": "Tiên Du - Phụ Tùng Ô Tô"
+    }
+  }
+}
+</script>
+
+
+<!-- SKU: p03 | Sản phẩm: Dầu Nhớt & Bộ Lọc Động Cơ | Dán vào trang: /san-pham/dau-nhot-bo-loc-dong-co.html -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Dầu Nhớt & Bộ Lọc Động Cơ",
+  "image": "https://ototiendu.com/assets/products/p03-dau-nhot.jpg",
+  "description": "5W-30 Full Synthetic Thay sau 5.000 km.",
+  "sku": "P03",
+  "brand": {
+    "@type": "Brand",
+    "name": "Toyota"
+  },
+  "category": "Động Cơ",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://ototiendu.com/san-pham/dau-nhot-bo-loc-dong-co.html",
+    "priceCurrency": "VND",
+    "price": 320000,
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "Organization",
+      "name": "Tiên Du - Phụ Tùng Ô Tô"
+    }
+  }
+}
+</script>
+
+
+<!-- SKU: p04 | Sản phẩm: Bugi Iridium | Dán vào trang: /san-pham/bugi-iridium.html -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Bugi Iridium",
+  "image": "https://ototiendu.com/assets/products/p04-bugi.jpg",
+  "description": "Đầu điện cực Iridium Tuổi thọ 100.000 km.",
+  "sku": "P04",
+  "brand": {
+    "@type": "Brand",
+    "name": "Toyota"
+  },
+  "category": "Đánh Lửa",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://ototiendu.com/san-pham/bugi-iridium.html",
+    "priceCurrency": "VND",
+    "price": 275000,
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "Organization",
+      "name": "Tiên Du - Phụ Tùng Ô Tô"
+    }
+  }
+}
+</script>
+
+
+<!-- SKU: p05 | Sản phẩm: Bộ Lọc Không Khí Dòng Cao (1.5L-2.0L) | Dán vào trang: /san-pham/bo-loc-khong-khi-dong-cao-15l-20l.html -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Bộ Lọc Không Khí Dòng Cao (1.5L-2.0L)",
+  "image": "https://ototiendu.com/assets/products/p05-loc-khong-khi-2.jpg",
+  "description": "Động cơ 1.5L - 2.0L Tiêu chuẩn OEM.",
+  "sku": "P05",
+  "brand": {
+    "@type": "Brand",
+    "name": "Toyota"
+  },
+  "category": "Động Cơ",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://ototiendu.com/san-pham/bo-loc-khong-khi-dong-cao-15l-20l.html",
+    "priceCurrency": "VND",
+    "price": 185000,
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "Organization",
+      "name": "Tiên Du - Phụ Tùng Ô Tô"
+    }
+  }
+}
+</script>
+
+
+<!-- SKU: p06 | Sản phẩm: Bộ Giảm Xóc Thể Thao | Dán vào trang: /san-pham/bo-giam-xoc-the-thao.html -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Bộ Giảm Xóc Thể Thao",
+  "image": "https://ototiendu.com/assets/products/p06-giam-xoc.jpg",
+  "description": "Hệ thống treo trước Tải trọng 450 kg.",
+  "sku": "P06",
+  "brand": {
+    "@type": "Brand",
+    "name": "Toyota"
+  },
+  "category": "Hệ Thống Treo",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://ototiendu.com/san-pham/bo-giam-xoc-the-thao.html",
+    "priceCurrency": "VND",
+    "price": 1250000,
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "Organization",
+      "name": "Tiên Du - Phụ Tùng Ô Tô"
+    }
+  }
+}
+</script>
+
+
+<!-- SKU: p07 | Sản phẩm: Bộ Lọc Dầu Động Cơ | Dán vào trang: /san-pham/bo-loc-dau-dong-co.html -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Bộ Lọc Dầu Động Cơ",
+  "image": "https://ototiendu.com/assets/products/p07-loc-dau.jpg",
+  "description": "Áp suất 6 - 8 bar Thay mỗi 5.000 km.",
+  "sku": "P07",
+  "brand": {
+    "@type": "Brand",
+    "name": "Toyota"
+  },
+  "category": "Động Cơ",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://ototiendu.com/san-pham/bo-loc-dau-dong-co.html",
+    "priceCurrency": "VND",
+    "price": 95000,
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "Organization",
+      "name": "Tiên Du - Phụ Tùng Ô Tô"
+    }
+  }
+}
+</script>
+
+
+<!-- SKU: p08 | Sản phẩm: Dây Curoa Truyền Động | Dán vào trang: /san-pham/day-curoa-truyen-dong.html -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Dây Curoa Truyền Động",
+  "image": "https://ototiendu.com/assets/products/p08-day-curoa.jpg",
+  "description": "Chiều dài 1.680 mm Tải trọng 5 kN.",
+  "sku": "P08",
+  "brand": {
+    "@type": "Brand",
+    "name": "Toyota"
+  },
+  "category": "Truyền Động",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://ototiendu.com/san-pham/day-curoa-truyen-dong.html",
+    "priceCurrency": "VND",
+    "price": 320000,
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "Organization",
+      "name": "Tiên Du - Phụ Tùng Ô Tô"
+    }
+  }
+}
+</script>
+
+
+<!-- SKU: p09 | Sản phẩm: Cảm Biến Oxy Khí Thải | Dán vào trang: /san-pham/cam-bien-oxy-khi-thai.html -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Cảm Biến Oxy Khí Thải",
+  "image": "https://ototiendu.com/assets/products/p09-cam-bien-oxy.jpg",
+  "description": "Tín hiệu 0 - 1V Nhiệt độ tối đa 850°C.",
+  "sku": "P09",
+  "brand": {
+    "@type": "Brand",
+    "name": "Toyota"
+  },
+  "category": "Hệ Thống Điện",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://ototiendu.com/san-pham/cam-bien-oxy-khi-thai.html",
+    "priceCurrency": "VND",
+    "price": 650000,
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "Organization",
+      "name": "Tiên Du - Phụ Tùng Ô Tô"
+    }
+  }
+}
+</script>
+
+
+<!-- SKU: p10 | Sản phẩm: Bộ Lọc Nhiên Liệu Cao Cấp | Dán vào trang: /san-pham/bo-loc-nhien-lieu-cao-cap.html -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Bộ Lọc Nhiên Liệu Cao Cấp",
+  "image": "https://ototiendu.com/assets/products/p10-loc-nhien-lieu.jpg",
+  "description": "Áp suất 3 - 5 bar Lọc 10 micron.",
+  "sku": "P10",
+  "brand": {
+    "@type": "Brand",
+    "name": "Toyota"
+  },
+  "category": "Nhiên Liệu",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://ototiendu.com/san-pham/bo-loc-nhien-lieu-cao-cap.html",
+    "priceCurrency": "VND",
+    "price": 145000,
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "Organization",
+      "name": "Tiên Du - Phụ Tùng Ô Tô"
+    }
+  }
+}
+</script>
+
+
+<!-- SKU: p11 | Sản phẩm: Đèn Pha LED Cao Cấp | Dán vào trang: /san-pham/den-pha-led-cao-cap.html -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Đèn Pha LED Cao Cấp",
+  "image": "https://ototiendu.com/assets/products/p11-den-pha-led.jpg",
+  "description": "6000K White Light Tuổi thọ 30.000h.",
+  "sku": "P11",
+  "brand": {
+    "@type": "Brand",
+    "name": "Toyota"
+  },
+  "category": "Hệ Thống Điện",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://ototiendu.com/san-pham/den-pha-led-cao-cap.html",
+    "priceCurrency": "VND",
+    "price": 2800000,
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "Organization",
+      "name": "Tiên Du - Phụ Tùng Ô Tô"
+    }
+  }
+}
+</script>
+
+
+<!-- SKU: p12 | Sản phẩm: Bơm Nước Làm Mát | Dán vào trang: /san-pham/bom-nuoc-lam-mat.html -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Bơm Nước Làm Mát",
+  "image": "https://ototiendu.com/assets/products/p12-bom-nuoc.jpg",
+  "description": "Lưu lượng 50 L/phút Trục thép không gỉ.",
+  "sku": "P12",
+  "brand": {
+    "@type": "Brand",
+    "name": "Toyota"
+  },
+  "category": "Làm Mát",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://ototiendu.com/san-pham/bom-nuoc-lam-mat.html",
+    "priceCurrency": "VND",
+    "price": 580000,
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "Organization",
+      "name": "Tiên Du - Phụ Tùng Ô Tô"
+    }
+  }
+}
+</script>
+

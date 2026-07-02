@@ -54,7 +54,7 @@ async function getCatsMap() {
 // ── Nguyên lý 2: Phân trang — chỉ load PAGE_SIZE sản phẩm mỗi lần ──
 const PAGE_SIZE = 24
 
-async function getProductsPaged({ page = 0, categorySlug = '', brandName = '', search = '' } = {}) {
+async function getProductsPaged({ page = 0, categorySlug = '', brandName = '', orKeywords = [], search = '' } = {}) {
   const from = page * PAGE_SIZE
   const to   = from + PAGE_SIZE - 1
 
@@ -72,16 +72,24 @@ async function getProductsPaged({ page = 0, categorySlug = '', brandName = '', s
     if (catId) q = q.eq('category_id', catId)
   }
 
-  // Lọc hãng xe
-  if (brandName) {
+  // Lọc theo danh sách dòng xe của 1 hãng (khớp tên bất kỳ dòng nào — vì
+  // brand_id chưa được gán cho phần lớn dữ liệu tồn kho thực tế)
+  if (orKeywords && orKeywords.length) {
+    const ors = orKeywords.map(k => `name_normalized.ilike.%${normalizeVietnamese(k)}%`).join(',')
+    q = q.or(ors)
+  } else if (brandName) {
     const brandMap = await getBrandsMap()
     const brandId  = brandMap[brandName]
     if (brandId) q = q.eq('brand_id', brandId)
   }
 
-  // Nguyên lý 4: Tìm kiếm không dấu trên cột name_normalized
+  // Nguyên lý 4: Tìm kiếm không dấu trên cột name_normalized —
+  // mỗi từ khoá là 1 điều kiện ilike riêng (AND), khớp cả khi các từ
+  // không liền nhau trong tên sản phẩm (vd: "ranger 2016")
   if (search.trim()) {
-    q = q.ilike('name_normalized', '%' + normalizeVietnamese(search) + '%')
+    normalizeVietnamese(search).split(/\s+/).filter(Boolean).forEach(token => {
+      q = q.ilike('name_normalized', '%' + token + '%')
+    })
   }
 
   const { data, error, count } = await q
