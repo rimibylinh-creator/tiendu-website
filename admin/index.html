@@ -786,6 +786,7 @@ function pFilter(val, key) {
     }
     if (pF.stock) q = q.eq('stock_status', pF.stock)
     const { data } = await q.limit(200)
+    if (data) data.forEach(p => { pStore[p.id] = p })
     renderP(data || [])
   }, 300)
 }
