@@ -402,16 +402,25 @@ const WMI_ASIA = {
   'MHL':'Honda (Thái Lan)','MHR':'Honda (Thái Lan)','MNA':'Honda (Thái Lan)',
   'MHS':'Honda (Thái Lan)',
   'MM8':'Mazda (Thái Lan)','MM6':'Mazda (Thái Lan)',
-  'PA1':'Mitsubishi (Thái Lan)','PAG':'Mitsubishi (Thái Lan)',
+  'RF3':'Mazda (Thái Lan / Việt Nam)','RF8':'Mazda (Thái Lan / Việt Nam)',
+  'RF9':'Mazda (Thái Lan / Việt Nam)',
+  'PA1':'Mitsubishi (Thái Lan)','PAA':'Mitsubishi (Thái Lan)',
+  'PAB':'Mitsubishi (Thái Lan)','PAG':'Mitsubishi (Thái Lan)',
+  'MMJ':'Mitsubishi (Thái Lan)',
   'MBJ':'Ford (Thái Lan)','MBF':'Ford (Thái Lan)',
   'MNF':'Nissan (Thái Lan)','MNN':'Nissan (Thái Lan)',
   'MMM':'Isuzu (Thái Lan)','MML':'Isuzu (Thái Lan)',
+  'MNG2':'Chevrolet (Thái Lan)',
 
   // ── INDONESIA ─────────────────────────────────────────────────
   'MHF':'Toyota (Indonesia)','MRH':'Toyota (Indonesia)','MR0':'Toyota (Indonesia)',
-  'MHK':'Honda (Indonesia)','MHH':'Honda (Indonesia)','MHL2':'Honda (Indonesia)',
-  'MNA2':'Honda (Indonesia)',
+  'MHK':'Honda (Indonesia)','MHH':'Honda (Indonesia)',
+  'MMS':'Mitsubishi (Indonesia)',  // Xpander, Pajero Sport — rất phổ biến ở VN
+  'MMP':'Mitsubishi (Indonesia)',
   'ZAR':'Mitsubishi (Indonesia)',
+  'MHY':'Daihatsu (Indonesia)',
+  'MHZ':'Daihatsu (Indonesia)',
+  'BHM':'Suzuki (Indonesia)',
 
   // ── ẤN ĐỘ ────────────────────────────────────────────────────
   'MA3':'Maruti Suzuki (Ấn Độ)','MA1':'Mercedes-Benz (Ấn Độ)',
@@ -424,6 +433,7 @@ const WMI_ASIA = {
   'VF7':'Vinfast','VF8':'Vinfast','VF9':'Vinfast',
   'MRL':'Honda (Việt Nam)','MRK':'Honda (Việt Nam)',
   'MNV':'Toyota (Việt Nam)',
+  'MMH':'Hyundai (Việt Nam)','KMH5':'Hyundai (Việt Nam)',
 
   // ── TRUNG QUỐC ────────────────────────────────────────────────
   'LGB':'Geely','LGX':'Geely','LGE':'Geely',
@@ -691,7 +701,7 @@ async function handleVinSearch(e) {
     // Head
     const nameParts = [make, model].filter(Boolean);
     document.getElementById('vcMake').textContent = nameParts.join(' ') || 'Không xác định';
-    document.getElementById('vcYear').textContent = year || '—';
+    document.getElementById('vcYear').textContent = year || decodeVinYear(raw[9]) || '—';
 
     // Badges
     const badges = [];
