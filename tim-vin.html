@@ -318,9 +318,11 @@
 </div>
 
 <script src="js/main.js"></script>
+<script src="js/vin-data.js"></script>
 <script>
 /* ============================================================
-   VIN LOOKUP — NHTSA vPIC API (free, global, no key needed)
+   VIN LOOKUP — NHTSA vPIC API (chính) + VINDATA offline (fallback)
+   Kết quả: Hãng + Dòng + Đời năm + Nơi sản xuất
    ============================================================ */
 
 const NHTSA_URL = 'https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/';
@@ -362,148 +364,23 @@ const MAINTENANCE_TABLE = [
   { item: 'Kiểm tra lốp xe', interval: 'Mỗi 6 tháng', note: 'Thay khi mòn đến giới hạn 1.6mm hoặc sau 5 năm' },
 ];
 
-// Bảng WMI cho xe Châu Á và toàn cầu — dùng khi NHTSA không trả về dữ liệu
-const WMI_ASIA = {
-  // ── NHẬT BẢN ──────────────────────────────────────────────────
-  // Toyota / Lexus
-  'JTD':'Toyota','JTE':'Toyota','JTF':'Toyota','JTG':'Toyota','JTH':'Toyota (Lexus)',
-  'JTJ':'Toyota (Lexus)','JTK':'Toyota','JTL':'Toyota','JTM':'Toyota','JTN':'Toyota',
-  'JTP':'Toyota','JTR':'Toyota','JTS':'Toyota','JTW':'Toyota',
-  // Honda / Acura
-  'JHM':'Honda','JH4':'Honda','JH6':'Honda','JHG':'Honda','JHL':'Honda',
-  // Mitsubishi
-  'JA3':'Mitsubishi','JA4':'Mitsubishi','JA6':'Mitsubishi','JMB':'Mitsubishi',
-  // Nissan / Infiniti
-  'JN1':'Nissan','JN6':'Nissan','JNA':'Nissan','JNB':'Nissan','JNK':'Nissan (Infiniti)',
-  // Mazda
-  'JM1':'Mazda','JM6':'Mazda','JM7':'Mazda',
-  // Suzuki
-  'JS1':'Suzuki','JS2':'Suzuki','JS3':'Suzuki','JS4':'Suzuki',
-  // Subaru
-  'JF1':'Subaru','JF2':'Subaru','JF3':'Subaru',
-  // Isuzu
-  'JAA':'Isuzu','JAB':'Isuzu','JAC':'Isuzu',
-  // Daihatsu
-  'JD1':'Daihatsu','JD2':'Daihatsu',
-  // Yamaha (mô tô)
-  'JYA':'Yamaha',
+// ── Dữ liệu WMI/năm/nước/dòng xe được tách sang js/vin-data.js (window.VINDATA) ──
+// Các hàm dưới là adapter mỏng để phần code phía dưới dùng lại như cũ.
 
-  // ── HÀN QUỐC ──────────────────────────────────────────────────
-  'KMH':'Hyundai','KMF':'Hyundai','KMJ':'Hyundai','KMU':'Hyundai','KM8':'Hyundai',
-  'KNA':'Kia','KNB':'Kia','KND':'Kia','KNE':'Kia','KNF':'Kia','KNG':'Kia',
-  'KL4':'Chevrolet (Hàn Quốc)','KLA':'Chevrolet (Hàn Quốc)','KLU':'Chevrolet (Hàn Quốc)',
-  'KPT':'Ssangyong','KPH':'Ssangyong',
-
-  // ── THÁI LAN ──────────────────────────────────────────────────
-  'MMA':'Toyota (Thái Lan)','MMB':'Toyota (Thái Lan)',
-  'MMC':'Toyota (Thái Lan)','MMD':'Toyota (Thái Lan)',
-  'MMT':'Toyota (Thái Lan)','MNB':'Toyota (Thái Lan)','MNC':'Toyota (Thái Lan)',
-  'MNT':'Toyota (Thái Lan)','MNK':'Toyota (Thái Lan)','MNG':'Toyota (Thái Lan)',
-  'MHL':'Honda (Thái Lan)','MHR':'Honda (Thái Lan)','MNA':'Honda (Thái Lan)',
-  'MHS':'Honda (Thái Lan)',
-  'MM8':'Mazda (Thái Lan)','MM6':'Mazda (Thái Lan)',
-  'RF3':'Mazda (Thái Lan / Việt Nam)','RF8':'Mazda (Thái Lan / Việt Nam)',
-  'RF9':'Mazda (Thái Lan / Việt Nam)',
-  'PA1':'Mitsubishi (Thái Lan)','PAA':'Mitsubishi (Thái Lan)',
-  'PAB':'Mitsubishi (Thái Lan)','PAG':'Mitsubishi (Thái Lan)',
-  'MMJ':'Mitsubishi (Thái Lan)',
-  'MBJ':'Ford (Thái Lan)','MBF':'Ford (Thái Lan)',
-  'MNF':'Nissan (Thái Lan)','MNN':'Nissan (Thái Lan)',
-  'MMM':'Isuzu (Thái Lan)','MML':'Isuzu (Thái Lan)',
-
-  // ── INDONESIA ─────────────────────────────────────────────────
-  'MHF':'Toyota (Indonesia)','MRH':'Toyota (Indonesia)','MR0':'Toyota (Indonesia)',
-  'MHK':'Honda (Indonesia)','MHH':'Honda (Indonesia)',
-  'MMS':'Mitsubishi (Indonesia)',  // Xpander, Pajero Sport — rất phổ biến ở VN
-  'MMP':'Mitsubishi (Indonesia)',
-  'ZAR':'Mitsubishi (Indonesia)',
-  'MHY':'Daihatsu (Indonesia)',
-  'MHZ':'Daihatsu (Indonesia)',
-  'BHM':'Suzuki (Indonesia)',
-
-  // ── ẤN ĐỘ ────────────────────────────────────────────────────
-  'MA3':'Maruti Suzuki (Ấn Độ)','MA1':'Mercedes-Benz (Ấn Độ)',
-  'MAJ':'Ford (Ấn Độ)','MAT':'Tata Motors','MAL':'Hyundai (Ấn Độ)',
-  'MBR':'Toyota (Ấn Độ)','MC2':'Honda (Ấn Độ)',
-
-  // ── VIỆT NAM ──────────────────────────────────────────────────
-  'ME1':'Việt Nam (VinFast/khác)',
-  'VF3':'VinFast','VF5':'VinFast','VF6':'VinFast',
-  'VF7':'VinFast','VF8':'VinFast','VF9':'VinFast',
-  'MRL':'Honda (Việt Nam)','MRK':'Honda (Việt Nam)',
-  'MNV':'Toyota (Việt Nam)',
-  'MMH':'Hyundai (Việt Nam)',
-  'TCM':'Mitsubishi (Việt Nam)','MMP':'Mitsubishi (Việt Nam)',
-
-  // ── THÁI LAN (bổ sung) ────────────────────────────────────────
-  'MMG':'Suzuki (Thái Lan)','MMP':'Suzuki (Thái Lan)',
-  'MBU':'General Motors (Thái Lan)','MNG':'Chevrolet (Thái Lan)',
-  'MHN':'Honda (Thái Lan)',
-
-  // ── TRUNG QUỐC ────────────────────────────────────────────────
-  'LGB':'Geely','LGX':'Geely','LGE':'Geely',
-  'LTV':'BYD','LBV':'BYD','LS5':'BYD',
-  'LSG':'Buick (Trung Quốc)','LSY':'Buick (Trung Quốc)',
-  'LMN':'FAW','LFP':'FAW','LFA':'FAW',
-  'LVS':'Volvo (Trung Quốc)','LVV':'Volvo (Trung Quốc)',
-  'LFW':'Chery','LHG':'Chery',
-  'LS6':'SAIC General Motors','LZW':'SAIC Wuling',
-
-  // ── CHÂU ÂU ────────────────────────────────────────────────────
-  'WAU':'Audi','WBA':'BMW','WBS':'BMW (M)','WBY':'BMW (i)',
-  'WDB':'Mercedes-Benz','WDC':'Mercedes-Benz','WDD':'Mercedes-Benz',
-  'WVW':'Volkswagen','WV2':'Volkswagen','WV1':'Volkswagen',
-  'VF1':'Renault (Pháp)','VF2':'Renault (Pháp)','VF4':'Peugeot (Pháp)',
-  'VNA':'Citroën','VNE':'Citroën',
-  'SAJ':'Jaguar','SAL':'Land Rover','SCC':'Lotus','SCF':'Aston Martin',
-  'VSS':'SEAT (Tây Ban Nha)','VSD':'Citroën (Tây Ban Nha)',
-  'TMB':'Škoda','TMA':'Volkswagen (Slovakia)',
-
-  // ── MỸ ────────────────────────────────────────────────────────
-  '1G1':'Chevrolet','1G6':'Cadillac','1FA':'Ford','1FT':'Ford (Truck)',
-  '1HG':'Honda (USA)','2HG':'Honda (Canada)','1N4':'Nissan (USA)',
-  '2T1':'Toyota (Canada)','3VW':'Volkswagen (Mexico)',
-};
-
-// Nhận diện khu vực từ ký tự đầu VIN
-const VIN_REGION = {
-  '1':'Mỹ','2':'Canada','3':'Mexico','4':'Mỹ','5':'Mỹ','6':'Úc / New Zealand',
-  '7':'New Zealand','8':'Argentina / Chile','9':'Brazil',
-  'A':'Nam Phi','B':'Angola','C':'Bờ Biển Ngà',
-  'J':'Nhật Bản',
-  'K':'Hàn Quốc',
-  'L':'Trung Quốc',
-  'M':'Đông Nam Á / Ấn Độ',
-  'N':'Thổ Nhĩ Kỳ / Ai Cập',
-  'P':'Philippines',
-  'R':'Đài Loan',
-  'S':'Anh / Thụy Điển / Ba Lan',
-  'T':'Thụy Sĩ / Séc / Hungary',
-  'U':'Romania',
-  'V':'Pháp / Tây Ban Nha / Serbia',
-  'VF':'Việt Nam (Vinfast)',
-  'W':'Đức',
-  'X':'Nga / Phần Lan',
-  'Y':'Thụy Điển / Phần Lan / Bỉ',
-  'Z':'Ý',
-};
-
-// Giải mã năm từ ký tự thứ 10 của VIN
+// Giải mã năm từ 1 ký tự (dùng khi chỉ có ký tự 10, không có ngữ cảnh chu kỳ → mặc định dải mới)
 function decodeVinYear(ch) {
-  const m = {
-    'A':2010,'B':2011,'C':2012,'D':2013,'E':2014,'F':2015,'G':2016,'H':2017,
-    'J':2018,'K':2019,'L':2020,'M':2021,'N':2022,'P':2023,'R':2024,'S':2025,'T':2026,
-    '1':2001,'2':2002,'3':2003,'4':2004,'5':2005,'6':2006,'7':2007,'8':2008,'9':2009,
-    'V':1997,'W':1998,'X':1999,'Y':2000,
-  };
-  return m[ch?.toUpperCase()] || null;
+  return (window.VINDATA && window.VINDATA.YEAR_NEW[(ch || '').toUpperCase()]) || null;
 }
 
-// Lấy tên khu vực từ VIN prefix
+// Giải mã năm chính xác từ toàn bộ VIN (có xét ký tự 7 để chọn chu kỳ)
+function decodeVinYearFull(vin) {
+  return (window.VINDATA && window.VINDATA.decodeYear(vin)) || null;
+}
+
+// Lấy tên nước sản xuất từ VIN (dùng dải 2 ký tự chuẩn ISO 3780)
 function getVinRegion(vin) {
-  if (!vin) return null;
-  if (vin.startsWith('VF')) return 'Việt Nam (Vinfast)';
-  return VIN_REGION[vin[0]] || null;
+  if (!vin || !window.VINDATA) return null;
+  return window.VINDATA.decodeWMI(vin).country;
 }
 
 function getField(results, varName) {
@@ -610,15 +487,16 @@ function buildPartsSection(fuelType, make) {
   `).join('');
 }
 
-// Giải mã bằng bảng WMI nội bộ (dùng cho cả VIN 17 ký tự không có trên NHTSA lẫn số khung ngắn)
+// Giải mã bằng VINDATA offline (dùng cho VIN 17 ký tự không có trên NHTSA lẫn số khung ngắn)
 function decodeByWMI(raw, isChassis) {
-  const wmi = raw.substring(0, 3).toUpperCase();
-  const wmiMake = WMI_ASIA[wmi];
-  // Năm: ký tự thứ 10 (index 9) chỉ có nghĩa với VIN 17 ký tự chuẩn
-  const yearChar = raw.length === 17 ? raw[9] : null;
-  const wmiYear = decodeVinYear(yearChar);
-  // Region chỉ có nghĩa với VIN chuẩn, không áp dụng cho số khung ngắn
-  const region = isChassis ? null : getVinRegion(raw);
+  const d = window.VINDATA.decode(raw);
+  const wmi = d.wmi;
+  const wmiMake = d.make;
+  // Năm chỉ có nghĩa với VIN 17 ký tự chuẩn
+  const wmiYear = raw.length === 17 ? d.year : null;
+  // Nước chỉ áp dụng cho VIN chuẩn (không áp dụng cho số khung ngắn)
+  const region = isChassis ? null : d.country;
+  const modelHint = raw.length === 17 ? d.modelHint : null;
 
   if (wmiMake) {
     document.getElementById('vcMake').textContent = wmiMake;
@@ -628,15 +506,15 @@ function decodeByWMI(raw, isChassis) {
       (wmiYear ? `<span class="vin-badge">Năm ${wmiYear}</span>` : '') +
       (region ? `<span class="vin-badge">${region}</span>` : '');
     buildSpecsGrid([
-      { label: 'Hãng xe', value: wmiMake },
-      { label: 'Dòng xe', value: 'Liên hệ Tiên Du để xác nhận' },
+      { label: 'Hãng xe', value: wmiMake, highlight: true },
+      { label: 'Dòng xe', value: modelHint ? modelHint + ' (gợi ý)' : 'Liên hệ Tiên Du để xác nhận' },
       { label: 'Đời xe', value: wmiYear ? String(wmiYear) : (isChassis ? 'Liên hệ Tiên Du' : null), highlight: !!wmiYear },
-      { label: 'Nước sản xuất', value: region || (wmiMake.includes('Việt Nam') ? 'Việt Nam' : null) },
+      { label: 'Nước sản xuất', value: region },
       { label: 'Mã WMI', value: wmi },
     ]);
     document.getElementById('vcOrigin').innerHTML =
-      `<span class="vin-origin-flag">⚠️</span>` +
-      `<span>Hãng: <strong>${wmiMake}</strong>${region ? ' · Nước: <strong>' + region + '</strong>' : ''}. Liên hệ Tiên Du để xác nhận dòng xe và phụ tùng phù hợp.</span>`;
+      `<span class="vin-origin-flag">📍</span>` +
+      `<span>Hãng: <strong>${wmiMake}</strong>${region ? ' · Nước SX: <strong>' + region + '</strong>' : ''}${modelHint ? ' · Dòng (gợi ý): <strong>' + modelHint + '</strong>' : ''}. Gọi Tiên Du để xác nhận dòng xe & phụ tùng theo mã OEM.</span>`;
   } else if (isChassis) {
     // Số khung không nhận diện được — không dùng VIN_REGION vì không phải VIN chuẩn
     document.getElementById('vcMake').textContent = 'Không xác định';
@@ -707,7 +585,7 @@ async function handleVinSearch(e) {
     if (isHardFatal) {
       // Ngay cả khi lỗi cấu trúc, vẫn thử WMI để hỗ trợ người dùng
       const wmi = raw.substring(0, 3).toUpperCase();
-      const wmiMake = WMI_ASIA[wmi];
+      const wmiMake = window.VINDATA.decodeWMI(raw).make;
       if (!wmiMake) {
         const errorText = getField(results, 'Error Text') || 'Số VIN không đúng định dạng.';
         showError('Số VIN không hợp lệ', errorText);
@@ -740,10 +618,14 @@ async function handleVinSearch(e) {
       return;
     }
 
+    // Dòng xe: ưu tiên NHTSA, nếu thiếu thì gợi ý từ bảng offline
+    const modelHint = window.VINDATA.decodeModelHint(raw);
+    const modelDisplay = model || (modelHint ? modelHint + ' (gợi ý)' : null);
+
     // Head
     const nameParts = [make, model].filter(Boolean);
-    document.getElementById('vcMake').textContent = nameParts.join(' ') || 'Không xác định';
-    document.getElementById('vcYear').textContent = year || decodeVinYear(raw[9]) || '—';
+    document.getElementById('vcMake').textContent = nameParts.join(' ') || make || 'Không xác định';
+    document.getElementById('vcYear').textContent = year || decodeVinYearFull(raw) || '—';
 
     // Badges
     const badges = [];
@@ -768,9 +650,9 @@ async function handleVinSearch(e) {
     const transDisplay = transParts.join(' ') || null;
 
     buildSpecsGrid([
-      { label: 'Hãng xe', value: make },
-      { label: 'Dòng xe', value: model },
-      { label: 'Năm sản xuất', value: year, highlight: true },
+      { label: 'Hãng xe', value: make, highlight: true },
+      { label: 'Dòng xe', value: modelDisplay },
+      { label: 'Năm sản xuất', value: year || decodeVinYearFull(raw), highlight: true },
       { label: 'Kiểu dáng', value: bodyClass },
       { label: 'Động cơ', value: engineDisplay },
       { label: 'Nhiên liệu', value: fuelType },
@@ -779,10 +661,12 @@ async function handleVinSearch(e) {
       { label: 'Cửa / Hàng ghế', value: [doors ? doors + ' cửa' : null, seats ? seats + ' hàng ghế' : null].filter(Boolean).join(' · ') || null },
     ]);
 
-    // Origin strip
+    // Origin strip — bổ sung nước SX offline nếu NHTSA thiếu
+    const offlineCountry = getVinRegion(raw);
     const originParts = [];
     if (manufacturer) originParts.push(`<span class="vin-origin-item"><strong>Nhà sản xuất:</strong> ${manufacturer}</span>`);
-    if (country) originParts.push(`<span class="vin-origin-item"><strong>Quốc gia SX:</strong> ${country}</span>`);
+    const countryShow = country || offlineCountry;
+    if (countryShow) originParts.push(`<span class="vin-origin-item"><strong>Quốc gia SX:</strong> ${countryShow}</span>`);
     if (plantCountry && plantCountry !== country) originParts.push(`<span class="vin-origin-item"><strong>Nhà máy:</strong> ${[plantState, plantCountry].filter(Boolean).join(', ')}</span>`);
     document.getElementById('vcOrigin').innerHTML = originParts.join('') || '<span class="vin-origin-item">Không có thông tin xuất xứ</span>';
 
