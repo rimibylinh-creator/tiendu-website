@@ -195,7 +195,7 @@ async function selectBrand(brand, logo) {
     btn.classList.toggle('selected', btn.dataset.brand === brand))
 
   document.getElementById('resultsSection').style.display = ''
-  document.getElementById('resIcon').innerHTML = `<img src="${logo}" alt="${brand}" style="height:24px;width:auto">`
+  document.getElementById('resIcon').innerHTML = `<img src="${logo}" alt="${brand}" style="width:56px;height:24px;object-fit:contain">`
   document.getElementById('resBrandName').textContent = brand
   document.getElementById('resultsBody').innerHTML = '<div class="lookup-loading">Đang tải dữ liệu...</div>'
   document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' })
