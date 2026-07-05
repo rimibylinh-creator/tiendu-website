@@ -2741,6 +2741,9 @@ p { margin: 0; }
   outline-offset: 3px;
 }
 
+/* Mobile sticky bottom call bar — hidden on desktop, shown ≤860px instead of floating-zalo */
+.mobile-sticky-bar { display: none; }
+
 /* ===========================================================
    VIN LOOKUP
    =========================================================== */
@@ -3304,12 +3307,35 @@ p { margin: 0; }
   /* Footer */
   .footer-top { flex-direction: column; }
   .footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
-  /* Floating button */
-  .floating-zalo { bottom: 20px; right: 20px; gap: 8px; }
-  .floating-zalo > a { width: 52px; height: 52px; }
-  .floating-zalo > a img { width: 52px; height: 52px; }
-  .floating-call a { width: 52px; height: 52px; }
-  .floating-call img { width: 22px; height: 22px; }
+  /* Floating button — replaced by mobile-sticky-bar on mobile */
+  .floating-zalo { display: none; }
+  body { padding-bottom: 64px; }
+  .mobile-sticky-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 1000;
+    gap: 10px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    background: var(--color-white);
+    box-shadow: 0 -2px 16px rgba(0,0,0,0.14);
+  }
+  .mobile-sticky-bar a {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-cta);
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  .mobile-sticky-bar img { width: 18px; height: 18px; }
+  .mobile-sticky-bar .msb-call { background: var(--color-black); color: var(--color-white); }
+  .mobile-sticky-bar .msb-zalo { background: var(--color-primary); color: var(--color-near-black); }
   /* Promo */
   .promo-slide-content { padding: 28px 16px; }
   .promo-slide-title { font-size: 18px; }
