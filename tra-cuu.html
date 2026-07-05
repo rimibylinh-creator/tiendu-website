@@ -167,16 +167,16 @@
 <script src="js/supabase-client.js"></script>
 <script>
 const CAR_BRANDS = [
-  { name: 'Toyota',     icon: '🚗' },
-  { name: 'Honda',      icon: '🚗' },
-  { name: 'Mazda',      icon: '🚗' },
-  { name: 'Mitsubishi', icon: '🚙' },
-  { name: 'Nissan',     icon: '🚙' },
-  { name: 'Suzuki',     icon: '🚗' },
-  { name: 'Isuzu',      icon: '🚛' },
-  { name: 'Hyundai',    icon: '🚗' },
-  { name: 'Kia',        icon: '🚗' },
-  { name: 'Daewoo',     icon: '🚗' },
+  { name: 'Toyota',     logo: 'assets/brands/toyota-v2.svg' },
+  { name: 'Honda',      logo: 'assets/brands/honda.svg' },
+  { name: 'Mazda',      logo: 'assets/brands/mazda.svg' },
+  { name: 'Mitsubishi', logo: 'assets/brands/mitsubishi.svg' },
+  { name: 'Nissan',     logo: 'assets/brands/nissan.svg' },
+  { name: 'Suzuki',     logo: 'assets/brands/suzuki.svg' },
+  { name: 'Isuzu',      logo: 'assets/brands/isuzu.svg' },
+  { name: 'Hyundai',    logo: 'assets/brands/hyundai.svg' },
+  { name: 'Kia',        logo: 'assets/brands/kia.svg' },
+  { name: 'Daewoo',     logo: 'assets/brands/daewoo.svg' },
 ]
 
 let allPartTypes = []
@@ -184,18 +184,18 @@ let allBrands    = []
 
 function renderBrandPicker() {
   document.getElementById('brandGrid').innerHTML = CAR_BRANDS.map(b => `
-    <button class="brand-pick-btn" data-brand="${b.name}" onclick="selectBrand('${b.name}','${b.icon}')">
-      <span class="brand-pick-icon">${b.icon}</span>
+    <button class="brand-pick-btn" data-brand="${b.name}" onclick="selectBrand('${b.name}','${b.logo}')">
+      <img class="brand-pick-icon" src="${b.logo}" alt="${b.name}">
       <span>${b.name}</span>
     </button>`).join('')
 }
 
-async function selectBrand(brand, icon) {
+async function selectBrand(brand, logo) {
   document.querySelectorAll('.brand-pick-btn').forEach(btn =>
     btn.classList.toggle('selected', btn.dataset.brand === brand))
 
   document.getElementById('resultsSection').style.display = ''
-  document.getElementById('resIcon').textContent = icon
+  document.getElementById('resIcon').innerHTML = `<img src="${logo}" alt="${brand}" style="height:24px;width:auto">`
   document.getElementById('resBrandName').textContent = brand
   document.getElementById('resultsBody').innerHTML = '<div class="lookup-loading">Đang tải dữ liệu...</div>'
   document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' })

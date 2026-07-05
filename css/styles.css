@@ -3424,7 +3424,7 @@ p { margin: 0; }
 }
 .brand-pick-btn:hover { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(254,205,39,.18); }
 .brand-pick-btn.selected { border-color: var(--color-primary); background: #fffbe6; box-shadow: 0 0 0 3px rgba(254,205,39,.25); }
-.brand-pick-icon { font-size: 28px; line-height: 1; }
+.brand-pick-icon { height: 32px; width: auto; max-width: 84px; object-fit: contain; }
 
 /* Selected brand header */
 .brand-selected-bar {
