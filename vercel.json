@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    { "source": "/about-us", "destination": "/gioi-thieu.html", "permanent": true },
+    { "source": "/about-us/", "destination": "/gioi-thieu.html", "permanent": true },
+    { "source": "/danh-muc/:path*", "destination": "/tim-vin.html", "permanent": true },
+    { "source": "/san-pham/:slug([^.]+)", "destination": "/san-pham.html", "permanent": true },
+    { "source": "/products/:slug*", "destination": "/san-pham.html", "permanent": true },
+    { "source": "/page/:num*", "destination": "/san-pham.html", "permanent": true }
+  ]
+}
