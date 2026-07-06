@@ -324,11 +324,49 @@ Người dùng nhập VIN
 
 ---
 
-## 9. Nguồn dữ liệu & lưu ý pháp lý
+## 9. Khung pháp lý Việt Nam — Số khung & Đăng kiểm
 
-- **NHTSA vPIC** (`vpic.nhtsa.dot.gov`) — cơ sở dữ liệu miễn phí của Bộ Giao thông Mỹ, hỗ trợ hầu hết xe sản xuất từ 1981. Chính xác nhất cho dòng xe, động cơ, nhà máy. Xe chỉ bán ở Châu Á đôi khi thiếu dữ liệu dòng xe.
-- **ISO 3779 / ISO 3780** — chuẩn quốc tế về cấu trúc VIN và mã WMI.
-- **Wikibooks WMI registry** — danh sách mã WMI chi tiết theo hãng.
+### Tiêu chuẩn quốc gia áp dụng
+
+| Văn bản | Nội dung |
+|---------|---------|
+| **TCVN 6578:2014** (tương đương ISO 3779:2009) | Cấu trúc và nội dung số VIN — tiêu chuẩn bắt buộc cho xe lưu hành tại VN. Ban hành bởi Bộ KH&CN. |
+| **TCVN 6578:2000** (ISO 3779:1977) | Phiên bản cũ hơn, đã được thay thế bởi TCVN 6578:2014. |
+
+### Quyết định & Hướng dẫn Cục Đăng kiểm
+
+- **Hướng dẫn 556/ĐK (01/06/2007)** — Cục Đăng kiểm VN hướng dẫn áp dụng VIN cho xe sản xuất/lắp ráp tại Việt Nam:
+  - WMI Việt Nam dùng cặp ký tự đầu: **RL, RM, RN** (theo ISO 3780)
+  - Ký tự 3 trong WMI: do Cục Đăng kiểm cấp cho từng cơ sở sản xuất
+  - VIN phải được đóng ở vị trí **dễ đọc từ bên ngoài xe**, thường ở **nửa phía trước, bên phải**
+  - Phải được bảo vệ tránh phá hủy/thay đổi
+
+### Thông tư đăng kiểm hiện hành
+
+| Thông tư | Nội dung liên quan đến số khung |
+|---------|--------------------------------|
+| **TT 16/2021/TT-BGTVT** | Quy định kiểm định xe cơ giới — yêu cầu số khung/VIN theo TCVN 6578 |
+| **TT 02/2023/TT-BGTVT** (hiệu lực 22/3/2023) | Sửa đổi bổ sung — yêu cầu **bản cà số khung và số động cơ** khi làm hồ sơ; số khung phải phù hợp TCVN 6578 |
+| **TT 47/2024/TT-BGTVT** (hiệu lực 01/01/2025) | Mới nhất — quy định miễn kiểm định lần đầu cho xe mới; trình tự thủ tục kiểm định cập nhật |
+
+### Số khung trong đăng kiểm thực tế
+
+- **Số khung = VIN** với xe sản xuất từ 1981 đúng chuẩn ISO 3779 (17 ký tự)
+- **Số khung ngắn hơn 17 ký tự** — một số xe cũ hoặc xe không xuất sang Mỹ, định dạng riêng của hãng; Cục Đăng kiểm vẫn chấp nhận nếu đủ điều kiện nhận dạng
+- **Cà số khung** trong hồ sơ đăng kiểm: đây là bản rập số khung thực tế đóng trên xe — dùng để đối chiếu với giấy tờ
+
+> **Thực tế quan trọng:** Số khung trong **Giấy chứng nhận đăng ký xe** (đăng ký) và **Phiếu kiểm định** (đăng kiểm) đều lấy từ số VIN. Nếu VIN tra tự động ra kết quả khác với giấy tờ → cần xác minh trực tiếp tại Cục Đăng kiểm hoặc đại lý chính hãng.
+
+---
+
+## 10. Nguồn dữ liệu & lưu ý pháp lý
+
+**Nguồn tham chiếu:**
+- **NHTSA vPIC** (`vpic.nhtsa.dot.gov`) — cơ sở dữ liệu Bộ GT Mỹ, hỗ trợ hầu hết xe từ 1981. Chính xác nhất cho dòng xe/động cơ với xe bán ở Mỹ. Xe Châu Á bán riêng cho thị trường nội địa thường thiếu dữ liệu.
+- **TCVN 6578:2014** — tiêu chuẩn VN tương đương ISO 3779:2009 ([hethongphapluat.com](https://hethongphapluat.com/tieu-chuan-quoc-gia-tcvn-6578-2014-iso-3779-2009-ve-phuong-tien-giao-thong-duong-bo-ma-nhan-dang-xe-vin-noi-dung-va-cau-truc.html) · [thuvienphapluat.vn](https://thuvienphapluat.vn/TCVN/Giao-thong/TCVN-6578-2014-Phuong-tien-giao-thong-duong-bo-Ma-nhan-dang-xe-Noi-dung-cau-truc-912953.aspx))
+- **Hướng dẫn 556/ĐK** — Cục Đăng kiểm VN về VIN xe lắp ráp trong nước ([caselaw.vn](https://caselaw.vn/van-ban-phap-luat/14875-huong-dan-so-556-dk-ngay-01-06-2007-thuc-hien-quyet-dinh-01-2007-qd-bgtvt-bo-truong-bo-giao-thong-van-tai-ap-dung-tieu-chuan-tcvn-6578-2000-va-tcvn-6580-2000-ve-so-nhan-dang-phuong-tien-vin-doi-voi-o-to-ro-mooc-va-so-mi-ro-mooc-san-xuat-lap-rap-tai-viet-nam-do-cuc-dang-kiem-viet-nam-ban-hanh))
+- **ISO 3779:2009** bản gốc tiếng Anh ([iso.org](https://www.iso.org/standard/52200.html))
+- **Wikibooks / Wikipedia WMI registry** — danh sách mã WMI toàn cầu
 
 **Lưu ý khi dùng kết quả tra VIN để bán phụ tùng:**
 
@@ -338,4 +376,5 @@ Người dùng nhập VIN
 
 ---
 
-*Tài liệu nội bộ Tiên Du — Phụ tùng ô tô Nha Trang · 0946.915.111*
+*Tài liệu nội bộ Tiên Du — Phụ tùng ô tô Nha Trang · 0946.915.111*  
+*Cập nhật: 7/2026 — Nguồn: TCVN 6578:2014, Hướng dẫn 556/ĐK, TT 02/2023/TT-BGTVT, TT 47/2024/TT-BGTVT*
