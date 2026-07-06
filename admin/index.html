@@ -229,6 +229,10 @@ input:checked+.slider:before{transform:translateX(16px)}
 .ai-html-prev th,.ai-html-prev td{border:1px solid #d2d2d2;padding:5px 8px}
 .ai-spinning{animation:aiSpin .9s linear infinite;display:inline-block}
 @keyframes aiSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.ai-thumb-wrap{margin-bottom:16px;background:#f5f5f5;border-radius:8px;overflow:hidden;border:1px solid #ebebeb;position:relative}
+.ai-thumb-wrap img{width:100%;display:block;border-radius:8px}
+.ai-thumb-loading{padding:32px;text-align:center;font-size:13px;color:#737373}
+.ai-img-count{display:inline-flex;align-items:center;gap:5px;background:#f0f4ff;border:1px solid #c7d7f7;border-radius:4px;padding:3px 8px;font-size:11px;font-weight:600;color:#3b5fc0}
 
 /* ── Responsive ── */
 @media(max-width:820px){
@@ -635,15 +639,23 @@ input:checked+.slider:before{transform:translateX(16px)}
     </div>
     <!-- Bước 2: kết quả -->
     <div id="aiResultPanel" style="display:none">
-      <div class="ai-result-meta">
+      <div class="ai-result-meta" style="margin-bottom:12px">
         <span class="ai-tag" id="res_cat"></span>
         <span class="ai-kw" id="res_kw"></span>
+        <span class="ai-img-count" id="res_img_count" style="display:none">🖼 0 ảnh minh hoạ</span>
       </div>
       <div class="ai-result-title" id="res_title"></div>
       <div class="ai-result-excerpt" id="res_excerpt"></div>
       <div class="ai-seo-note">💡 <span id="res_seonote"></span></div>
+      <div style="margin-top:14px">
+        <div class="flabel" style="margin-bottom:6px">🖼 Ảnh thumbnail (AI tự tạo)</div>
+        <div class="ai-thumb-wrap">
+          <div class="ai-thumb-loading" id="res_thumb_loading"><span class="ai-spinning">⏳</span> Đang tạo ảnh thumbnail...</div>
+          <img id="res_thumb" src="" alt="" style="display:none" onload="this.style.display='block';document.getElementById('res_thumb_loading').style.display='none'" onerror="document.getElementById('res_thumb_loading').textContent='⚠️ Không tải được ảnh thumbnail'">
+        </div>
+      </div>
       <details style="margin-top:12px">
-        <summary style="font-size:12px;font-weight:600;color:#737373;cursor:pointer;user-select:none;padding:4px 0">Xem trước nội dung (HTML)</summary>
+        <summary style="font-size:12px;font-weight:600;color:#737373;cursor:pointer;user-select:none;padding:4px 0">Xem trước nội dung &amp; ảnh minh hoạ</summary>
         <div class="ai-html-prev" id="res_content"></div>
       </details>
     </div>
@@ -1872,8 +1884,15 @@ QUY TẮC NỘI DUNG:
 - KHÔNG thêm CSS inline, class, id, hay <style>. Trang web đã có sẵn style cho các thẻ này.
 - Link nội bộ khi hợp lý: sản phẩm "san-pham.html", liên hệ "lien-he.html", tra cứu "tra-cuu.html".
 
+HÌNH ẢNH MINH HOẠ TRONG BÀI:
+- Chèn ĐÚNG 2 đến 3 marker hình ảnh vào nội dung tại các vị trí tự nhiên (sau đoạn mở đầu, sau một H2, và trước phần kết).
+- Định dạng marker: [[IMG:english_photo_prompt|Chú thích tiếng Việt ngắn gọn]]
+- Ký tự | là dấu phân cách bắt buộc giữa prompt và chú thích. KHÔNG dùng | ở nơi khác.
+- english_photo_prompt: mô tả chi tiết bằng tiếng Anh, kiểu nhiếp ảnh thực tế chuyên nghiệp, ví dụ: "close-up of worn brake pads vs new brake pads, automotive workshop lighting, sharp focus, professional product photography"
+- KHÔNG dùng marker này ở ngoài phần content.
+
 ĐẦU RA: Trả về DUY NHẤT một object JSON hợp lệ (không kèm markdown, không giải thích), theo schema:
-{"title":"string — tiêu đề bài, 50-60 ký tự","slug":"string — không dấu kebab-case","excerpt":"string — meta description 140-160 ký tự","category_slug":"một trong: bao-duong | kinh-nghiem | phu-tung | tin-nganh","content":"string — HTML thân bài theo quy tắc trên","focus_keyword":"string — từ khóa SEO chính đã tối ưu","seo_notes":"string — 1-2 câu giải thích chiến lược SEO của bài này"}`
+{"title":"string — tiêu đề bài, 50-60 ký tự","slug":"string — không dấu kebab-case","excerpt":"string — meta description 140-160 ký tự","category_slug":"một trong: bao-duong | kinh-nghiem | phu-tung | tin-nganh","content":"string — HTML thân bài có chứa 2-3 marker [[IMG:...|...]]","thumbnail_prompt":"string — detailed English photorealistic prompt for the cover thumbnail, 16:9, professional automotive photography","focus_keyword":"string — từ khóa SEO chính đã tối ưu","seo_notes":"string — 1-2 câu giải thích chiến lược SEO của bài này"}`
 
 const AI_CAT_NAMES = {
   'bao-duong':   'Bảo dưỡng',
@@ -1958,7 +1977,7 @@ async function runAiWriter() {
     }
     const data = await resp.json()
     const raw = (data.content || []).map(b => b.type === 'text' ? b.text : '').join('').trim()
-    const article = parseAiJson(raw)
+    const article = processArticleImages(parseAiJson(raw))
     _aiArticle = article
     showAiResult(article)
   } catch (e) {
@@ -1968,6 +1987,34 @@ async function runAiWriter() {
     btn.disabled = false
     btn.textContent = '✍️ Viết bài →'
   }
+}
+
+function buildPollinationsUrl(prompt, w = 800, h = 450) {
+  let seed = 0
+  for (let i = 0; i < prompt.length; i++) seed = (seed * 31 + prompt.charCodeAt(i)) >>> 0
+  seed = seed % 999983
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true`
+}
+
+function processArticleImages(article) {
+  let imgCount = 0
+  article.content = (article.content || '').replace(
+    /\[\[IMG:([^|\]]+)\|([^\]]+)\]\]/g,
+    (_, prompt, caption) => {
+      imgCount++
+      const url = buildPollinationsUrl(prompt.trim())
+      return `<figure style="margin:24px 0">` +
+        `<img src="${url}" alt="${caption.trim()}" style="width:100%;border-radius:8px;display:block" loading="lazy" ` +
+        `onerror="this.style.opacity='.3'">` +
+        `<figcaption style="font-size:13px;color:#737373;text-align:center;margin-top:8px;font-style:italic">${caption.trim()}</figcaption>` +
+        `</figure>`
+    }
+  )
+  article._imgCount = imgCount
+  article._thumbUrl = article.thumbnail_prompt
+    ? buildPollinationsUrl(article.thumbnail_prompt, 1200, 630)
+    : ''
+  return article
 }
 
 function parseAiJson(raw) {
@@ -1986,6 +2033,25 @@ function showAiResult(a) {
   document.getElementById('res_excerpt').textContent = a.excerpt
   document.getElementById('res_seonote').textContent = a.seo_notes || ''
   document.getElementById('res_content').innerHTML = a.content || ''
+  // Image count badge
+  const badge = document.getElementById('res_img_count')
+  if (a._imgCount > 0) {
+    badge.textContent = `🖼 ${a._imgCount} ảnh minh hoạ`
+    badge.style.display = ''
+  } else {
+    badge.style.display = 'none'
+  }
+  // Thumbnail
+  const thumbImg = document.getElementById('res_thumb')
+  const thumbLoading = document.getElementById('res_thumb_loading')
+  if (a._thumbUrl) {
+    thumbImg.style.display = 'none'
+    thumbLoading.style.display = ''
+    thumbLoading.innerHTML = '<span class="ai-spinning">⏳</span> Đang tạo ảnh thumbnail...'
+    thumbImg.src = a._thumbUrl
+  } else {
+    thumbLoading.textContent = '— Không có thumbnail —'
+  }
   document.getElementById('aiFormPanel').style.display = 'none'
   document.getElementById('aiResultPanel').style.display = ''
   document.getElementById('aiFootWrite').style.display = 'none'
@@ -2011,6 +2077,10 @@ function fillFromAi() {
   sv('po_title', a.title || '')
   sv('po_slug', a.slug || '')
   sv('po_excerpt', a.excerpt || '')
+  if (a._thumbUrl) {
+    sv('po_cover', a._thumbUrl)
+    prevImg('po_cover', 'po_prev')
+  }
   const catName = AI_CAT_NAMES[a.category_slug]
   if (catName) {
     const cat = postCats.find(c => c.name === catName)
