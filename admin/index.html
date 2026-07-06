@@ -1996,20 +1996,34 @@ function buildPollinationsUrl(prompt, w = 800, h = 450) {
   return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true`
 }
 
+function makeImgBlock(url, caption) {
+  return `<p style="margin:20px 0 0"><img src="${url}" alt="${caption}" style="width:100%;max-width:800px;border-radius:8px;display:block" onerror="this.style.opacity='.25'"></p>` +
+    (caption ? `<p style="font-size:13px;color:#737373;text-align:center;font-style:italic;margin:4px 0 20px">${caption}</p>` : '')
+}
+
 function processArticleImages(article) {
   let imgCount = 0
+  // Replace [[IMG:prompt|caption]] markers Claude inserts
   article.content = (article.content || '').replace(
-    /\[\[IMG:([^|\]]+)\|([^\]]+)\]\]/g,
+    /\[\[IMG:([^|\]]+)\|([^\]]*)\]\]/g,
     (_, prompt, caption) => {
       imgCount++
-      const url = buildPollinationsUrl(prompt.trim())
-      return `<figure style="margin:24px 0">` +
-        `<img src="${url}" alt="${caption.trim()}" style="width:100%;border-radius:8px;display:block" loading="lazy" ` +
-        `onerror="this.style.opacity='.3'">` +
-        `<figcaption style="font-size:13px;color:#737373;text-align:center;margin-top:8px;font-style:italic">${caption.trim()}</figcaption>` +
-        `</figure>`
+      return makeImgBlock(buildPollinationsUrl(prompt.trim()), caption.trim())
     }
   )
+  // Fallback: Claude didn't insert markers — auto-inject after H2 tags
+  if (imgCount === 0 && article.thumbnail_prompt) {
+    let h2Count = 0
+    article.content = article.content.replace(/<\/h2>/gi, match => {
+      h2Count++
+      if (h2Count === 1 || h2Count === 2) {
+        imgCount++
+        const variant = h2Count === 1 ? article.thumbnail_prompt : article.thumbnail_prompt + ', different perspective, detail shot'
+        return match + makeImgBlock(buildPollinationsUrl(variant), '')
+      }
+      return match
+    })
+  }
   article._imgCount = imgCount
   article._thumbUrl = article.thumbnail_prompt
     ? buildPollinationsUrl(article.thumbnail_prompt, 1200, 630)
@@ -2086,7 +2100,10 @@ function fillFromAi() {
     const cat = postCats.find(c => c.name === catName)
     if (cat) document.getElementById('po_cat').value = cat.id
   }
-  if (quillEditor) quillEditor.root.innerHTML = a.content || ''
+  if (quillEditor) {
+    quillEditor.root.innerHTML = ''
+    if (a.content) quillEditor.clipboard.dangerouslyPasteHTML(0, a.content)
+  }
 }
 
 // ── UTILS ─────────────────────────────────────────────
