@@ -515,8 +515,8 @@ function decodeByWMI(raw, isChassis) {
     buildSpecsGrid([
       { label: 'Hãng xe', value: wmiMake, highlight: true },
       { label: 'Dòng xe', value: modelHint ? modelHint + ' (gợi ý)' : 'Liên hệ Tiên Du để xác nhận' },
-      { label: 'Đời xe', value: wmiYear ? String(wmiYear) : (isChassis ? 'Liên hệ Tiên Du' : null), highlight: !!wmiYear },
-      { label: 'Nước sản xuất', value: region },
+      { label: 'Đời xe', value: wmiYear ? String(wmiYear) : (isChassis ? 'Liên hệ Tiên Du' : '—'), highlight: !!wmiYear },
+      { label: 'Nước sản xuất', value: region || '—' },
       { label: 'Mã WMI', value: wmi },
     ]);
     document.getElementById('vcOrigin').innerHTML =
@@ -656,10 +656,16 @@ async function handleVinSearch(e) {
     if (transSpeeds) transParts.push(`${transSpeeds} cấp`);
     const transDisplay = transParts.join(' ') || null;
 
+    // Nước SX: ưu tiên NHTSA, nếu thiếu thì tra offline
+    const offlineCountry = getVinRegion(raw);
+    const countryShow = country || offlineCountry;
+    const yearShow = year || decodeVinYearFull(raw);
+
     buildSpecsGrid([
-      { label: 'Hãng xe', value: make, highlight: true },
-      { label: 'Dòng xe', value: modelDisplay },
-      { label: 'Năm sản xuất', value: year || decodeVinYearFull(raw), highlight: true },
+      { label: 'Hãng xe', value: make || '—', highlight: true },
+      { label: 'Dòng xe', value: modelDisplay || 'Liên hệ Tiên Du để xác nhận' },
+      { label: 'Năm sản xuất', value: yearShow || '—', highlight: !!yearShow },
+      { label: 'Nước sản xuất', value: countryShow || '—' },
       { label: 'Kiểu dáng', value: bodyClass },
       { label: 'Động cơ', value: engineDisplay },
       { label: 'Nhiên liệu', value: fuelType },
@@ -668,11 +674,9 @@ async function handleVinSearch(e) {
       { label: 'Cửa / Hàng ghế', value: [doors ? doors + ' cửa' : null, seats ? seats + ' hàng ghế' : null].filter(Boolean).join(' · ') || null },
     ]);
 
-    // Origin strip — bổ sung nước SX offline nếu NHTSA thiếu
-    const offlineCountry = getVinRegion(raw);
+    // Origin strip
     const originParts = [];
     if (manufacturer) originParts.push(`<span class="vin-origin-item"><strong>Nhà sản xuất:</strong> ${manufacturer}</span>`);
-    const countryShow = country || offlineCountry;
     if (countryShow) originParts.push(`<span class="vin-origin-item"><strong>Quốc gia SX:</strong> ${countryShow}</span>`);
     if (plantCountry && plantCountry !== country) originParts.push(`<span class="vin-origin-item"><strong>Nhà máy:</strong> ${[plantState, plantCountry].filter(Boolean).join(', ')}</span>`);
     document.getElementById('vcOrigin').innerHTML = originParts.join('') || '<span class="vin-origin-item">Không có thông tin xuất xứ</span>';

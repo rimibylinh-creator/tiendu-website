@@ -59,7 +59,8 @@
     // ── THÁI LAN (ML–MR) ──────────────────────────────────
     MR0:{make:'Toyota',country:'Thái Lan'}, MR1:{make:'Toyota',country:'Thái Lan'},
     MR2:{make:'Toyota',country:'Thái Lan'}, MRH:{make:'Honda',country:'Thái Lan'},
-    MNT:{make:'Nissan',country:'Thái Lan'},
+    MRN:{make:'Honda',country:'Thái Lan'},  // Honda Thailand variants
+    MNT:{make:'Nissan',country:'Thái Lan'}, MNS:{make:'Nissan',country:'Thái Lan'},
     MMA:{make:'Mitsubishi',country:'Thái Lan'}, MMB:{make:'Mitsubishi',country:'Thái Lan'},
     MMC:{make:'Mitsubishi',country:'Thái Lan'}, MMD:{make:'Mitsubishi',country:'Thái Lan'},
     MMT:{make:'Mitsubishi',country:'Thái Lan'}, ML3:{make:'Mitsubishi',country:'Thái Lan'},
@@ -182,25 +183,59 @@
         Khóa con so khớp bằng "bắt đầu bằng" trên đoạn ký tự 4-8.
      --------------------------------------------------------- */
   const VDS_HINTS = {
-    // Toyota Thái Lan (bán tải/SUV phổ biến VN) — ký tự 4-8
-    MR0:{ 'B':'Hilux / Fortuner (nhóm IMV)', 'E':'Yaris / Vios', 'H':'Corolla' },
-    MR1:{ 'B':'Hilux / Fortuner', 'K':'Fortuner' },
-    RL4:{ 'B':'Vios / Corolla (lắp ráp VN)', 'V':'Veloz / Avanza' },
-    // Ford Thái Lan
-    MNB:{ 'U':'Ranger', 'B':'Ranger', 'E':'Everest' },
-    MNC:{ 'U':'Ranger', 'B':'Ranger', 'E':'Everest' },
+    // ── TOYOTA ────────────────────────────────────────────────
+    // Thái Lan: MR0/MR1/MR2
+    // Ký tự 4 (VDS[0]) = mã platform/series — dùng 1 ký tự đầu
+    MR0:{
+      'B':'HiLux Revo / Fortuner',  // IMV platform nhóm B
+      'G':'Fortuner / HiLux (IMV)', // IMV nhóm G (phổ biến 2016+)
+      'C':'Fortuner / Land Cruiser Prado',
+      'E':'Yaris / Vios',
+      'H':'Corolla / Corolla Cross',
+      'J':'Innova / Rush',
+      'A':'Alphard / Vellfire',
+    },
+    MR1:{ 'B':'HiLux Revo', 'G':'HiLux / Fortuner', 'K':'Fortuner' },
+    MR2:{ 'B':'HiLux Revo', 'G':'HiLux / Fortuner' },
+    // Việt Nam: RL4
+    RL4:{ 'B':'Vios / Corolla Altis (VN)', 'V':'Veloz / Avanza', 'H':'Corolla Cross (VN)' },
+    // Nhật: JTD/JTE...
+    JTD:{ 'K':'Camry', 'E':'Land Cruiser', 'F':'Land Cruiser' },
+    JTE:{ 'A':'RAV4', 'B':'Highlander', 'F':'Land Cruiser Prado' },
+
+    // ── FORD ──────────────────────────────────────────────────
+    MNB:{ 'U':'Ranger', 'B':'Ranger', 'E':'Everest', 'F':'Everest' },
+    MNC:{ 'U':'Ranger', 'B':'Ranger', 'E':'Everest', 'F':'Everest' },
     MNA:{ 'U':'Ranger', 'E':'Everest' },
     RL0:{ 'U':'Ranger (lắp ráp VN)' },
-    // Mitsubishi
-    MMT:{ 'K':'Triton / Pajero Sport' }, MMA:{ 'K':'Triton' },
-    MK2:{ 'X':'Xpander' }, // Indonesia
-    // Honda
-    MRH:{ 'G':'Civic / City', 'R':'CR-V' }, RLH:{ 'G':'City / Civic (VN)' },
-    // Hyundai / Kia
-    KMH:{ 'C':'Accent / Elantra', 'J':'Tucson / Santa Fe' },
-    KNA:{ 'B':'Morning / Soluto', 'J':'Seltos / Sportage' },
-    // VinFast
-    RLL:{ 'V':'VF e34 / VF 5 / VF 6 / VF 7 / VF 8 / VF 9' },
+
+    // ── MITSUBISHI ────────────────────────────────────────────
+    MMT:{ 'K':'Triton / Pajero Sport', 'L':'Triton', 'J':'Pajero Sport' },
+    MMA:{ 'K':'Triton', 'J':'Pajero Sport' },
+    MMB:{ 'K':'Triton' },
+    MK2:{ 'X':'Xpander', 'F':'Outlander', 'E':'Eclipse Cross' }, // Indonesia
+    RLA:{ 'X':'Xpander (VN)', 'E':'Outlander (VN)' },            // Vina Star VN
+
+    // ── HONDA ─────────────────────────────────────────────────
+    MRH:{ 'G':'City / Civic', 'R':'CR-V', 'F':'HR-V', 'B':'Accord / Odyssey' },
+    RLH:{ 'G':'City / Civic (VN)', 'R':'CR-V (VN)', 'F':'HR-V (VN)' },
+    JHM:{ 'C':'Accord', 'E':'CR-V', 'F':'Pilot / Odyssey', 'H':'Jazz / Fit' },
+
+    // ── HYUNDAI ───────────────────────────────────────────────
+    KMH:{ 'C':'Accent / Elantra', 'J':'Tucson / Santa Fe', 'Z':'Tucson / Ioniq', 'D':'Grand i10' },
+    KM8:{ 'S':'Santa Fe', 'J':'Tucson' },
+
+    // ── KIA ───────────────────────────────────────────────────
+    KNA:{ 'B':'Morning / Picanto', 'J':'Seltos / Sportage', 'F':'Carnival', 'H':'Sorento' },
+    KND:{ 'J':'Cerato / K3', 'D':'Sportage', 'F':'Sorento', 'C':'Seltos' },
+
+    // ── NISSAN / ISUZU ────────────────────────────────────────
+    MNT:{ 'E':'Navara', 'N':'X-Trail', 'K':'Navara' },
+    MPA:{ 'G':'D-Max / mu-X (Isuzu)' },
+    MP1:{ 'G':'D-Max (Isuzu)' },
+
+    // ── VINFAST ───────────────────────────────────────────────
+    RLL:{ 'V':'VF 3 / VF 5 / VF 6 / VF 7 / VF 8 / VF 9' },
   };
 
   /* ---------------------------------------------------------
