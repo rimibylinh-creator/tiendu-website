@@ -251,18 +251,29 @@
     return t >= l && t <= h;
   }
 
-  // Giải mã năm từ ký tự 10, dùng ký tự 7 để chọn chu kỳ
+  // Giải mã năm từ ký tự 10
+  // Quy tắc NHTSA (vị trí 7 là số → chu kỳ cũ) CHỈ áp dụng cho xe Bắc Mỹ.
+  // Xe Châu Á/Châu Âu KHÔNG theo quy tắc này → dùng chu kỳ dựa trên năm hợp lý.
   function decodeYear(vin) {
     const v = normalizeVIN(vin);
-    if (v.length < 10) return null;
-    const y = v.charAt(9);          // ký tự thứ 10 (index 9)
-    const pos7 = v.charAt(6);       // ký tự thứ 7 (index 6)
-    if (v.length < 17) return null; // năm chỉ có nghĩa với VIN 17 ký tự chuẩn
-    // Chuẩn NHTSA: ký tự 7 là SỐ → dải 1980–2009; là CHỮ → dải 2010–2039.
-    // Với thị trường VN 2026, ưu tiên dải mới nếu nhập nhằng.
-    const isOldCycle = /[0-9]/.test(pos7);
-    const table = isOldCycle ? YEAR_OLD : YEAR_NEW;
-    return table[y] || null;
+    if (v.length !== 17) return null;
+    const y = v.charAt(9).toUpperCase(); // ký tự thứ 10 (index 9)
+    const wmi1 = v.charAt(0);           // ký tự đầu WMI
+
+    const yearNew = YEAR_NEW[y] || null; // dải 2010–2039
+    const yearOld = YEAR_OLD[y] || null; // dải 1980–2009
+
+    // Xe Bắc Mỹ (WMI bắt đầu bằng 1–5 hoặc 7): dùng quy tắc NHTSA vị trí 7
+    if (/[1-57]/.test(wmi1)) {
+      const isOldCycle = /[0-9]/.test(v.charAt(6));
+      return (isOldCycle ? yearOld : yearNew) || yearNew || yearOld;
+    }
+
+    // Xe không phải Bắc Mỹ: ưu tiên chu kỳ mới (2010–2039) vì đây là thị trường VN 2026.
+    // Nếu chu kỳ mới cho năm quá xa tương lai (> 2027) thì thử chu kỳ cũ (2001–2009).
+    if (yearNew && yearNew <= 2027) return yearNew;
+    if (yearOld && yearOld >= 2000) return yearOld; // xe 2000–2009
+    return yearNew || yearOld;
   }
 
   // Gợi ý dòng xe từ VDS (ký tự 4–8)
