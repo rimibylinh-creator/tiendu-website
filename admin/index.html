@@ -665,8 +665,9 @@ input:checked+.slider:before{transform:translateX(16px)}
     <button class="btn-primary" id="btnRunAi" onclick="runAiWriter()">✍️ Viết bài →</button>
   </div>
   <div class="modal-foot" id="aiFootResult" style="display:none">
+    <span id="res_img_note" style="font-size:12px;color:#737373;flex:1"></span>
     <button class="btn-outline" onclick="resetAiWriter()">← Viết lại</button>
-    <button class="btn-primary" onclick="fillFromAi()">Điền vào form bài viết →</button>
+    <button class="btn-primary" onclick="fillFromAi()">Điền vào form →</button>
   </div>
 </div>
 </div>
@@ -2002,6 +2003,12 @@ function makeImgBlock(url, caption) {
 }
 
 function processArticleImages(article) {
+  // Always ensure thumbnail_prompt exists — fallback from keyword/title
+  if (!article.thumbnail_prompt) {
+    const topic = article.focus_keyword || article.title || 'automotive car parts Vietnam'
+    article.thumbnail_prompt = topic + ', professional automotive photography, car repair workshop, realistic photo'
+  }
+
   let imgCount = 0
   // Replace [[IMG:prompt|caption]] markers Claude inserts
   article.content = (article.content || '').replace(
@@ -2011,23 +2018,23 @@ function processArticleImages(article) {
       return makeImgBlock(buildPollinationsUrl(prompt.trim()), caption.trim())
     }
   )
-  // Fallback: Claude didn't insert markers — auto-inject after H2 tags
-  if (imgCount === 0 && article.thumbnail_prompt) {
+  // Fallback: auto-inject after 1st and 2nd H2 if Claude skipped markers
+  if (imgCount === 0) {
     let h2Count = 0
     article.content = article.content.replace(/<\/h2>/gi, match => {
       h2Count++
       if (h2Count === 1 || h2Count === 2) {
         imgCount++
-        const variant = h2Count === 1 ? article.thumbnail_prompt : article.thumbnail_prompt + ', different perspective, detail shot'
-        return match + makeImgBlock(buildPollinationsUrl(variant), '')
+        const p = h2Count === 1
+          ? article.thumbnail_prompt
+          : article.thumbnail_prompt.replace('realistic photo', 'close-up detail, macro photography')
+        return match + makeImgBlock(buildPollinationsUrl(p), '')
       }
       return match
     })
   }
   article._imgCount = imgCount
-  article._thumbUrl = article.thumbnail_prompt
-    ? buildPollinationsUrl(article.thumbnail_prompt, 1200, 630)
-    : ''
+  article._thumbUrl = buildPollinationsUrl(article.thumbnail_prompt, 1200, 630)
   return article
 }
 
@@ -2066,6 +2073,9 @@ function showAiResult(a) {
   } else {
     thumbLoading.textContent = '— Không có thumbnail —'
   }
+  document.getElementById('res_img_note').textContent = a._imgCount > 0
+    ? `🖼 ${a._imgCount} ảnh AI sẽ tải sau ~15 giây trong editor`
+    : ''
   document.getElementById('aiFormPanel').style.display = 'none'
   document.getElementById('aiResultPanel').style.display = ''
   document.getElementById('aiFootWrite').style.display = 'none'
@@ -2100,10 +2110,7 @@ function fillFromAi() {
     const cat = postCats.find(c => c.name === catName)
     if (cat) document.getElementById('po_cat').value = cat.id
   }
-  if (quillEditor) {
-    quillEditor.root.innerHTML = ''
-    if (a.content) quillEditor.clipboard.dangerouslyPasteHTML(0, a.content)
-  }
+  if (quillEditor && a.content) quillEditor.root.innerHTML = a.content
 }
 
 // ── UTILS ─────────────────────────────────────────────
