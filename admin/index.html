@@ -213,6 +213,23 @@ input:checked+.slider:before{transform:translateX(16px)}
 #toast.ok {background:#101010;color:#fff}
 #toast.err{background:#dc2626;color:#fff}
 
+/* ── AI Writer ── */
+.ai-key-box{background:#fafafa;border:1px solid #ebebeb;border-radius:8px;padding:12px 14px;margin-bottom:14px}
+.ai-result-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.ai-tag{background:#dbeafe;color:#1e40af;border-radius:4px;padding:3px 8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.ai-kw{background:#fef9c3;color:#854d0e;border-radius:4px;padding:3px 8px;font-size:11px;font-weight:600}
+.ai-result-title{font-size:18px;font-weight:700;color:#101010;line-height:1.35;margin-bottom:8px}
+.ai-result-excerpt{font-size:13px;color:#737373;line-height:1.6;margin-bottom:10px;border-left:3px solid #fecd27;padding-left:12px}
+.ai-seo-note{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:10px 12px;font-size:12px;color:#15803d}
+.ai-html-prev{margin-top:10px;max-height:300px;overflow-y:auto;background:#f9f9f9;border:1px solid #ebebeb;border-radius:6px;padding:14px;font-size:13px;line-height:1.6;color:#252b42}
+.ai-html-prev h2,.ai-html-prev h3{font-weight:700;margin:10px 0 4px}
+.ai-html-prev ul,.ai-html-prev ol{padding-left:20px;margin-bottom:8px}
+.ai-html-prev p{margin-bottom:6px}
+.ai-html-prev table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px}
+.ai-html-prev th,.ai-html-prev td{border:1px solid #d2d2d2;padding:5px 8px}
+.ai-spinning{animation:aiSpin .9s linear infinite;display:inline-block}
+@keyframes aiSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
 /* ── Responsive ── */
 @media(max-width:820px){
   .layout{grid-template-columns:1fr;grid-template-rows:56px 48px 1fr}
@@ -348,7 +365,10 @@ input:checked+.slider:before{transform:translateX(16px)}
     <div id="tab-posts" style="display:none">
       <div class="ph">
         <div><div class="ph-title">Bài viết</div><div class="ph-sub" id="poCount">Đang tải...</div></div>
-        <button class="btn-primary" onclick="openPostModal()">+ Thêm bài viết</button>
+        <div class="ph-actions">
+          <button class="btn-sheet" style="background:#fffbe6;border-color:#fecd27;color:#7a5c00;font-weight:600" onclick="openAiWriter()">✍️ AI Viết Blog</button>
+          <button class="btn-primary" onclick="openPostModal()">+ Thêm bài viết</button>
+        </div>
       </div>
       <div class="toolbar">
         <input class="search-input" placeholder="🔍 Tìm tiêu đề..." oninput="poFilter(this.value)">
@@ -568,6 +588,73 @@ input:checked+.slider:before{transform:translateX(16px)}
   <div class="modal-foot">
     <button class="btn-outline" onclick="closeModal('postModal')">Hủy</button>
     <button class="btn-primary" onclick="savePost()">Lưu bài viết</button>
+  </div>
+</div>
+</div>
+
+<!-- ── AI WRITER MODAL ────────────────── -->
+<div class="modal-overlay" id="aiWriterModal" style="display:none" onclick="bkClose(event,'aiWriterModal')">
+<div class="modal-box xl">
+  <div class="modal-head">
+    <span class="modal-title">✍️ AI Viết Blog SEO</span>
+    <button class="modal-close" onclick="closeModal('aiWriterModal')">✕</button>
+  </div>
+  <div class="modal-body">
+    <!-- Bước 1: nhập yêu cầu -->
+    <div id="aiFormPanel">
+      <div class="fg" style="margin-bottom:14px">
+        <label class="flabel">Chủ đề / yêu cầu bài viết *</label>
+        <textarea class="ftextarea" id="ai_topic" rows="4" placeholder="VD: Khi nào cần thay lọc gió động cơ? Dấu hiệu nhận biết và chi phí thay lọc gió tại Nha Trang..."></textarea>
+        <span class="fnote">Mô tả càng chi tiết → bài viết càng đúng hướng</span>
+      </div>
+      <div class="fg" style="margin-bottom:14px">
+        <label class="flabel">Gợi ý danh mục (tuỳ chọn)</label>
+        <select class="fsel" id="ai_cat">
+          <option value="">— Tự động chọn —</option>
+          <option value="bao-duong">Bảo dưỡng</option>
+          <option value="kinh-nghiem">Kinh nghiệm</option>
+          <option value="phu-tung">Phụ tùng</option>
+          <option value="tin-nganh">Tin ngành</option>
+        </select>
+      </div>
+      <div class="ai-key-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <label class="flabel" style="margin-bottom:0">🔑 Claude API Key</label>
+          <button class="btn-ghost" style="font-size:11px;padding:3px 8px" onclick="toggleAiKeyField()">Hiện / đổi</button>
+        </div>
+        <div id="aiKeyFieldWrap" style="display:none;margin-bottom:6px">
+          <div class="finput-row">
+            <input class="finput" type="password" id="ai_key_input" placeholder="sk-ant-api03-...">
+            <button class="btn-outline" style="white-space:nowrap" onclick="saveAiKey()">Lưu</button>
+          </div>
+          <span class="fnote">Chỉ lưu trong trình duyệt này (localStorage), không gửi lên server</span>
+        </div>
+        <div id="aiKeyStatus" style="font-size:12px;color:#737373">Chưa có API key</div>
+      </div>
+      <div id="aiError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:10px 12px;font-size:13px;color:#dc2626;margin-bottom:10px"></div>
+    </div>
+    <!-- Bước 2: kết quả -->
+    <div id="aiResultPanel" style="display:none">
+      <div class="ai-result-meta">
+        <span class="ai-tag" id="res_cat"></span>
+        <span class="ai-kw" id="res_kw"></span>
+      </div>
+      <div class="ai-result-title" id="res_title"></div>
+      <div class="ai-result-excerpt" id="res_excerpt"></div>
+      <div class="ai-seo-note">💡 <span id="res_seonote"></span></div>
+      <details style="margin-top:12px">
+        <summary style="font-size:12px;font-weight:600;color:#737373;cursor:pointer;user-select:none;padding:4px 0">Xem trước nội dung (HTML)</summary>
+        <div class="ai-html-prev" id="res_content"></div>
+      </details>
+    </div>
+  </div>
+  <div class="modal-foot" id="aiFootWrite">
+    <button class="btn-outline" onclick="closeModal('aiWriterModal')">Đóng</button>
+    <button class="btn-primary" id="btnRunAi" onclick="runAiWriter()">✍️ Viết bài →</button>
+  </div>
+  <div class="modal-foot" id="aiFootResult" style="display:none">
+    <button class="btn-outline" onclick="resetAiWriter()">← Viết lại</button>
+    <button class="btn-primary" onclick="fillFromAi()">Điền vào form bài viết →</button>
   </div>
 </div>
 </div>
@@ -1751,6 +1838,185 @@ async function openFromDashSearch(tab, id) {
       if (data) { poStore[data.id] = data; openPostModal(data) }
     }
   }
+}
+
+// ── AI BLOG WRITER ────────────────────────────────────
+
+const AI_SYSTEM_PROMPT = `Bạn là chuyên gia content SEO tiếng Việt cho Tiên Du Phụ Tùng Ô Tô — cửa hàng phụ tùng ô tô bán sỉ & lẻ tại Nha Trang.
+
+ĐỘC GIẢ: Chủ xe, thợ máy, chủ garage tại Việt Nam. Họ tìm kiếm trên Google các câu hỏi thực tế về bảo dưỡng, chọn phụ tùng, dấu hiệu hỏng hóc.
+
+MỤC TIÊU MỖI BÀI:
+1. Xếp hạng cao trên Google cho từ khóa mục tiêu (SEO on-page chuẩn).
+2. Xây lòng tin để độc giả gọi/Zalo Tiên Du mua phụ tùng.
+
+QUY TẮC SEO BẮT BUỘC:
+- Tiêu đề (title): 50–60 ký tự, chứa từ khóa chính ở đầu, hấp dẫn (số liệu, câu hỏi, "cách"...).
+- Slug: không dấu, kebab-case, ngắn gọn, chứa từ khóa chính. VD "dau-hieu-ma-phanh-can-thay".
+- Excerpt (mô tả meta): 140–160 ký tự, chứa từ khóa chính, tóm tắt lợi ích, có tính mời gọi đọc.
+- Nội dung: 900–1500 từ. Cấu trúc rõ ràng với nhiều thẻ H2/H3.
+- Từ khóa chính xuất hiện tự nhiên trong: H1 (chính là title), đoạn mở đầu, ít nhất 2 thẻ H2, và đoạn kết.
+- Có ít nhất 1 danh sách (ul/ol) và cân nhắc 1 bảng so sánh (table) nếu phù hợp.
+- Chèn từ khóa phụ / từ đồng nghĩa (semantic SEO), tránh nhồi nhét từ khóa.
+- Nhắc địa danh "Nha Trang" và tên "Tiên Du" một cách tự nhiên (local SEO), KHÔNG lạm dụng.
+- Đoạn kết: có lời kêu gọi hành động (CTA) nhắc gọi 0946.915.111 hoặc Zalo Tiên Du.
+
+QUY TẮC NỘI DUNG:
+- Chính xác về kỹ thuật ô tô. KHÔNG bịa số liệu, giá cụ thể, hay thông số nếu không chắc — nói khoảng ước lượng hoặc khuyên liên hệ để báo giá.
+- Giọng văn: chuyên nghiệp nhưng gần gũi, như một người thợ lành nghề đang tư vấn. Tránh sáo rỗng, tránh giọng quảng cáo lố.
+- Viết cho người Việt đọc trên điện thoại: câu ngắn, đoạn ngắn (2–4 câu), dễ quét.
+
+ĐỊNH DẠNG NỘI DUNG (content) — CỰC KỲ QUAN TRỌNG:
+- Trả về HTML thuần cho phần thân bài, dùng CÁC THẺ: <h2>, <h3>, <p>, <ul>, <ol>, <li>, <blockquote>, <table>, <thead>, <tbody>, <tr>, <th>, <td>, <strong>, <a>.
+- KHÔNG bọc trong <html>, <head>, <body>, <article>. KHÔNG thêm thẻ <h1> (title hiển thị riêng).
+- KHÔNG thêm CSS inline, class, id, hay <style>. Trang web đã có sẵn style cho các thẻ này.
+- Link nội bộ khi hợp lý: sản phẩm "san-pham.html", liên hệ "lien-he.html", tra cứu "tra-cuu.html".
+
+ĐẦU RA: Trả về DUY NHẤT một object JSON hợp lệ (không kèm markdown, không giải thích), theo schema:
+{"title":"string — tiêu đề bài, 50-60 ký tự","slug":"string — không dấu kebab-case","excerpt":"string — meta description 140-160 ký tự","category_slug":"một trong: bao-duong | kinh-nghiem | phu-tung | tin-nganh","content":"string — HTML thân bài theo quy tắc trên","focus_keyword":"string — từ khóa SEO chính đã tối ưu","seo_notes":"string — 1-2 câu giải thích chiến lược SEO của bài này"}`
+
+const AI_CAT_NAMES = {
+  'bao-duong':   'Bảo dưỡng',
+  'kinh-nghiem': 'Kinh nghiệm',
+  'phu-tung':    'Phụ tùng',
+  'tin-nganh':   'Tin ngành',
+}
+
+let _aiArticle = null
+
+function openAiWriter() {
+  _aiArticle = null
+  document.getElementById('aiFormPanel').style.display = ''
+  document.getElementById('aiResultPanel').style.display = 'none'
+  document.getElementById('aiFootWrite').style.display = ''
+  document.getElementById('aiFootResult').style.display = 'none'
+  document.getElementById('aiError').style.display = 'none'
+  const key = localStorage.getItem('td_claude_key')
+  const status = document.getElementById('aiKeyStatus')
+  status.textContent = key ? '✅ API key đã lưu (...' + key.slice(-6) + ')' : '⚠️ Chưa có API key — nhấn "Hiện / đổi" để nhập'
+  status.style.color = key ? '#15803d' : '#dc2626'
+  document.getElementById('aiKeyFieldWrap').style.display = 'none'
+  document.getElementById('btnRunAi').disabled = false
+  document.getElementById('btnRunAi').textContent = '✍️ Viết bài →'
+  openModal('aiWriterModal')
+}
+
+function toggleAiKeyField() {
+  const wrap = document.getElementById('aiKeyFieldWrap')
+  wrap.style.display = wrap.style.display === 'none' ? '' : 'none'
+}
+
+function saveAiKey() {
+  const val = document.getElementById('ai_key_input').value.trim()
+  if (!val.startsWith('sk-')) { toast('Key phải bắt đầu bằng sk-', 'err'); return }
+  localStorage.setItem('td_claude_key', val)
+  document.getElementById('aiKeyStatus').textContent = '✅ API key đã lưu (...' + val.slice(-6) + ')'
+  document.getElementById('aiKeyStatus').style.color = '#15803d'
+  document.getElementById('aiKeyFieldWrap').style.display = 'none'
+  document.getElementById('ai_key_input').value = ''
+  toast('✅ Đã lưu API key!')
+}
+
+async function runAiWriter() {
+  const topic = document.getElementById('ai_topic').value.trim()
+  if (!topic) { toast('Vui lòng nhập chủ đề bài viết', 'err'); return }
+  const key = localStorage.getItem('td_claude_key')
+  if (!key) { toast('Vui lòng nhập Claude API key trước', 'err'); document.getElementById('aiKeyFieldWrap').style.display = ''; return }
+
+  const btn = document.getElementById('btnRunAi')
+  btn.disabled = true
+  btn.innerHTML = '<span class="ai-spinning">⏳</span> Đang viết...'
+  document.getElementById('aiError').style.display = 'none'
+
+  const catHint = document.getElementById('ai_cat').value
+  let userMsg = 'Viết một bài blog chuẩn SEO về chủ đề sau:\n\n"' + topic + '"\n'
+  if (catHint && AI_CAT_NAMES[catHint]) {
+    userMsg += '\nGợi ý danh mục: ' + AI_CAT_NAMES[catHint] + ' (slug: ' + catHint + '). Nếu không phù hợp, hãy tự chọn danh mục đúng nhất.'
+  } else {
+    userMsg += '\nTự chọn danh mục phù hợp nhất trong 4 danh mục cho phép.'
+  }
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-5',
+        max_tokens: 8000,
+        system: AI_SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: userMsg }],
+      }),
+    })
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}))
+      throw new Error(err?.error?.message || 'HTTP ' + resp.status)
+    }
+    const data = await resp.json()
+    const raw = (data.content || []).map(b => b.type === 'text' ? b.text : '').join('').trim()
+    const article = parseAiJson(raw)
+    _aiArticle = article
+    showAiResult(article)
+  } catch (e) {
+    const errEl = document.getElementById('aiError')
+    errEl.textContent = '❌ ' + e.message
+    errEl.style.display = ''
+    btn.disabled = false
+    btn.textContent = '✍️ Viết bài →'
+  }
+}
+
+function parseAiJson(raw) {
+  let s = raw.trim()
+  const fence = s.match(/```(?:json)?\s*([\s\S]*?)```/)
+  if (fence) s = fence[1].trim()
+  const first = s.indexOf('{'), last = s.lastIndexOf('}')
+  if (first !== -1 && last !== -1) s = s.slice(first, last + 1)
+  return JSON.parse(s)
+}
+
+function showAiResult(a) {
+  document.getElementById('res_cat').textContent = AI_CAT_NAMES[a.category_slug] || a.category_slug
+  document.getElementById('res_kw').textContent = '🔑 ' + (a.focus_keyword || '')
+  document.getElementById('res_title').textContent = a.title
+  document.getElementById('res_excerpt').textContent = a.excerpt
+  document.getElementById('res_seonote').textContent = a.seo_notes || ''
+  document.getElementById('res_content').innerHTML = a.content || ''
+  document.getElementById('aiFormPanel').style.display = 'none'
+  document.getElementById('aiResultPanel').style.display = ''
+  document.getElementById('aiFootWrite').style.display = 'none'
+  document.getElementById('aiFootResult').style.display = ''
+}
+
+function resetAiWriter() {
+  _aiArticle = null
+  document.getElementById('aiFormPanel').style.display = ''
+  document.getElementById('aiResultPanel').style.display = 'none'
+  document.getElementById('aiFootWrite').style.display = ''
+  document.getElementById('aiFootResult').style.display = 'none'
+  const btn = document.getElementById('btnRunAi')
+  btn.disabled = false
+  btn.textContent = '✍️ Viết bài →'
+}
+
+function fillFromAi() {
+  if (!_aiArticle) return
+  const a = _aiArticle
+  closeModal('aiWriterModal')
+  openPostModal()
+  sv('po_title', a.title || '')
+  sv('po_slug', a.slug || '')
+  sv('po_excerpt', a.excerpt || '')
+  const catName = AI_CAT_NAMES[a.category_slug]
+  if (catName) {
+    const cat = postCats.find(c => c.name === catName)
+    if (cat) document.getElementById('po_cat').value = cat.id
+  }
+  if (quillEditor) quillEditor.root.innerHTML = a.content || ''
 }
 
 // ── UTILS ─────────────────────────────────────────────
