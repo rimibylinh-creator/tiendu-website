@@ -227,13 +227,14 @@ function renderProductCard(p, baseHref) {
 }
 
 function renderBlogCard(p, baseHref) {
-  const catName = p.post_categories?.name || ''
-  const catSlug = p.post_categories?.slug || ''
-  const href    = 'tin-tuc-chi-tiet.html?slug=' + p.slug
+  const catName  = p.post_categories?.name || ''
+  const catSlug  = p.post_categories?.slug || ''
+  const href     = 'tin-tuc-chi-tiet.html?slug=' + p.slug
+  const coverSrc = p.cover_image_url || 'assets/no-image.svg'
   return `
 <article class="blog-card" data-blog-cat="${catSlug}">
   <div class="blog-card-img">
-    <img src="${p.cover_image_url}" alt="${p.title}" loading="lazy">
+    <img src="${coverSrc}" alt="${p.title}" loading="lazy" onerror="this.src='assets/no-image.svg'">
   </div>
   <div class="blog-card-body">
     <div class="blog-meta">
@@ -250,12 +251,13 @@ function renderBlogCard(p, baseHref) {
 }
 
 function renderFeaturedBlog(p) {
-  const catName = p.post_categories?.name || ''
-  const catSlug = p.post_categories?.slug || ''
+  const catName  = p.post_categories?.name || ''
+  const catSlug  = p.post_categories?.slug || ''
+  const coverSrc = p.cover_image_url || 'assets/no-image.svg'
   return `
 <div class="blog-featured" data-blog-cat="${catSlug}">
   <div class="blog-featured-image">
-    <img src="${p.cover_image_url}" alt="${p.title}">
+    <img src="${coverSrc}" alt="${p.title}" onerror="this.src='assets/no-image.svg'">
   </div>
   <div class="blog-featured-content">
     <div class="blog-meta">

@@ -329,7 +329,9 @@
 
   if (post.cover_image_url) {
     const bg = document.getElementById('postCoverBg')
-    bg.src = post.cover_image_url; bg.style.display = 'block'
+    bg.src = post.cover_image_url
+    bg.style.display = 'block'
+    bg.onerror = () => { bg.style.display = 'none' }
   }
 
   if (catName) {
@@ -350,8 +352,10 @@
   if (post.excerpt) { excerptEl.textContent = post.excerpt; excerptEl.style.display = 'block' }
 
   const contentEl = document.getElementById('postContent')
-  if (post.content && post.content !== '<p><br></p>') {
-    contentEl.innerHTML = post.content
+  if (post.content && post.content.replace(/<p>(\s|<br\s*\/?>\s*|\n)*<\/p>/gi, '').trim()) {
+    // Dọn các <p> rỗng do editor (Quill/CKEditor) tạo ra
+    const cleaned = post.content.replace(/<p>(\s|<br\s*\/?>\s*|\n)*<\/p>/gi, '').trim()
+    contentEl.innerHTML = cleaned
   } else {
     contentEl.innerHTML = '<p style="color:#a0a0a0;text-align:center;padding:40px 0">Nội dung đang được cập nhật...</p>'
   }
