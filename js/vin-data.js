@@ -56,28 +56,38 @@
     KPA:{make:'SsangYong',country:'Hàn Quốc'}, KPB:{make:'SsangYong',country:'Hàn Quốc'},
     KNM:{make:'Renault Samsung',country:'Hàn Quốc'},
 
-    // ── THÁI LAN (ML–MR) ──────────────────────────────────
+    // ── THÁI LAN (ML–MR) ── Nguồn: Wikibooks WMI registry ──
     MR0:{make:'Toyota',country:'Thái Lan'}, MR1:{make:'Toyota',country:'Thái Lan'},
-    MR2:{make:'Toyota',country:'Thái Lan'}, MRH:{make:'Honda',country:'Thái Lan'},
-    MRN:{make:'Honda',country:'Thái Lan'},  // Honda Thailand variants
-    MNT:{make:'Nissan',country:'Thái Lan'}, MNS:{make:'Nissan',country:'Thái Lan'},
+    MR2:{make:'Toyota',country:'Thái Lan'}, MR3:{make:'Toyota',country:'Thái Lan'},
+    MRH:{make:'Honda',country:'Thái Lan'},  // Honda Automobile Thailand
+    MRT:{make:'Neta (Hozon Auto)',country:'Thái Lan'}, // Bangchan General Assembly
+    MNT:{make:'Nissan',country:'Thái Lan'},
     MMA:{make:'Mitsubishi',country:'Thái Lan'}, MMB:{make:'Mitsubishi',country:'Thái Lan'},
     MMC:{make:'Mitsubishi',country:'Thái Lan'}, MMD:{make:'Mitsubishi',country:'Thái Lan'},
     MMT:{make:'Mitsubishi',country:'Thái Lan'}, ML3:{make:'Mitsubishi',country:'Thái Lan'},
     MMS:{make:'Suzuki',country:'Thái Lan'}, MMR:{make:'Subaru',country:'Thái Lan'},
     MMM:{make:'Chevrolet',country:'Thái Lan'}, MML:{make:'MG (SAIC)',country:'Thái Lan'},
-    MMF:{make:'BMW',country:'Thái Lan'}, MMU:{make:'Holden',country:'Thái Lan'},
+    MMF:{make:'BMW',country:'Thái Lan'}, MMU:{make:'Holden / Chevrolet Colorado',country:'Thái Lan'},
     MNA:{make:'Ford',country:'Thái Lan'}, MNB:{make:'Ford',country:'Thái Lan'},
     MNC:{make:'Ford',country:'Thái Lan'}, MPB:{make:'Ford',country:'Thái Lan'},
     MPA:{make:'Isuzu',country:'Thái Lan'}, MP1:{make:'Isuzu',country:'Thái Lan'},
-    MP2:{make:'Mazda (Isuzu SX)',country:'Thái Lan'}, MNU:{make:'Great Wall (GWM)',country:'Thái Lan'},
-    MNK:{make:'Hino',country:'Thái Lan'},
+    // Mazda Thailand — AutoAlliance Thailand (Ford-Mazda joint plant, Rayong)
+    MM0:{make:'Mazda',country:'Thái Lan'}, MM6:{make:'Mazda',country:'Thái Lan'},
+    MM7:{make:'Mazda',country:'Thái Lan'}, MM8:{make:'Mazda',country:'Thái Lan'},
+    MP2:{make:'Mazda BT-50 (Isuzu plant)',country:'Thái Lan'},
+    MNU:{make:'Great Wall (GWM)',country:'Thái Lan'}, MNK:{make:'Hino',country:'Thái Lan'},
+    MP5:{make:'Foton',country:'Thái Lan'},
 
-    // ── INDONESIA (MF–MK) ─────────────────────────────────
-    MHF:{make:'Toyota',country:'Indonesia'}, MHK:{make:'Daihatsu / Toyota',country:'Indonesia'},
+    // ── INDONESIA (MF–MK) ── Nguồn: Wikibooks WMI registry ─
+    MHF:{make:'Toyota',country:'Indonesia'}, MHK:{make:'Daihatsu / Toyota (Astra)',country:'Indonesia'},
     MHR:{make:'Honda',country:'Indonesia'}, MHY:{make:'Suzuki',country:'Indonesia'},
-    MHL:{make:'Mercedes-Benz',country:'Indonesia'}, MK2:{make:'Mitsubishi',country:'Indonesia'},
-    MK3:{make:'Wuling (SGMW)',country:'Indonesia'}, MF3:{make:'Hyundai',country:'Indonesia'},
+    MHD:{make:'Suzuki (Indomobil)',country:'Indonesia'}, // PT Indomobil Suzuki International
+    MHB:{make:'Nissan',country:'Indonesia'},              // PT Nissan Motor Indonesia
+    MHL:{make:'Mercedes-Benz',country:'Indonesia'},
+    MK2:{make:'Mitsubishi',country:'Indonesia'},          // PT Mitsubishi Motors Krama Yudha
+    MK3:{make:'Wuling (SGMW)',country:'Indonesia'},
+    MKF:{make:'DFSK (Sokonindo)',country:'Indonesia'},    // PT Sokonindo Automobile
+    MF3:{make:'Hyundai',country:'Indonesia'},
     MJB:{make:'GM (Chevrolet)',country:'Indonesia'},
 
     // ── ẤN ĐỘ (MA–ME) ────────────────────────────────────
@@ -87,15 +97,18 @@
     MBR:{make:'Mercedes-Benz',country:'Ấn Độ'}, MZB:{make:'Kia',country:'Ấn Độ'},
     MZ7:{make:'MG',country:'Ấn Độ'}, MEX:{make:'Škoda / VW',country:'Ấn Độ'},
 
-    // ── VIỆT NAM (RL–RN) ──────────────────────────────────
-    RLL:{make:'VinFast',country:'Việt Nam'},
-    RL4:{make:'Toyota',country:'Việt Nam'},
-    RL0:{make:'Ford',country:'Việt Nam'},
-    RLH:{make:'Honda',country:'Việt Nam'},
-    RLE:{make:'Isuzu',country:'Việt Nam'},
-    RLM:{make:'Mercedes-Benz',country:'Việt Nam'},
-    RLA:{make:'Mitsubishi (Vina Star)',country:'Việt Nam'},
-    RLC:{make:'Yamaha',country:'Việt Nam'},
+    // ── VIỆT NAM (RL–RN) ── Nguồn: Wikibooks WMI + Cục ĐK VN ─
+    RLL:{make:'VinFast',country:'Việt Nam'},  // VinFast SUV
+    RLN:{make:'VinFast',country:'Việt Nam'},  // VinFast (WMI thứ 2, xác nhận Wikibooks)
+    RL4:{make:'Toyota',country:'Việt Nam'},   // Toyota Motor Vietnam
+    RL0:{make:'Ford',country:'Việt Nam'},     // Ford Vietnam
+    RLH:{make:'Honda',country:'Việt Nam'},   // Honda Vietnam
+    RLE:{make:'Isuzu',country:'Việt Nam'},   // Isuzu Vietnam
+    RLM:{make:'Mercedes-Benz',country:'Việt Nam'}, // Mercedes-Benz Vietnam
+    RLA:{make:'Mitsubishi (Vina Star)',country:'Việt Nam'}, // Vina Star Motors
+    RLC:{make:'Yamaha',country:'Việt Nam'},  // Yamaha Motor Vietnam (mô tô/xe máy)
+    RLV:{make:'Vietnam Precision Industrial',country:'Việt Nam'},
+    RP8:{make:'Piaggio',country:'Việt Nam'}, // Piaggio Vietnam
 
     // ── TRUNG QUỐC (L*) ───────────────────────────────────
     LFV:{make:'FAW-Volkswagen',country:'Trung Quốc'}, LFP:{make:'FAW',country:'Trung Quốc'},
