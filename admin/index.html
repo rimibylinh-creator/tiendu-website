@@ -1898,7 +1898,7 @@ function openAiWriter() {
   document.getElementById('aiKeyFieldWrap').style.display = 'none'
   document.getElementById('btnRunAi').disabled = false
   document.getElementById('btnRunAi').textContent = '✍️ Viết bài →'
-  openModal('aiWriterModal')
+  document.getElementById('aiWriterModal').style.display = 'flex'
 }
 
 function toggleAiKeyField() {
