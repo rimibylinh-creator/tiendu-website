@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Sản phẩm — Tiên Du Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,-apple-system,sans-serif;background:#f7f7f7;color:#252b42;font-size:14px}
+
+/* ── Layout ── */
+.pe-layout{display:grid;grid-template-columns:220px 1fr;grid-template-rows:56px 1fr;height:100vh}
+
+/* ── Top bar ── */
+.topbar{grid-column:1/-1;background:#101010;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:2px solid #fecd27;position:sticky;top:0;z-index:100}
+.topbar-brand{font-weight:800;font-size:13px;letter-spacing:2.5px;color:#fecd27}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-user{color:rgba(255,255,255,.45);font-size:12px}
+.btn-logout{background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);border-radius:6px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:inherit}
+.btn-logout:hover{background:rgba(255,255,255,.1)}
+
+/* ── Sidebar ── */
+.sidebar{background:#fff;border-right:1px solid #ebebeb;padding:16px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.nav-sec{font-size:10px;font-weight:700;color:#c0c0c0;text-transform:uppercase;letter-spacing:.8px;padding:10px 10px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:#737373;border:none;background:none;width:100%;text-align:left;text-decoration:none;transition:all .12s;font-family:inherit}
+.nav-item:hover{background:#f5f5f5;color:#252b42}
+.nav-item.active{background:#fecd27;color:#000;font-weight:700}
+.nav-icon{width:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.nav-div{height:1px;background:#f0f0f0;margin:8px 2px}
+
+/* ── Main ── */
+.pe-main{overflow-y:auto;display:flex;flex-direction:column}
+
+/* ── Breadcrumb ── */
+.pe-breadcrumb{display:flex;align-items:center;gap:6px;padding:14px 32px 0;font-size:12px;color:#a0a0a0}
+.pe-breadcrumb a{color:#737373;text-decoration:none;transition:color .12s}
+.pe-breadcrumb a:hover{color:#252b42}
+.bc-sep{color:#d2d2d2}
+.bc-current{color:#252b42;font-weight:600}
+
+/* ── Page header ── */
+.pe-page-header{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 32px 20px;gap:16px;flex-wrap:wrap}
+.pe-page-title{font-size:22px;font-weight:800;color:#101010;line-height:1.2}
+.pe-page-sub{font-size:12px;color:#a0a0a0;margin-top:3px}
+.pe-header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+/* ── Form wrap ── */
+.pe-form-wrap{padding:0 32px;display:flex;flex-direction:column;gap:16px;flex:1}
+
+/* ── Cards ── */
+.pe-card{background:#fff;border-radius:12px;border:1px solid #ebebeb;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden}
+.pe-card-head{display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid #f3f3f3;font-size:13px;font-weight:700;color:#252b42;letter-spacing:.3px}
+.pe-card-head-right{margin-left:auto;font-size:11px;color:#a0a0a0;font-weight:400}
+.pe-card-body{padding:20px}
+.pe-card-body.no-pad{padding:0}
+
+/* ── Bottom bar ── */
+.pe-bottom-bar{display:flex;align-items:center;justify-content:space-between;padding:20px 32px 32px;margin-top:8px}
+
+/* ── Buttons ── */
+.btn-primary{background:#fecd27;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:#000;transition:opacity .12s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.btn-primary:hover:not(:disabled){opacity:.85}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-outline{background:#fff;border:1.5px solid #d2d2d2;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;color:#252b42;transition:border-color .12s;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn-outline:hover{border-color:#252b42}
+.btn-danger{background:#dc2626;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-rm{background:#fee2e2;color:#dc2626;border:none;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;line-height:1}
+.btn-add-spec{width:100%;background:#f7f7f7;border:1.5px dashed #d2d2d2;border-radius:6px;padding:7px;font-size:12px;color:#737373;cursor:pointer;font-family:inherit;transition:all .12s;margin-top:4px}
+.btn-add-spec:hover{border-color:#fecd27;color:#252b42}
+
+/* ── Form elements ── */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg.s2{grid-column:1/-1}
+.fg.s1{grid-column:span 1}
+.flabel{font-size:11px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:.4px}
+.flabel-hint{font-weight:400;text-transform:none;font-size:11px}
+.finput,.fsel,.ftextarea{width:100%;border:1.5px solid #d2d2d2;border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;background:#fff;color:#252b42}
+.finput:focus,.fsel:focus,.ftextarea:focus{border-color:#fecd27}
+.ftextarea{resize:vertical;min-height:72px}
+.fnote{font-size:11px;color:#c0c0c0}
+.finput-row{display:flex;gap:8px;align-items:center}
+.upload-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border:1.5px solid #d2d2d2;border-radius:8px;cursor:pointer;flex-shrink:0;transition:border-color .12s;background:#fff}
+.upload-btn:hover{border-color:#fecd27}
+
+/* ── Toggle ── */
+.toggle{position:relative;display:inline-block;width:36px;height:20px}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#d2d2d2;border-radius:20px;cursor:pointer;transition:.18s}
+.slider:before{content:'';position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.18s}
+input:checked+.slider{background:#22c55e}
+input:checked+.slider:before{transform:translateX(16px)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f5f5f5}
+.toggle-row:last-child{border-bottom:none}
+.toggle-label{font-size:13px;font-weight:500;color:#252b42}
+.toggle-hint{font-size:11px;color:#a0a0a0;margin-top:1px}
+
+/* ── Image preview ── */
+.img-prev{width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #ebebeb;display:none;margin-top:6px}
+.img-prev.on{display:block}
+
+/* ── Gallery ── */
+.gallery-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.gallery-item{position:relative;width:84px;height:84px;border-radius:8px;overflow:hidden;border:1.5px solid #e8e8e8;flex-shrink:0}
+.gallery-img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-rm{position:absolute!important;top:3px!important;right:3px!important;width:20px!important;height:20px!important;font-size:12px!important;border-radius:4px!important;background:rgba(220,38,38,.85)!important;color:#fff!important;padding:0!important;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+
+/* ── Specs ── */
+.spec-item{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.spec-item input{flex:1;border:1.5px solid #d2d2d2;border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;transition:border-color .12s}
+.spec-item input:focus{border-color:#fecd27}
+.dspec-row{display:flex;gap:8px;margin-bottom:7px;align-items:center}
+.dspec-row input{flex:1;border:1.5px solid #d2d2d2;border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;transition:border-color .12s}
+.dspec-row input:focus{border-color:#fecd27}
+.dspec-row input:first-child{flex:0.6;color:#737373}
+
+/* ── Quill ── */
+.quill-wrap{border:1.5px solid #d2d2d2;border-radius:8px;overflow:hidden;margin-top:4px}
+.quill-wrap .ql-toolbar{border:none;border-bottom:1.5px solid #e8e8e8;background:#fafafa;font-family:inherit}
+.quill-wrap .ql-container{border:none;font-family:inherit;font-size:14px}
+.quill-wrap .ql-editor{min-height:300px;padding:14px 16px;line-height:1.7}
+.quill-wrap .ql-editor img{max-width:100%;border-radius:6px}
+.quill-wrap .ql-editor p{margin-bottom:8px}
+.quill-wrap:focus-within{border-color:#fecd27}
+
+/* ── Tabs (content sections) ── */
+.pm-tab-bar{display:flex;border-bottom:1.5px solid #e8e8e8;margin-bottom:16px}
+.pm-tab-btn{padding:9px 18px;font-size:13px;font-weight:500;color:#737373;border:none;background:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:all .15s}
+.pm-tab-btn.active{color:#101010;border-bottom-color:#fecd27;font-weight:600}
+.pm-tab-btn:hover:not(.active){color:#252b42;background:#f7f7f7}
+.pm-tab-panel{display:none}
+.pm-tab-panel.active{display:block}
+
+/* ── AI section ── */
+.ai-run-btn{background:#fffbe6;border:1.5px solid #fecd27;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:#7a5c00;display:inline-flex;align-items:center;gap:7px;transition:all .12s}
+.ai-run-btn:hover:not(:disabled){background:#fecd27;color:#000}
+.ai-run-btn:disabled{opacity:.5;cursor:not-allowed}
+.ai-result-wrap{margin-top:16px;border:1px solid #ebebeb;border-radius:10px;overflow:hidden}
+.ai-result-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fafafa;border-bottom:1px solid #f0f0f0;font-size:12px;font-weight:600;color:#252b42}
+.ai-result-body{padding:14px}
+.ai-conf{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:4px;font-size:11px;font-weight:700}
+.ai-conf.high{background:#dcfce7;color:#15803d}
+.ai-conf.medium{background:#fef3c7;color:#92400e}
+.ai-conf.low{background:#fee2e2;color:#991b1b}
+.ai-section-label{font-size:10px;font-weight:800;color:#a0a0a0;text-transform:uppercase;letter-spacing:.8px;margin:10px 0 5px}
+.ai-section-label:first-child{margin-top:0}
+.ai-chips{display:flex;flex-wrap:wrap;gap:5px}
+.ai-chip{border-radius:4px;padding:3px 9px;font-size:12px;font-weight:500}
+.ai-chip-vehicle{background:#e0f2fe;color:#0369a1}
+.ai-chip-spec{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.ai-specs-grid{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:12px;line-height:1.8}
+.ai-specs-key{color:#a0a0a0;white-space:nowrap}
+.ai-specs-val{color:#252b42;font-weight:500}
+.ai-excerpt-prev{font-size:13px;color:#252b42;background:#fffbe6;border-left:3px solid #fecd27;padding:8px 12px;border-radius:0 6px 6px 0;line-height:1.6;margin-bottom:8px}
+.ai-apply-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid #f0f0f0}
+.ai-apply-btn{background:#101010;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;color:#fecd27;display:inline-flex;align-items:center;gap:6px;transition:opacity .12s}
+.ai-apply-btn:hover{opacity:.85}
+.ai-apply-btn.outline{background:#fff;border:1.5px solid #d2d2d2;color:#252b42}
+.ai-apply-btn.outline:hover{border-color:#252b42}
+.ai-key-note{font-size:12px;color:#737373;background:#fafafa;border-radius:8px;padding:10px 12px;border:1px solid #ebebeb}
+
+/* ── Toast ── */
+#toast{position:fixed;bottom:24px;right:24px;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;z-index:9999;max-width:340px}
+#toast.on{opacity:1;transform:translateY(0)}
+#toast.ok{background:#101010;color:#fff}
+#toast.err{background:#dc2626;color:#fff}
+
+/* ── Loading overlay ── */
+#loadingOverlay{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:500;flex-direction:column;gap:10px;font-size:13px;color:#737373}
+#loadingOverlay.hidden{display:none}
+
+/* ── Section divider ── */
+.sec-divider{font-size:10px;font-weight:800;color:#a0a0a0;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sec-divider::after{content:'';flex:1;height:1px;background:#f0f0f0}
+
+/* ── Spin animation ── */
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.spinning{animation:spin .9s linear infinite;display:inline-flex}
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay">
+  <div style="width:32px;height:32px;border:3px solid #fecd27;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite"></div>
+  Đang tải...
+</div>
+
+<div class="pe-layout" id="peLayout" style="display:none">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <span class="topbar-brand">TIÊN DU ADMIN</span>
+    <div class="topbar-right">
+      <span class="topbar-user" id="uEmail"></span>
+      <button class="btn-logout" onclick="doLogout()">Đăng xuất</button>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="nav-sec">Quản lý</div>
+    <a class="nav-item" href="index.html">
+      <span class="nav-icon"><i data-lucide="layout-dashboard" style="width:14px;height:14px;stroke-width:2"></i></span> Dashboard
+    </a>
+    <a class="nav-item active" href="index.html">
+      <span class="nav-icon"><i data-lucide="package" style="width:14px;height:14px;stroke-width:2"></i></span> Sản phẩm
+    </a>
+    <a class="nav-item" href="index.html">
+      <span class="nav-icon"><i data-lucide="file-text" style="width:14px;height:14px;stroke-width:2"></i></span> Bài viết
+    </a>
+    <div class="nav-div"></div>
+    <a class="nav-item" href="../index.html" target="_blank">
+      <span class="nav-icon"><i data-lucide="external-link" style="width:14px;height:14px;stroke-width:2"></i></span> Xem website
+    </a>
+  </aside>
+
+  <!-- Main content -->
+  <main class="pe-main">
+
+    <!-- Breadcrumb -->
+    <nav class="pe-breadcrumb">
+      <a href="index.html">Admin</a>
+      <span class="bc-sep">/</span>
+      <a href="index.html">Sản phẩm</a>
+      <span class="bc-sep">/</span>
+      <span class="bc-current" id="bcCurrent">Đang tải...</span>
+    </nav>
+
+    <!-- Page header -->
+    <div class="pe-page-header">
+      <div>
+        <h1 class="pe-page-title" id="peTitle">Sản phẩm</h1>
+        <p class="pe-page-sub" id="peSub"></p>
+      </div>
+      <div class="pe-header-actions">
+        <a href="index.html" class="btn-outline">
+          <i data-lucide="arrow-left" style="width:13px;height:13px;stroke-width:2"></i> Quay lại
+        </a>
+        <button class="btn-primary" id="saveBtnTop" onclick="saveProduct()">
+          <i data-lucide="save" style="width:14px;height:14px;stroke-width:2"></i> Lưu sản phẩm
+        </button>
+      </div>
+    </div>
+
+    <!-- Form cards -->
+    <div class="pe-form-wrap">
+
+      <!-- Card 1: Thông tin cơ bản -->
+      <div class="pe-card">
+        <div class="pe-card-head">
+          <i data-lucide="package" style="width:15px;height:15px;stroke-width:2"></i>
+          Thông tin cơ bản
+        </div>
+        <div class="pe-card-body">
+          <div class="fgrid">
+            <div class="fg">
+              <label class="flabel">Tên sản phẩm *</label>
+              <input class="finput" id="p_name" placeholder="Má Phanh Gốm Cao Cấp" oninput="autoSlug('p_name','p_slug')">
+            </div>
+            <div class="fg">
+              <label class="flabel">Slug (URL) *</label>
+              <input class="finput" id="p_slug" placeholder="ma-phanh-gom-cao-cap">
+              <span class="fnote">Tự động tạo từ tên</span>
+            </div>
+            <div class="fg">
+              <label class="flabel">Mã sản phẩm / SKU <span class="flabel-hint">(nội bộ, không hiện web)</span></label>
+              <input class="finput" id="p_sku" placeholder="VD: OEM-12345 hoặc TD-MP-001">
+            </div>
+            <div class="fg">
+              <label class="flabel">Thương hiệu xe</label>
+              <select class="fsel" id="p_brand"></select>
+            </div>
+            <div class="fg">
+              <label class="flabel">Danh mục</label>
+              <select class="fsel" id="p_cat"></select>
+            </div>
+            <div class="fg">
+              <label class="flabel">Giá bán (₫) *</label>
+              <input class="finput" type="number" id="p_price" placeholder="450000" step="1000" min="0">
+            </div>
+            <div class="fg">
+              <label class="flabel">Trạng thái kho</label>
+              <select class="fsel" id="p_status">
+                <option value="in_stock">Còn hàng</option>
+                <option value="out_of_stock">Hết hàng</option>
+                <option value="preorder">Đặt trước</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="flabel">Số lượng tồn kho</label>
+              <input class="finput" type="number" id="p_qty" placeholder="50" min="0">
+            </div>
+            <div class="fg s2">
+              <label class="flabel">Ảnh đại diện sản phẩm</label>
+              <div class="finput-row">
+                <input class="finput" id="p_thumb" placeholder="Dán URL ảnh hoặc tải lên →" oninput="prevImg('p_thumb','p_prev')">
+                <label class="upload-btn" title="Tải ảnh lên">
+                  <i data-lucide="camera" style="width:16px;height:16px;stroke-width:2;pointer-events:none"></i>
+                  <input type="file" accept="image/*" hidden onchange="uploadProductImg(this)">
+                </label>
+              </div>
+              <span class="fnote upload-progress" id="p_upload_note"></span>
+              <img class="img-prev" id="p_prev" alt="Xem trước ảnh">
+            </div>
+            <div class="fg s2">
+              <label class="flabel">Thư viện ảnh <span class="flabel-hint">(ảnh bổ sung trang chi tiết)</span></label>
+              <div id="galleryList" class="gallery-grid"></div>
+              <label class="btn-add-spec" style="display:block;cursor:pointer;margin-top:8px">
+                + Thêm ảnh vào thư viện
+                <input type="file" accept="image/*" multiple hidden onchange="uploadGalleryImgs(this)">
+              </label>
+              <span id="gallery_note" class="fnote"></span>
+            </div>
+            <div class="fg s2">
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Nổi bật trang chủ</div>
+                  <div class="toggle-hint">Hiển thị ưu tiên trong mục sản phẩm nổi bật</div>
+                </div>
+                <label class="toggle"><input type="checkbox" id="p_feat"><span class="slider"></span></label>
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Hiển thị trên website</div>
+                  <div class="toggle-hint">Bỏ chọn để ẩn sản phẩm khỏi catalog</div>
+                </div>
+                <label class="toggle"><input type="checkbox" id="p_pub" checked><span class="slider"></span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: AI Viết mô tả -->
+      <div class="pe-card">
+        <div class="pe-card-head">
+          <i data-lucide="wand-2" style="width:15px;height:15px;stroke-width:2"></i>
+          AI Viết mô tả sản phẩm
+          <span class="pe-card-head-right">Dựa trên tên & mã SP — Claude AI</span>
+        </div>
+        <div class="pe-card-body">
+          <div id="aiKeyNote" class="ai-key-note" style="display:none;margin-bottom:14px">
+            <strong>Chưa có Claude API key.</strong> Mở <a href="index.html" style="color:#fecd27">Admin</a>, nhấn "AI Viết Blog" và nhập key một lần — key được lưu trên trình duyệt này.
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px">
+            <button class="ai-run-btn" id="aiRunBtn" onclick="aiGenerateDesc()">
+              <i data-lucide="wand-2" style="width:14px;height:14px;stroke-width:2"></i>
+              Tự viết mô tả bằng AI
+            </button>
+            <span style="font-size:12px;color:#a0a0a0">Tự động tìm thông số kỹ thuật và đời xe tương thích</span>
+          </div>
+          <div id="aiResultWrap" style="display:none">
+            <div class="ai-result-wrap">
+              <div class="ai-result-head">
+                <span>Kết quả AI</span>
+                <span id="aiConfBadge"></span>
+              </div>
+              <div class="ai-result-body">
+                <div id="aiExcerptPrev" class="ai-excerpt-prev" style="display:none"></div>
+                <div id="aiSpecsSection" style="display:none">
+                  <div class="ai-section-label">Đặc điểm nổi bật</div>
+                  <div class="ai-chips" id="aiSpecsChips"></div>
+                </div>
+                <div id="aiVehiclesSection" style="display:none">
+                  <div class="ai-section-label" style="margin-top:10px">Đời xe tương thích</div>
+                  <div class="ai-chips" id="aiVehiclesChips"></div>
+                </div>
+                <div id="aiDetailedSection" style="display:none">
+                  <div class="ai-section-label" style="margin-top:10px">Thông số kỹ thuật</div>
+                  <div class="ai-specs-grid" id="aiDetailedGrid"></div>
+                </div>
+                <div class="ai-apply-row">
+                  <button class="ai-apply-btn" onclick="applyAllAiFields()">
+                    <i data-lucide="check-circle" style="width:13px;height:13px;stroke-width:2"></i>
+                    Áp tất cả vào form
+                  </button>
+                  <button class="ai-apply-btn outline" onclick="applyAiExcerptOnly()">
+                    Chỉ áp mô tả ngắn
+                  </button>
+                  <button class="ai-apply-btn outline" onclick="applyAiVehiclesOnly()">
+                    Chỉ áp đời xe
+                  </button>
+                  <button class="ai-apply-btn outline" onclick="applyAiSpecsOnly()">
+                    Chỉ áp thông số
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Tổng quan & điểm nổi bật -->
+      <div class="pe-card">
+        <div class="pe-card-head">
+          <i data-lucide="align-left" style="width:15px;height:15px;stroke-width:2"></i>
+          Tổng quan & điểm nổi bật
+        </div>
+        <div class="pe-card-body">
+          <div class="fgrid">
+            <div class="fg s2">
+              <label class="flabel">Mô tả ngắn <span class="flabel-hint">(1–2 câu, hiện dưới tên trên trang chi tiết)</span></label>
+              <textarea class="finput ftextarea" id="p_overview" rows="2" placeholder="Má phanh gốm ceramic cao cấp — bền gấp 3x, ít bụi, phù hợp Toyota Camry, Vios..."></textarea>
+            </div>
+            <div class="fg s2">
+              <label class="flabel">Điểm nổi bật <span class="flabel-hint">(tối đa 3 dòng, hiện ngay dưới ảnh trên card)</span></label>
+              <div id="specsList"></div>
+              <button class="btn-add-spec" type="button" onclick="addSpec()">+ Thêm điểm nổi bật</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Nội dung trang chi tiết -->
+      <div class="pe-card">
+        <div class="pe-card-head">
+          <i data-lucide="file-text" style="width:15px;height:15px;stroke-width:2"></i>
+          Nội dung trang chi tiết
+          <span class="pe-card-head-right">Tương ứng 3 tab trên trang sản phẩm</span>
+        </div>
+        <div class="pe-card-body no-pad">
+          <div style="padding:0 20px">
+            <div class="pm-tab-bar">
+              <button class="pm-tab-btn active" onclick="switchPTab(this,'pt-mo-ta')">Mô tả sản phẩm</button>
+              <button class="pm-tab-btn" onclick="switchPTab(this,'pt-thong-so')">Thông số kỹ thuật</button>
+              <button class="pm-tab-btn" onclick="switchPTab(this,'pt-xe')">Xe tương thích</button>
+            </div>
+          </div>
+          <div style="padding:0 20px 20px">
+            <div class="pm-tab-panel active" id="pt-mo-ta">
+              <div class="quill-wrap">
+                <div id="quillProductDesc"></div>
+              </div>
+              <span class="fnote" style="margin-top:6px;display:block">Hỗ trợ định dạng đầy đủ · Click biểu tượng ảnh để chèn hình</span>
+            </div>
+            <div class="pm-tab-panel" id="pt-thong-so">
+              <span class="fnote" style="display:block;margin-bottom:10px">Mỗi hàng là 1 thông số — hiện thành bảng trên trang chi tiết</span>
+              <div id="detailedSpecsList"></div>
+              <button class="btn-add-spec" type="button" onclick="addDetailedSpec()" style="margin-top:6px">+ Thêm thông số</button>
+            </div>
+            <div class="pm-tab-panel" id="pt-xe">
+              <span class="fnote" style="display:block;margin-bottom:10px">Mỗi dòng là 1 đời xe — VD: "Toyota Camry (2012–2026)". Hiện dạng chip.</span>
+              <div id="vehiclesList"></div>
+              <button class="btn-add-spec" type="button" onclick="addVehicle()">+ Thêm xe</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /pe-form-wrap -->
+
+    <!-- Bottom action bar -->
+    <div class="pe-bottom-bar">
+      <a href="index.html" class="btn-outline">
+        <i data-lucide="arrow-left" style="width:13px;height:13px;stroke-width:2"></i> Quay lại danh sách
+      </a>
+      <div style="display:flex;gap:8px">
+        <button id="deleteBtnBottom" class="btn-danger" style="display:none" onclick="confirmDeleteProduct()">
+          <i data-lucide="trash-2" style="width:13px;height:13px;stroke-width:2;vertical-align:-2px"></i> Xóa sản phẩm
+        </button>
+        <button class="btn-primary" onclick="saveProduct()">
+          <i data-lucide="save" style="width:14px;height:14px;stroke-width:2"></i> Lưu sản phẩm
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div><!-- /pe-layout -->
+
+<div id="toast"></div>
+
+<script>
+// ── Supabase ──────────────────────────────────────────────────────────
+const SB_URL = 'https://kdqjhlpvxrpijeoibgki.supabase.co'
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkcWpobHB2eHJwaWplb2liZ2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1Mjc0NDYsImV4cCI6MjA5ODEwMzQ0Nn0.cm4yaxaZZi6zIbEij8MEZqfHj_EbVhwlOK93szN-rMQ'
+const { createClient } = supabase
+const db = createClient(SB_URL, SB_KEY)
+
+let brands = [], cats = []
+let editPId = null
+let quillProductEditor = null
+let aiData = null
+
+// ── Auth ──────────────────────────────────────────────────────────────
+async function doLogout() {
+  await db.auth.signOut()
+  location.href = 'index.html'
+}
+
+async function init() {
+  const { data: { session } } = await db.auth.getSession()
+  if (!session) { location.href = 'index.html'; return }
+  document.getElementById('uEmail').textContent = session.user.email
+
+  await Promise.all([loadBrands(), loadCats()])
+  initQuill()
+  if (window.lucide) lucide.createIcons()
+
+  const params = new URLSearchParams(location.search)
+  const id = params.get('id')
+  if (id) {
+    await loadProduct(id)
+  } else {
+    document.getElementById('bcCurrent').textContent = 'Thêm sản phẩm mới'
+    document.getElementById('peTitle').textContent = 'Thêm sản phẩm mới'
+    addSpec()
+    addDetailedSpec()
+  }
+
+  // Check AI prefill from drawer
+  const aiPrefill = sessionStorage.getItem('td_ai_prefill')
+  if (aiPrefill) {
+    try {
+      const d = JSON.parse(aiPrefill)
+      sessionStorage.removeItem('td_ai_prefill')
+      aiData = d
+      renderAiResult(d)
+    } catch {}
+  }
+
+  document.getElementById('loadingOverlay').classList.add('hidden')
+  document.getElementById('peLayout').style.display = 'grid'
+  if (!localStorage.getItem('td_claude_key')) {
+    document.getElementById('aiKeyNote').style.display = 'block'
+  }
+}
+
+// ── Load data ─────────────────────────────────────────────────────────
+async function loadBrands() {
+  const { data } = await db.from('brands').select('id,name').order('name')
+  brands = data || []
+  const sel = document.getElementById('p_brand')
+  sel.innerHTML = '<option value="">— Chọn thương hiệu —</option>' + brands.map(b => `<option value="${b.id}">${b.name}</option>`).join('')
+}
+
+async function loadCats() {
+  const { data } = await db.from('categories').select('id,name,slug').order('name')
+  cats = data || []
+  const sel = document.getElementById('p_cat')
+  sel.innerHTML = '<option value="">— Chọn danh mục —</option>' + cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('')
+}
+
+async function loadProduct(id) {
+  const { data: p, error } = await db.from('products')
+    .select('*,brands(id,name),categories(id,name,slug)')
+    .eq('id', id).single()
+  if (error || !p) { toast('Không tìm thấy sản phẩm', 'err'); location.href = 'index.html'; return }
+
+  editPId = p.id
+  document.getElementById('bcCurrent').textContent = p.name
+  document.getElementById('peTitle').textContent = p.name
+  document.getElementById('peSub').textContent = `SKU: ${p.sku || '—'}  ·  ID: ${p.id}`
+  document.getElementById('deleteBtnBottom').style.display = 'inline-flex'
+
+  sv('p_name', p.name || ''); sv('p_slug', p.slug || '')
+  sv('p_sku', p.sku || '')
+  sv('p_price', p.price || ''); sv('p_qty', p.stock_quantity ?? '')
+  sv('p_thumb', p.thumbnail_url || ''); sv('p_status', p.stock_status || 'in_stock')
+  document.getElementById('p_feat').checked = !!p.is_featured
+  document.getElementById('p_pub').checked  = !!p.is_published
+  document.getElementById('p_upload_note').textContent = ''
+  if (p.brands?.id)     document.getElementById('p_brand').value = p.brands.id
+  if (p.categories?.id) document.getElementById('p_cat').value   = p.categories.id
+
+  sv('p_overview', p.overview || '')
+
+  const specs = p.short_specs || []
+  specs.length ? specs.forEach(s => addSpec(s)) : addSpec()
+
+  const dspecs = p.detailed_specs || []
+  dspecs.length ? dspecs.forEach(r => addDetailedSpec(r.key, r.value)) : addDetailedSpec()
+
+  ;(p.compatible_vehicles || []).forEach(v => addVehicle(v))
+
+  // Gallery
+  const { data: imgs } = await db.from('product_images')
+    .select('id,image_url,display_order').eq('product_id', p.id).order('display_order')
+  ;(imgs || []).forEach(img => addGalleryItem(img.image_url, img.id))
+
+  if (quillProductEditor) quillProductEditor.root.innerHTML = p.description || ''
+  prevImg('p_thumb', 'p_prev')
+}
+
+// ── Quill ─────────────────────────────────────────────────────────────
+function initQuill() {
+  if (!window.Quill || quillProductEditor) return
+  quillProductEditor = new Quill('#quillProductDesc', {
+    theme: 'snow',
+    placeholder: 'Mô tả chi tiết: tính năng, ưu điểm, hướng dẫn lắp đặt...',
+    modules: {
+      toolbar: {
+        container: [
+          [{ header: [2,3,4,false] }],
+          ['bold','italic','underline','strike'],
+          [{ color:[] },{ background:[] }],
+          [{ list:'ordered' },{ list:'bullet' }],
+          ['blockquote'],['link','image'],['clean']
+        ],
+        handlers: {
+          image: async () => {
+            const input = document.createElement('input')
+            input.type = 'file'; input.accept = 'image/*'
+            input.onchange = async () => {
+              const file = input.files[0]; if (!file) return
+              toast('Đang tải ảnh lên...')
+              const path = `products/desc-${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi,'-')}`
+              const { data, error } = await db.storage.from('product-images').upload(path, file, { upsert: false })
+              if (error) { toast('Upload thất bại: ' + error.message, 'err'); return }
+              const { data: { publicUrl } } = db.storage.from('product-images').getPublicUrl(data.path)
+              const range = quillProductEditor.getSelection() || { index: quillProductEditor.getLength() }
+              quillProductEditor.insertEmbed(range.index, 'image', publicUrl)
+              quillProductEditor.setSelection(range.index + 1)
+              toast('Đã chèn ảnh!')
+            }
+            input.click()
+          }
+        }
+      }
+    }
+  })
+}
+
+// ── Save ──────────────────────────────────────────────────────────────
+async function saveProduct() {
+  const name  = gv('p_name').trim()
+  const slug  = gv('p_slug').trim()
+  const price = parseInt(gv('p_price'))
+  if (!name || !slug || !price) { toast('Nhập đầy đủ tên, slug và giá', 'err'); return }
+
+  const btn = document.getElementById('saveBtnTop')
+  btn.disabled = true
+  btn.innerHTML = '<div class="spinning" style="width:14px;height:14px;border:2px solid #000;border-top-color:transparent;border-radius:50%"></div> Đang lưu...'
+
+  const specs    = [...document.querySelectorAll('#specsList .spec-item input')].map(i => i.value.trim()).filter(Boolean)
+  const vehicles = [...document.querySelectorAll('#vehiclesList .spec-item input')].map(i => i.value.trim()).filter(Boolean)
+  const descHtml = quillProductEditor?.root.innerHTML || ''
+  const descClean = descHtml === '<p><br></p>' ? null : descHtml || null
+  const dspecRows = [...document.querySelectorAll('#detailedSpecsList .dspec-row')]
+  const detailedSpecs = dspecRows
+    .map(row => { const ins = row.querySelectorAll('input'); return { key: ins[0]?.value.trim(), value: ins[1]?.value.trim() } })
+    .filter(r => r.key || r.value)
+
+  const payload = {
+    name, slug, price,
+    sku:                 gv('p_sku').trim() || null,
+    brand_id:            document.getElementById('p_brand').value || null,
+    category_id:         document.getElementById('p_cat').value   || null,
+    stock_status:        gv('p_status'),
+    stock_quantity:      parseInt(gv('p_qty')) || 0,
+    thumbnail_url:       gv('p_thumb').trim() || null,
+    overview:            gv('p_overview').trim() || null,
+    short_specs:         specs,
+    detailed_specs:      detailedSpecs.length ? detailedSpecs : null,
+    compatible_vehicles: vehicles.length ? vehicles : null,
+    description:         descClean,
+    is_featured:         document.getElementById('p_feat').checked,
+    is_published:        document.getElementById('p_pub').checked,
+  }
+
+  let productId = editPId
+  if (editPId) {
+    const { error } = await db.from('products').update(payload).eq('id', editPId)
+    if (error) { toast(error.message, 'err'); resetSaveBtn(); return }
+  } else {
+    const { data, error } = await db.from('products').insert(payload).select('id').single()
+    if (error) { toast(error.message, 'err'); resetSaveBtn(); return }
+    productId = data.id
+    editPId = productId
+  }
+
+  // Sync gallery
+  await db.from('product_images').delete().eq('product_id', productId)
+  const galleryItems = [...document.querySelectorAll('#galleryList .gallery-item')]
+    .map((el, idx) => ({ product_id: productId, image_url: el.dataset.url, display_order: idx }))
+  if (galleryItems.length) await db.from('product_images').insert(galleryItems)
+
+  toast('Đã lưu sản phẩm!')
+  setTimeout(() => { location.href = 'index.html' }, 900)
+}
+
+function resetSaveBtn() {
+  const btn = document.getElementById('saveBtnTop')
+  btn.disabled = false
+  btn.innerHTML = '<i data-lucide="save" style="width:14px;height:14px;stroke-width:2"></i> Lưu sản phẩm'
+  if (window.lucide) lucide.createIcons()
+}
+
+// ── Delete ────────────────────────────────────────────────────────────
+async function confirmDeleteProduct() {
+  if (!editPId) return
+  const name = gv('p_name') || 'sản phẩm này'
+  if (!confirm(`Xóa vĩnh viễn "${name}"?\n\nThao tác này không thể hoàn tác.`)) return
+  const { error } = await db.from('products').delete().eq('id', editPId)
+  if (error) { toast('Lỗi: ' + error.message, 'err'); return }
+  toast('Đã xóa sản phẩm!')
+  setTimeout(() => { location.href = 'index.html' }, 800)
+}
+
+// ── Image upload ──────────────────────────────────────────────────────
+async function uploadProductImg(input) {
+  const file = input.files[0]; input.value = ''
+  if (!file) return
+  const note = document.getElementById('p_upload_note')
+  note.textContent = 'Đang tải lên...'
+  const path = `products/${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi,'-')}`
+  const { data, error } = await db.storage.from('product-images').upload(path, file, { upsert: false })
+  if (error) { note.textContent = 'Upload thất bại'; toast(error.message, 'err'); return }
+  const { data: { publicUrl } } = db.storage.from('product-images').getPublicUrl(data.path)
+  sv('p_thumb', publicUrl); prevImg('p_thumb', 'p_prev')
+  note.textContent = 'Đã tải lên!'
+  toast('Ảnh đã được lưu!')
+}
+
+async function uploadGalleryImgs(input) {
+  const files = [...input.files]; input.value = ''
+  if (!files.length) return
+  const note = document.getElementById('gallery_note')
+  note.textContent = `Đang tải ${files.length} ảnh...`
+  let uploaded = 0
+  for (const file of files) {
+    const path = `products/${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '-')}`
+    const { data, error } = await db.storage.from('product-images').upload(path, file, { upsert: false })
+    if (error) { note.textContent = 'Lỗi: ' + error.message; continue }
+    const { data: { publicUrl } } = db.storage.from('product-images').getPublicUrl(data.path)
+    addGalleryItem(publicUrl)
+    uploaded++
+  }
+  note.textContent = `Đã tải lên ${uploaded}/${files.length} ảnh`
+}
+
+function addGalleryItem(url, id = null) {
+  const div = document.createElement('div')
+  div.className = 'gallery-item'
+  div.dataset.url = url
+  if (id) div.dataset.id = id
+  div.innerHTML = `<img class="gallery-img" src="${url}" alt="" onerror="this.style.opacity='.3'">
+    <button class="gallery-rm" type="button" onclick="this.parentElement.remove()" title="Xoá">×</button>`
+  document.getElementById('galleryList').appendChild(div)
+}
+
+// ── Form helpers ──────────────────────────────────────────────────────
+function addSpec(val = '') {
+  const div = document.createElement('div')
+  div.className = 'spec-item'
+  div.innerHTML = `<input type="text" value="${esc(val)}" placeholder="VD: Động cơ 2.0L – 2.5L">
+    <button class="btn-rm" type="button" onclick="this.parentElement.remove()" title="Xoá">×</button>`
+  document.getElementById('specsList').appendChild(div)
+}
+
+function addVehicle(val = '') {
+  const div = document.createElement('div')
+  div.className = 'spec-item'
+  div.innerHTML = `<input type="text" value="${esc(val)}" placeholder="VD: Toyota Camry (2019–2024)">
+    <button class="btn-rm" type="button" onclick="this.parentElement.remove()" title="Xoá">×</button>`
+  document.getElementById('vehiclesList').appendChild(div)
+}
+
+function addDetailedSpec(key = '', value = '') {
+  const div = document.createElement('div')
+  div.className = 'dspec-row'
+  div.innerHTML = `
+    <input type="text" value="${esc(key)}"   placeholder="Tên thông số (VD: Vật liệu)">
+    <input type="text" value="${esc(value)}" placeholder="Giá trị (VD: Gốm ceramic)">
+    <button class="btn-rm" type="button" onclick="this.parentElement.remove()" title="Xoá">×</button>`
+  document.getElementById('detailedSpecsList').appendChild(div)
+}
+
+function switchPTab(btn, panelId) {
+  document.querySelectorAll('.pm-tab-btn').forEach(b => b.classList.remove('active'))
+  document.querySelectorAll('.pm-tab-panel').forEach(p => p.classList.remove('active'))
+  btn.classList.add('active')
+  document.getElementById(panelId).classList.add('active')
+}
+
+// ── AI Product Description ────────────────────────────────────────────
+const AI_PRODUCT_PROMPT = `Bạn là chuyên gia phụ tùng ô tô với kiến thức kỹ thuật sâu về thị trường Việt Nam.
+Dựa trên tên sản phẩm, mã SKU và danh mục, hãy tra cứu và tạo nội dung mô tả phụ tùng đầy đủ bằng tiếng Việt.
+
+ĐẦU RA: Trả về DUY NHẤT một JSON object hợp lệ (KHÔNG kèm markdown, KHÔNG giải thích), theo schema:
+{
+  "excerpt": "Mô tả ngắn 1-2 câu, nêu công dụng chính và điểm nổi bật",
+  "short_specs": ["Đặc điểm 1", "Đặc điểm 2", "Đặc điểm 3"],
+  "detailed_specs": [{"key": "Chất liệu", "value": "..."}, {"key": "Trọng lượng", "value": "..."}],
+  "compatible_vehicles": ["Toyota Vios thế hệ 3 (2014–2023)", "Honda City 2014–2021"],
+  "description_html": "<p>Mô tả đầy đủ HTML...</p>",
+  "confidence": "high"
+}
+
+QUY TẮC:
+- excerpt: 1–2 câu súc tích, bao gồm công dụng và lợi ích chính
+- short_specs: 3–5 đặc điểm nổi bật ngắn gọn (dưới 10 từ/điểm)
+- detailed_specs: 4–8 thông số kỹ thuật key-value (vật liệu, kích thước, tiêu chuẩn, OEM code...)
+- compatible_vehicles: chỉ liệt kê đời xe THỰC SỰ tương thích — không đoán mò. Nếu không chắc, trả về []
+- description_html: 150–300 từ, dùng <p> <ul> <li> <strong>, KHÔNG dùng <h1>/<h2>, KHÔNG CSS inline
+- confidence: "high" nếu chắc chắn, "medium" nếu có thể đúng, "low" nếu ước lượng`
+
+async function aiGenerateDesc() {
+  const key = localStorage.getItem('td_claude_key')
+  if (!key) {
+    document.getElementById('aiKeyNote').style.display = 'block'
+    toast('Cần nhập Claude API key', 'err'); return
+  }
+
+  const name  = gv('p_name').trim()
+  const sku   = gv('p_sku').trim()
+  const catId = document.getElementById('p_cat').value
+  const cat   = cats.find(c => c.id == catId)?.name || ''
+  const brandId = document.getElementById('p_brand').value
+  const brand = brands.find(b => b.id == brandId)?.name || ''
+
+  if (!name) { toast('Nhập tên sản phẩm trước', 'err'); return }
+
+  const btn = document.getElementById('aiRunBtn')
+  btn.disabled = true
+  btn.innerHTML = '<div class="spinning" style="width:14px;height:14px;border:2px solid #7a5c00;border-top-color:transparent;border-radius:50%"></div> Đang tìm kiếm...'
+
+  try {
+    const userMsg = [
+      `Tên sản phẩm: ${name}`,
+      sku   ? `Mã SKU: ${sku}`    : '',
+      cat   ? `Danh mục: ${cat}`  : '',
+      brand ? `Hãng xe: ${brand}` : '',
+    ].filter(Boolean).join('\n')
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-5',
+        max_tokens: 2000,
+        system: AI_PRODUCT_PROMPT,
+        messages: [{ role: 'user', content: userMsg }],
+      })
+    })
+
+    if (!resp.ok) { const t = await resp.text(); throw new Error(`API ${resp.status}: ${t.slice(0,200)}`) }
+    const data = await resp.json()
+    let raw = data.content.map(b => b.type === 'text' ? b.text : '').join('').trim()
+    const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/)
+    if (fence) raw = fence[1].trim()
+    const fi = raw.indexOf('{'), li = raw.lastIndexOf('}')
+    if (fi !== -1 && li !== -1) raw = raw.slice(fi, li + 1)
+    aiData = JSON.parse(raw)
+    renderAiResult(aiData)
+  } catch (e) {
+    toast('Lỗi AI: ' + (e.message || 'không rõ'), 'err')
+  } finally {
+    btn.disabled = false
+    btn.innerHTML = '<i data-lucide="wand-2" style="width:14px;height:14px;stroke-width:2"></i> Viết lại'
+    if (window.lucide) lucide.createIcons()
+  }
+}
+
+function renderAiResult(d) {
+  const conf = d.confidence || 'medium'
+  const confLabel = { high: 'Độ chính xác cao', medium: 'Có thể đúng — nên kiểm tra', low: 'Ước lượng — cần xác nhận' }[conf] || ''
+  document.getElementById('aiConfBadge').innerHTML = `<span class="ai-conf ${conf}">${confLabel}</span>`
+  if (window.lucide) lucide.createIcons()
+
+  const excerptEl = document.getElementById('aiExcerptPrev')
+  if (d.excerpt) { excerptEl.textContent = d.excerpt; excerptEl.style.display = 'block' }
+  else excerptEl.style.display = 'none'
+
+  const specsEl = document.getElementById('aiSpecsSection')
+  if (d.short_specs?.length) {
+    document.getElementById('aiSpecsChips').innerHTML = d.short_specs.map(s => `<span class="ai-chip ai-chip-spec">${s}</span>`).join('')
+    specsEl.style.display = 'block'
+  } else specsEl.style.display = 'none'
+
+  const vehiclesEl = document.getElementById('aiVehiclesSection')
+  if (d.compatible_vehicles?.length) {
+    document.getElementById('aiVehiclesChips').innerHTML = d.compatible_vehicles.map(v => `<span class="ai-chip ai-chip-vehicle">${v}</span>`).join('')
+    vehiclesEl.style.display = 'block'
+  } else vehiclesEl.style.display = 'none'
+
+  const detailedEl = document.getElementById('aiDetailedSection')
+  if (d.detailed_specs?.length) {
+    document.getElementById('aiDetailedGrid').innerHTML = d.detailed_specs.map(s => `<span class="ai-specs-key">${s.key}</span><span class="ai-specs-val">${s.value}</span>`).join('')
+    detailedEl.style.display = 'block'
+  } else detailedEl.style.display = 'none'
+
+  document.getElementById('aiResultWrap').style.display = 'block'
+}
+
+function applyAllAiFields() {
+  if (!aiData) return
+  if (aiData.excerpt) sv('p_overview', aiData.excerpt)
+  if (aiData.short_specs?.length) {
+    document.getElementById('specsList').innerHTML = ''
+    aiData.short_specs.forEach(s => addSpec(s))
+  }
+  if (aiData.compatible_vehicles?.length) {
+    document.getElementById('vehiclesList').innerHTML = ''
+    aiData.compatible_vehicles.forEach(v => addVehicle(v))
+    document.querySelector('[onclick*="pt-xe"]')?.click()
+  }
+  if (aiData.detailed_specs?.length) {
+    document.getElementById('detailedSpecsList').innerHTML = ''
+    aiData.detailed_specs.forEach(r => addDetailedSpec(r.key, r.value))
+  }
+  if (aiData.description_html && quillProductEditor) {
+    quillProductEditor.root.innerHTML = aiData.description_html
+    document.querySelector('[onclick*="pt-mo-ta"]')?.click()
+  }
+  toast('Đã áp tất cả dữ liệu AI vào form')
+}
+
+function applyAiExcerptOnly() {
+  if (aiData?.excerpt) { sv('p_overview', aiData.excerpt); toast('Đã áp mô tả ngắn') }
+}
+
+function applyAiVehiclesOnly() {
+  if (aiData?.compatible_vehicles?.length) {
+    document.getElementById('vehiclesList').innerHTML = ''
+    aiData.compatible_vehicles.forEach(v => addVehicle(v))
+    document.querySelector('[onclick*="pt-xe"]')?.click()
+    toast('Đã áp danh sách đời xe')
+  }
+}
+
+function applyAiSpecsOnly() {
+  if (aiData?.detailed_specs?.length) {
+    document.getElementById('detailedSpecsList').innerHTML = ''
+    aiData.detailed_specs.forEach(r => addDetailedSpec(r.key, r.value))
+    if (aiData.short_specs?.length) {
+      document.getElementById('specsList').innerHTML = ''
+      aiData.short_specs.forEach(s => addSpec(s))
+    }
+    document.querySelector('[onclick*="pt-thong-so"]')?.click()
+    toast('Đã áp thông số kỹ thuật')
+  }
+}
+
+// ── Utils ─────────────────────────────────────────────────────────────
+const VI = {'à':'a','á':'a','ả':'a','ã':'a','ạ':'a','ă':'a','ắ':'a','ặ':'a','ằ':'a','ẳ':'a','ẵ':'a','â':'a','ấ':'a','ầ':'a','ẩ':'a','ẫ':'a','ậ':'a','è':'e','é':'e','ẻ':'e','ẽ':'e','ẹ':'e','ê':'e','ế':'e','ề':'e','ể':'e','ễ':'e','ệ':'e','ì':'i','í':'i','ỉ':'i','ĩ':'i','ị':'i','ò':'o','ó':'o','ỏ':'o','õ':'o','ọ':'o','ô':'o','ố':'o','ồ':'o','ổ':'o','ỗ':'o','ộ':'o','ơ':'o','ớ':'o','ờ':'o','ở':'o','ỡ':'o','ợ':'o','ù':'u','ú':'u','ủ':'u','ũ':'u','ụ':'u','ư':'u','ứ':'u','ừ':'u','ử':'u','ữ':'u','ự':'u','ỳ':'y','ý':'y','ỷ':'y','ỹ':'y','ỵ':'y','đ':'d'}
+
+function toSlug(s) {
+  return s.toLowerCase().split('').map(c => VI[c] ?? c).join('')
+    .replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-').replace(/-+/g,'-')
+}
+
+function autoSlug(srcId, dstId) {
+  const el = document.getElementById(dstId)
+  if (!el._manual) el.value = toSlug(document.getElementById(srcId).value)
+}
+
+document.addEventListener('input', e => {
+  if (e.target.id === 'p_slug') e.target._manual = true
+})
+
+function prevImg(inputId, imgId) {
+  const url = document.getElementById(inputId).value.trim()
+  const img = document.getElementById(imgId)
+  if (url) { img.src = url; img.classList.add('on') } else img.classList.remove('on')
+}
+
+const gv  = id => document.getElementById(id).value
+const sv  = (id, v) => { const el = document.getElementById(id); el.value = v; el._manual = false }
+const esc = s => (s || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')
+
+let toastT
+function toast(msg, type = 'ok') {
+  const el = document.getElementById('toast')
+  el.textContent = msg; el.className = `on ${type}`
+  clearTimeout(toastT)
+  toastT = setTimeout(() => el.className = '', 3200)
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────
+init()
+</script>
+</body>
+</html>

@@ -999,53 +999,12 @@ async function qSet(table, field, val, id) {
   if (row) { row[field] = val; if (table === 'products') pStore[id] = { ...pStore[id], [field]: val } }
 }
 
-async function openProductModal(p = null) {
-  editPId = p?.id || null
-  document.getElementById('pMTitle').textContent = p ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm'
-
-  const bSel = document.getElementById('p_brand')
-  const cSel = document.getElementById('p_cat')
-  bSel.innerHTML = '<option value="">— Chọn thương hiệu —</option>' + brands.map(b => `<option value="${b.id}">${b.name}</option>`).join('')
-  cSel.innerHTML = '<option value="">— Chọn danh mục —</option>'   + cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('')
-
-  sv('p_name', p?.name || ''); sv('p_slug', p?.slug || '')
-  sv('p_sku', p?.sku || '')
-  sv('p_price', p?.price || ''); sv('p_qty', p?.stock_quantity ?? '')
-  sv('p_thumb', p?.thumbnail_url || ''); sv('p_status', p?.stock_status || 'in_stock')
-  document.getElementById('p_feat').checked = !!p?.is_featured
-  document.getElementById('p_pub').checked  = p ? !!p.is_published : true
-  document.getElementById('p_upload_note').textContent = ''
-  if (p?.brands?.id)     bSel.value = p.brands.id
-  if (p?.categories?.id) cSel.value = p.categories.id
-
-  sv('p_overview', p?.overview || '')
-
-  document.getElementById('specsList').innerHTML = ''
-  const specs = p?.short_specs || []
-  specs.length ? specs.forEach(s => addSpec(s)) : addSpec()
-
-  document.getElementById('detailedSpecsList').innerHTML = ''
-  const dspecs = p?.detailed_specs || []
-  dspecs.length ? dspecs.forEach(r => addDetailedSpec(r.key, r.value)) : addDetailedSpec()
-
-  document.getElementById('vehiclesList').innerHTML = ''
-  ;(p?.compatible_vehicles || []).forEach(v => addVehicle(v))
-
-  document.getElementById('galleryList').innerHTML = ''
-  document.getElementById('gallery_note').textContent = ''
+function openProductModal(p = null) {
   if (p?.id) {
-    const { data: imgs } = await db.from('product_images')
-      .select('id,image_url,display_order').eq('product_id', p.id).order('display_order')
-    ;(imgs || []).forEach(img => addGalleryItem(img.image_url, img.id))
+    location.href = 'product-edit.html?id=' + p.id
+  } else {
+    location.href = 'product-edit.html'
   }
-
-  if (quillProductEditor) {
-    quillProductEditor.root.innerHTML = p?.description || ''
-  }
-
-  prevImg('p_thumb', 'p_prev')
-  document.getElementById('productModal').style.display = 'flex'
-  setTimeout(() => quillProductEditor?.focus && null, 100)
 }
 
 async function saveProduct() {
@@ -2596,15 +2555,8 @@ function renderAiDescPreview(d) {
 
 function applyAiToProductModal() {
   if (!qeProduct || !qeAiData) return
-  const enriched = {
-    ...qeProduct,
-    excerpt:             qeAiData.excerpt             || qeProduct.excerpt,
-    short_specs:         qeAiData.short_specs         || qeProduct.short_specs,
-    detailed_specs:      qeAiData.detailed_specs      || qeProduct.detailed_specs,
-    compatible_vehicles: qeAiData.compatible_vehicles || qeProduct.compatible_vehicles,
-    description:         qeAiData.description_html    || qeProduct.description,
-  }
-  openProductModal(enriched)
+  sessionStorage.setItem('td_ai_prefill', JSON.stringify(qeAiData))
+  location.href = 'product-edit.html?id=' + qeProduct.id
 }
 
 let bulkChanges = []
