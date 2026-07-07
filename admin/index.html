@@ -17,7 +17,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,-apple-system,sans-serif;background:#f5f5f5;color:#252b42;font-size:14px;height:100vh;overflow:hidden}
 
-/* ── Login ── */
+/*  Login  */
 #loginWrap{min-height:100vh;display:flex;align-items:center;justify-content:center}
 .login-card{background:#fff;border-radius:16px;padding:48px 40px;width:400px;box-shadow:0 8px 32px rgba(0,0,0,.1)}
 .login-logo{font-size:22px;font-weight:800;letter-spacing:1px;margin-bottom:4px}
@@ -28,7 +28,7 @@ body{font-family:Inter,-apple-system,sans-serif;background:#f5f5f5;color:#252b42
 .field input:focus{border-color:#fecd27}
 #loginErr{color:#dc2626;font-size:13px;margin-bottom:14px;padding:10px 14px;background:#fef2f2;border-radius:8px;display:none}
 
-/* ── Layout ── */
+/*  Layout  */
 #adminWrap{display:none;height:100vh}
 .layout{display:grid;grid-template-columns:220px 1fr;grid-template-rows:56px 1fr;height:100vh}
 .topbar{grid-column:1/-1;background:#101010;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:2px solid #fecd27}
@@ -38,23 +38,23 @@ body{font-family:Inter,-apple-system,sans-serif;background:#f5f5f5;color:#252b42
 .btn-logout{background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);border-radius:6px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:inherit}
 .btn-logout:hover{background:rgba(255,255,255,.1)}
 
-/* ── Sidebar ── */
+/*  Sidebar  */
 .sidebar{background:#fff;border-right:1px solid #ebebeb;padding:16px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
 .nav-sec{font-size:10px;font-weight:700;color:#c0c0c0;text-transform:uppercase;letter-spacing:.8px;padding:10px 10px 4px}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:#737373;border:none;background:none;width:100%;text-align:left;text-decoration:none;transition:all .12s;font-family:inherit}
 .nav-item:hover{background:#f5f5f5;color:#252b42}
 .nav-item.active{background:#fecd27;color:#000;font-weight:700}
-.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-icon{width:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .nav-div{height:1px;background:#f0f0f0;margin:8px 2px}
 
-/* ── Main ── */
+/*  Main  */
 .main{overflow-y:auto;padding:28px 32px;background:#f7f7f7}
 .ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:16px;flex-wrap:wrap}
 .ph-title{font-size:21px;font-weight:800;color:#101010}
 .ph-sub{font-size:13px;color:#737373;margin-top:3px}
 .ph-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 
-/* ── Stats ── */
+/*  Stats  */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
 .stat{background:#fff;border-radius:12px;padding:20px 22px;border:1px solid #ebebeb;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .stat-label{font-size:11px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
@@ -64,14 +64,14 @@ body{font-family:Inter,-apple-system,sans-serif;background:#f5f5f5;color:#252b42
 .stat.red   .stat-val{color:#dc2626}
 .stat.amber .stat-val{color:#b45309}
 
-/* ── Toolbar ── */
+/*  Toolbar  */
 .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
 .search-input{border:1.5px solid #d2d2d2;border-radius:8px;padding:8px 14px;font-size:13px;outline:none;width:240px;transition:border-color .15s;font-family:inherit;background:#fff;color:#252b42}
 .search-input:focus{border-color:#fecd27}
 .fsel-sm{border:1.5px solid #d2d2d2;border-radius:8px;padding:8px 10px;font-size:13px;outline:none;background:#fff;font-family:inherit;cursor:pointer}
 .fsel-sm:focus{border-color:#fecd27}
 
-/* ── Table ── */
+/*  Table  */
 .tcard{background:#fff;border-radius:12px;border:1px solid #ebebeb;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 table{width:100%;border-collapse:collapse}
 th{padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:.5px;background:#fafafa;border-bottom:1px solid #ebebeb;white-space:nowrap}
@@ -83,7 +83,7 @@ tr:hover td{background:#fffef2}
 .rmeta{font-size:11px;color:#a0a0a0;margin-top:2px}
 .rsub{font-size:12px;color:#a0a0a0;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* ── Badges ── */
+/*  Badges  */
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:64px;font-size:11px;font-weight:700;white-space:nowrap}
 .b-green {background:#dcfce7;color:#15803d}
 .b-red   {background:#fee2e2;color:#b91c1c}
@@ -92,7 +92,7 @@ tr:hover td{background:#fffef2}
 .b-blue  {background:#dbeafe;color:#1e40af}
 .chip{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:600;background:#f0f0f0;color:#252b42;margin-right:3px}
 
-/* ── Toggle ── */
+/*  Toggle  */
 .toggle{position:relative;display:inline-block;width:36px;height:20px}
 .toggle input{opacity:0;width:0;height:0}
 .slider{position:absolute;inset:0;background:#d2d2d2;border-radius:20px;cursor:pointer;transition:.18s}
@@ -100,7 +100,7 @@ tr:hover td{background:#fffef2}
 input:checked+.slider{background:#22c55e}
 input:checked+.slider:before{transform:translateX(16px)}
 
-/* ── Buttons ── */
+/*  Buttons  */
 .btn-primary{background:#fecd27;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:#000;transition:opacity .12s;white-space:nowrap}
 .btn-primary:hover{opacity:.85}
 .btn-outline{background:#fff;border:1.5px solid #d2d2d2;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;color:#252b42;transition:border-color .12s;white-space:nowrap}
@@ -118,14 +118,14 @@ input:checked+.slider:before{transform:translateX(16px)}
 .btn-sheet:hover{background:#dbeafe;border-color:#93c5fd}
 .btn-sheet:disabled{opacity:.6;cursor:wait}
 
-/* ── Upload button ── */
+/*  Upload button  */
 .upload-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border:1.5px solid #d2d2d2;border-radius:8px;cursor:pointer;font-size:18px;flex-shrink:0;transition:border-color .12s;background:#fff}
 .upload-btn:hover{border-color:#fecd27}
 .upload-label{display:flex;align-items:center;gap:8px}
 .upload-label input[type=file]{display:none}
 .upload-progress{font-size:12px;color:#737373;margin-top:4px}
 
-/* ── Modal ── */
+/*  Modal  */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.48);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;backdrop-filter:blur(4px)}
 .modal-box{background:#fff;border-radius:16px;width:100%;max-width:700px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.2)}
 .modal-box.lg{max-width:860px}
@@ -138,7 +138,7 @@ input:checked+.slider:before{transform:translateX(16px)}
 .modal-body{padding:20px 24px;overflow-y:auto;flex:1}
 .modal-foot{padding:14px 24px;border-top:1px solid #f0f0f0;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;align-items:center}
 
-/* ── Form ── */
+/*  Form  */
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .fg{display:flex;flex-direction:column;gap:5px}
 .fg.s2{grid-column:1/-1}
@@ -149,7 +149,7 @@ input:checked+.slider:before{transform:translateX(16px)}
 .fnote{font-size:11px;color:#c0c0c0}
 .finput-row{display:flex;gap:8px;align-items:center}
 
-/* ── Specs ── */
+/*  Specs  */
 .spec-item{display:flex;gap:8px;margin-bottom:8px}
 .spec-item input{flex:1;border:1.5px solid #d2d2d2;border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;transition:border-color .12s}
 .spec-item input:focus{border-color:#fecd27}
@@ -157,11 +157,11 @@ input:checked+.slider:before{transform:translateX(16px)}
 .btn-add-spec{width:100%;background:#f7f7f7;border:1.5px dashed #d2d2d2;border-radius:6px;padding:7px;font-size:12px;color:#737373;cursor:pointer;font-family:inherit;transition:all .12s;margin-top:4px}
 .btn-add-spec:hover{border-color:#fecd27;color:#252b42}
 
-/* ── Image preview ── */
+/*  Image preview  */
 .img-prev{width:76px;height:76px;object-fit:cover;border-radius:8px;border:1px solid #ebebeb;display:none;margin-top:4px}
 .img-prev.on{display:block}
 
-/* ── Gallery ── */
+/*  Gallery  */
 .gallery-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
 .gallery-item{position:relative;width:84px;height:84px;border-radius:8px;overflow:hidden;border:1.5px solid #e8e8e8;flex-shrink:0}
 .gallery-img{width:100%;height:100%;object-fit:cover;display:block}
@@ -169,7 +169,7 @@ input:checked+.slider:before{transform:translateX(16px)}
 .gallery-upload-label{display:block;cursor:pointer}
 .gallery-upload-label input{display:none}
 
-/* ── Quill editor ── */
+/*  Quill editor  */
 .quill-wrap{border:1.5px solid #d2d2d2;border-radius:8px;overflow:hidden;margin-top:4px}
 .quill-wrap .ql-toolbar{border:none;border-bottom:1.5px solid #e8e8e8;background:#fafafa;font-family:inherit}
 .quill-wrap .ql-container{border:none;font-family:inherit;font-size:14px}
@@ -178,7 +178,7 @@ input:checked+.slider:before{transform:translateX(16px)}
 .quill-wrap .ql-editor p{margin-bottom:8px}
 .quill-wrap:focus-within{border-color:#fecd27}
 
-/* ── Product modal sections + tabs ── */
+/*  Product modal sections + tabs  */
 .pm-section{padding:20px 24px;border-bottom:1px solid #f0f0f0}
 .pm-section-alt{background:#fafafa}
 .pm-section:last-child{border-bottom:none}
@@ -196,7 +196,7 @@ input:checked+.slider:before{transform:translateX(16px)}
 .dspec-row input:focus{border-color:#fecd27}
 .dspec-row input:first-child{flex:0.6;color:#737373}
 
-/* ── Import preview ── */
+/*  Import preview  */
 .import-preview-table{width:100%;border-collapse:collapse;font-size:13px}
 .import-preview-table th{padding:8px 12px;background:#fafafa;border-bottom:1px solid #ebebeb;font-size:11px;color:#737373;text-transform:uppercase;letter-spacing:.4px;font-weight:700;text-align:left}
 .import-preview-table td{padding:8px 12px;border-bottom:1px solid #f5f5f5}
@@ -205,17 +205,17 @@ input:checked+.slider:before{transform:translateX(16px)}
 .import-template{background:#fafafa;border:1px solid #ebebeb;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:#737373}
 .import-template code{background:#f0f0f0;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12px}
 
-/* ── Empty ── */
+/*  Empty  */
 .empty{text-align:center;padding:48px 16px;color:#c0c0c0}
-.empty-icon{font-size:36px;margin-bottom:10px}
+.empty-icon{margin-bottom:10px;display:flex;justify-content:center;color:#c8c8c8}
 
-/* ── Toast ── */
+/*  Toast  */
 #toast{position:fixed;bottom:24px;right:24px;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;z-index:9999;max-width:340px}
 #toast.on{opacity:1;transform:translateY(0)}
 #toast.ok {background:#101010;color:#fff}
 #toast.err{background:#dc2626;color:#fff}
 
-/* ── AI Writer ── */
+/*  AI Writer  */
 .ai-key-box{background:#fafafa;border:1px solid #ebebeb;border-radius:8px;padding:12px 14px;margin-bottom:14px}
 .ai-result-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
 .ai-tag{background:#dbeafe;color:#1e40af;border-radius:4px;padding:3px 8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
@@ -236,7 +236,7 @@ input:checked+.slider:before{transform:translateX(16px)}
 .ai-thumb-loading{padding:32px;text-align:center;font-size:13px;color:#737373}
 .ai-img-count{display:inline-flex;align-items:center;gap:5px;background:#f0f4ff;border:1px solid #c7d7f7;border-radius:4px;padding:3px 8px;font-size:11px;font-weight:600;color:#3b5fc0}
 
-/* ── Right Drawer ── */
+/*  Right Drawer  */
 .rdrawer{position:fixed;right:0;top:56px;bottom:0;width:360px;background:#fff;border-left:1px solid #ebebeb;box-shadow:-4px 0 24px rgba(0,0,0,.1);z-index:500;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1)}
 .rdrawer.open{transform:translateX(0)}
 .rdrawer-toggle{position:absolute;left:-40px;top:calc(50% - 36px);width:40px;height:72px;background:#fecd27;border:none;border-radius:10px 0 0 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:17px;line-height:1;color:#000;box-shadow:-3px 2px 10px rgba(0,0,0,.15);transition:background .12s;font-family:inherit}
@@ -288,7 +288,7 @@ input:checked+.slider:before{transform:translateX(16px)}
 .licon-lg{width:20px;height:20px;stroke-width:1.75;flex-shrink:0;display:block}
 .licon-xl{width:28px;height:28px;stroke-width:1.5;flex-shrink:0;display:block}
 
-/* ── Responsive ── */
+/*  Responsive  */
 @media(max-width:820px){
   .layout{grid-template-columns:1fr;grid-template-rows:56px 48px 1fr}
   .sidebar{flex-direction:row;overflow-x:auto;padding:0;border-right:none;border-bottom:1px solid #ebebeb;gap:0}
@@ -304,10 +304,10 @@ input:checked+.slider:before{transform:translateX(16px)}
 </head>
 <body>
 
-<!-- ── LOGIN ─────────────────────────── -->
+<!--  LOGIN  -->
 <div id="loginWrap">
   <div class="login-card">
-    <div class="login-logo">⚙ TIÊN DU</div>
+    <div class="login-logo" style="display:flex;align-items:center;justify-content:center;gap:8px"><i data-lucide="settings" style="width:18px;height:18px;stroke-width:2"></i> TIÊN DU</div>
     <p class="login-sub">Hệ thống quản trị — chỉ dành cho nội bộ</p>
     <div class="field"><label>Email</label>
       <input type="email" id="email" placeholder="admin@ototiendu.com" autocomplete="username">
@@ -320,7 +320,7 @@ input:checked+.slider:before{transform:translateX(16px)}
   </div>
 </div>
 
-<!-- ── ADMIN ──────────────────────────── -->
+<!--  ADMIN  -->
 <div id="adminWrap">
 <div class="layout">
 
@@ -335,19 +335,19 @@ input:checked+.slider:before{transform:translateX(16px)}
   <aside class="sidebar">
     <span class="nav-sec">Tổng quan</span>
     <button class="nav-item active" id="nav-dashboard" onclick="showTab('dashboard')">
-      <span class="nav-icon">📊</span> Dashboard
+      <span class="nav-icon"><i data-lucide="layout-dashboard" class="licon"></i></span> Dashboard
     </button>
     <div class="nav-div"></div>
     <span class="nav-sec">Nội dung</span>
     <button class="nav-item" id="nav-products" onclick="showTab('products')">
-      <span class="nav-icon">📦</span> Sản phẩm
+      <span class="nav-icon"><i data-lucide="package" class="licon"></i></span> Sản phẩm
     </button>
     <button class="nav-item" id="nav-posts" onclick="showTab('posts')">
-      <span class="nav-icon">📝</span> Bài viết
+      <span class="nav-icon"><i data-lucide="file-text" class="licon"></i></span> Bài viết
     </button>
     <div class="nav-div"></div>
     <a class="nav-item" href="/" target="_blank">
-      <span class="nav-icon">🌐</span> Xem website
+      <span class="nav-icon"><i data-lucide="external-link" class="licon"></i></span> Xem website
     </a>
   </aside>
 
@@ -361,7 +361,7 @@ input:checked+.slider:before{transform:translateX(16px)}
       </div>
       <div style="position:relative;margin-bottom:20px">
         <input id="dashSearch" class="search-input" style="width:100%;font-size:14px;padding:11px 16px 11px 42px" placeholder="Tìm nhanh sản phẩm hoặc bài viết..." oninput="runDashSearch(this.value)" autocomplete="off" onkeydown="if(event.key==='Escape')closeDashSearch()">
-        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">🔍</span>
+        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none;display:flex;align-items:center;color:#a0a0a0"><i data-lucide="search" style="width:15px;height:15px;stroke-width:2"></i></span>
         <div id="dashSearchDrop" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:200;background:#fff;border:1.5px solid #e0e0e0;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.14);max-height:380px;overflow-y:auto;margin-top:4px"></div>
       </div>
       <div class="stats">
@@ -371,10 +371,10 @@ input:checked+.slider:before{transform:translateX(16px)}
         <div class="stat amber"><div class="stat-label">Bài viết</div><div class="stat-val" id="s-posts">—</div><div class="stat-note">đã đăng</div></div>
       </div>
       <div class="ph" style="margin-top:4px">
-        <div><div class="ph-title" style="font-size:16px">⚠️ Cần nhập kho</div><div class="ph-sub">Tồn kho còn dưới 10</div></div>
+        <div><div class="ph-title" style="font-size:16px;display:flex;align-items:center;gap:7px"><i data-lucide="alert-triangle" style="width:16px;height:16px;stroke-width:2;color:#b45309"></i> Cần nhập kho</div><div class="ph-sub">Tồn kho còn dưới 10</div></div>
       </div>
       <div class="tcard" id="lowWrap">
-        <div class="empty"><div class="empty-icon">✅</div><p>Tất cả sản phẩm đều đủ hàng!</p></div>
+        <div class="empty"><div class="empty-icon"><i data-lucide="circle-check" style="width:32px;height:32px;stroke-width:1.5;color:#22c55e"></i></div><p>Tất cả sản phẩm đều đủ hàng!</p></div>
       </div>
     </div>
 
@@ -383,27 +383,27 @@ input:checked+.slider:before{transform:translateX(16px)}
       <div class="ph">
         <div><div class="ph-title">Sản phẩm</div><div class="ph-sub" id="pCount">Đang tải...</div></div>
         <div class="ph-actions">
-          <label class="btn-import" style="cursor:pointer" title="Nhập từ CSV hoặc Excel">
-            📥 Nhập từ file
+          <label class="btn-import" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px" title="Nhập từ CSV hoặc Excel">
+            <i data-lucide="upload" class="licon"></i> Nhập từ file
             <input type="file" accept=".csv,.xlsx,.xls" hidden onchange="handleImport(this)">
           </label>
           <button class="btn-tmpl" onclick="dlTemplate()" title="Tải file mẫu CSV">Tải mẫu CSV</button>
-          <button id="btnSyncSheet" class="btn-sheet" onclick="syncFromSheet()" title="Nhập sản phẩm từ Google Sheet vào hệ thống">📥 Sheet → Admin</button>
-          <button id="btnPushSheet" class="btn-sheet" onclick="pushToSheet()" title="Đẩy tất cả sản phẩm từ Admin lên Google Sheet" style="background:#f0fdf4;border-color:#bbf7d0;color:#15803d">📤 Admin → Sheet</button>
-          <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/1cwEq5aNw4Q1IX_aFc5dq4qefrWzobjQWxRpOA9ubFug/edit" target="_blank" rel="noopener" title="Mở file Google Sheet kho hàng" style="text-decoration:none">📄 Mở Sheet</a>
+          <button id="btnSyncSheet" class="btn-sheet" style="display:inline-flex;align-items:center;gap:6px" onclick="syncFromSheet()" title="Nhập sản phẩm từ Google Sheet vào hệ thống"><i data-lucide="download" class="licon"></i> Sheet → Admin</button>
+          <button id="btnPushSheet" class="btn-sheet" style="display:inline-flex;align-items:center;gap:6px;background:#f0fdf4;border-color:#bbf7d0;color:#15803d" onclick="pushToSheet()" title="Đẩy tất cả sản phẩm từ Admin lên Google Sheet"><i data-lucide="upload" class="licon"></i> Admin → Sheet</button>
+          <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/1cwEq5aNw4Q1IX_aFc5dq4qefrWzobjQWxRpOA9ubFug/edit" target="_blank" rel="noopener" title="Mở file Google Sheet kho hàng" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px"><i data-lucide="table-2" class="licon"></i> Mở Sheet</a>
           <button class="btn-primary" onclick="openProductModal()">+ Thêm sản phẩm</button>
         </div>
       </div>
       <div class="toolbar">
-        <input class="search-input" placeholder="🔍 Tìm tên sản phẩm..." oninput="pFilter(this.value,'q')">
+        <input class="search-input" placeholder="Tìm tên sản phẩm..." oninput="pFilter(this.value,'q')">
         <select class="fsel-sm" onchange="pFilter(this.value,'cat')" id="catSel">
           <option value="">Tất cả danh mục</option>
         </select>
         <select class="fsel-sm" onchange="pFilter(this.value,'stock')">
           <option value="">Tất cả trạng thái</option>
-          <option value="in_stock">✅ Còn hàng</option>
-          <option value="out_of_stock">❌ Hết hàng</option>
-          <option value="preorder">⏳ Đặt trước</option>
+          <option value="in_stock">Còn hàng</option>
+          <option value="out_of_stock">Hết hàng</option>
+          <option value="preorder">Đặt trước</option>
         </select>
       </div>
       <div class="tcard" style="overflow:visible">
@@ -424,12 +424,12 @@ input:checked+.slider:before{transform:translateX(16px)}
       <div class="ph">
         <div><div class="ph-title">Bài viết</div><div class="ph-sub" id="poCount">Đang tải...</div></div>
         <div class="ph-actions">
-          <button class="btn-sheet" style="background:#fffbe6;border-color:#fecd27;color:#7a5c00;font-weight:600" onclick="openAiWriter()">✍️ AI Viết Blog</button>
+          <button class="btn-sheet" style="background:#fffbe6;border-color:#fecd27;color:#7a5c00;font-weight:600;display:inline-flex;align-items:center;gap:6px" onclick="openAiWriter()"><i data-lucide="bot" class="licon"></i> AI Viết Blog</button>
           <button class="btn-primary" onclick="openPostModal()">+ Thêm bài viết</button>
         </div>
       </div>
       <div class="toolbar">
-        <input class="search-input" placeholder="🔍 Tìm tiêu đề..." oninput="poFilter(this.value)">
+        <input class="search-input" placeholder="Tìm tiêu đề..." oninput="poFilter(this.value)">
       </div>
       <div class="tcard">
         <table>
@@ -446,16 +446,16 @@ input:checked+.slider:before{transform:translateX(16px)}
 </div>
 </div>
 
-<!-- ── PRODUCT MODAL ───────────────────── -->
+<!--  PRODUCT MODAL  -->
 <div class="modal-overlay" id="productModal" style="display:none" onclick="bkClose(event,'productModal')">
 <div class="modal-box xl">
   <div class="modal-head">
     <span class="modal-title" id="pMTitle">Thêm sản phẩm</span>
-    <button class="modal-close" onclick="closeModal('productModal')">✕</button>
+    <button class="modal-close" onclick="closeModal('productModal')"></button>
   </div>
   <div class="modal-body" style="padding:0">
 
-    <!-- ── THÔNG TIN CƠ BẢN ──────────────────────────────── -->
+    <!--  THÔNG TIN CƠ BẢN  -->
     <div class="pm-section">
       <div class="fgrid">
         <div class="fg">
@@ -486,9 +486,9 @@ input:checked+.slider:before{transform:translateX(16px)}
         <div class="fg">
           <label class="flabel">Trạng thái kho</label>
           <select class="fsel" id="p_status">
-            <option value="in_stock">✅ Còn hàng</option>
-            <option value="out_of_stock">❌ Hết hàng</option>
-            <option value="preorder">⏳ Đặt trước</option>
+            <option value="in_stock">Còn hàng</option>
+            <option value="out_of_stock">Hết hàng</option>
+            <option value="preorder">Đặt trước</option>
           </select>
         </div>
         <div class="fg">
@@ -499,7 +499,7 @@ input:checked+.slider:before{transform:translateX(16px)}
           <label class="flabel">Ảnh sản phẩm</label>
           <div class="finput-row">
             <input class="finput" id="p_thumb" placeholder="URL ảnh hoặc upload →" oninput="prevImg('p_thumb','p_prev')">
-            <label class="upload-btn" title="Tải ảnh lên">📷<input type="file" accept="image/*" hidden onchange="uploadProductImg(this)"></label>
+            <label class="upload-btn" title="Tải ảnh lên" style="display:inline-flex;align-items:center;justify-content:center"><i data-lucide="camera" style="width:16px;height:16px;stroke-width:2;pointer-events:none"></i><input type="file" accept="image/*" hidden onchange="uploadProductImg(this)"></label>
           </div>
           <span class="fnote upload-progress" id="p_upload_note"></span>
           <img class="img-prev" id="p_prev" alt="Xem trước ảnh">
@@ -524,7 +524,7 @@ input:checked+.slider:before{transform:translateX(16px)}
       </div>
     </div>
 
-    <!-- ── TỔNG QUAN ─────────────────────────────────────── -->
+    <!--  TỔNG QUAN  -->
     <div class="pm-section pm-section-alt">
       <div class="pm-section-head">
         <span class="pm-section-label">Tổng quan sản phẩm</span>
@@ -543,7 +543,7 @@ input:checked+.slider:before{transform:translateX(16px)}
       </div>
     </div>
 
-    <!-- ── 3 TABS NỘI DUNG ───────────────────────────────── -->
+    <!--  3 TABS NỘI DUNG  -->
     <div class="pm-section">
       <div class="pm-section-head">
         <span class="pm-section-label">Nội dung trang chi tiết sản phẩm</span>
@@ -562,7 +562,7 @@ input:checked+.slider:before{transform:translateX(16px)}
         <div class="quill-wrap">
           <div id="quillProductDesc"></div>
         </div>
-        <span class="fnote" style="margin-top:6px">Hỗ trợ định dạng đầy đủ · Click 🖼 để chèn ảnh</span>
+        <span class="fnote" style="margin-top:6px">Hỗ trợ định dạng đầy đủ · Click biểu tượng ảnh để chèn ảnh</span>
       </div>
 
       <!-- Tab 2: Thông số kỹ thuật -->
@@ -588,12 +588,12 @@ input:checked+.slider:before{transform:translateX(16px)}
 </div>
 </div>
 
-<!-- ── POST MODAL ─────────────────────── -->
+<!--  POST MODAL  -->
 <div class="modal-overlay" id="postModal" style="display:none" onclick="bkClose(event,'postModal')">
 <div class="modal-box xl">
   <div class="modal-head">
     <span class="modal-title" id="poMTitle">Thêm bài viết</span>
-    <button class="modal-close" onclick="closeModal('postModal')">✕</button>
+    <button class="modal-close" onclick="closeModal('postModal')"></button>
   </div>
   <div class="modal-body">
     <div class="fgrid">
@@ -618,8 +618,8 @@ input:checked+.slider:before{transform:translateX(16px)}
         <label class="flabel">Ảnh bìa</label>
         <div class="finput-row">
           <input class="finput" id="po_cover" placeholder="URL ảnh hoặc upload →" oninput="prevImg('po_cover','po_prev')">
-          <label class="upload-btn" title="Tải ảnh bìa lên">
-            📷
+          <label class="upload-btn" title="Tải ảnh bìa lên" style="display:inline-flex;align-items:center;justify-content:center">
+            <i data-lucide="camera" style="width:16px;height:16px;stroke-width:2;pointer-events:none"></i>
             <input type="file" accept="image/*" hidden onchange="uploadPostCover(this)">
           </label>
         </div>
@@ -635,7 +635,7 @@ input:checked+.slider:before{transform:translateX(16px)}
         <div class="quill-wrap">
           <div id="quillEditor"></div>
         </div>
-        <span class="fnote" style="margin-top:4px">Click vào biểu tượng 🖼 trong toolbar để chèn ảnh từ máy tính</span>
+        <span class="fnote" style="margin-top:4px">Click biểu tượng ảnh trong toolbar để chèn ảnh từ máy tính</span>
       </div>
       <div class="fg">
         <label class="flabel">Hiển thị trên website</label>
@@ -650,12 +650,12 @@ input:checked+.slider:before{transform:translateX(16px)}
 </div>
 </div>
 
-<!-- ── AI WRITER MODAL ────────────────── -->
+<!--  AI WRITER MODAL  -->
 <div class="modal-overlay" id="aiWriterModal" style="display:none" onclick="bkClose(event,'aiWriterModal')">
 <div class="modal-box xl">
   <div class="modal-head">
-    <span class="modal-title">✍️ AI Viết Blog SEO</span>
-    <button class="modal-close" onclick="closeModal('aiWriterModal')">✕</button>
+    <span class="modal-title" style="display:flex;align-items:center;gap:7px"><i data-lucide="bot" class="licon-md"></i> AI Viết Blog SEO</span>
+    <button class="modal-close" onclick="closeModal('aiWriterModal')"></button>
   </div>
   <div class="modal-body">
     <!-- Bước 1: nhập yêu cầu -->
@@ -677,7 +677,7 @@ input:checked+.slider:before{transform:translateX(16px)}
       </div>
       <div class="ai-key-box">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <label class="flabel" style="margin-bottom:0">🔑 Claude API Key</label>
+          <label class="flabel" style="margin-bottom:0;display:flex;align-items:center;gap:5px"><i data-lucide="key" class="licon"></i> Claude API Key</label>
           <button class="btn-ghost" style="font-size:11px;padding:3px 8px" onclick="toggleAiKeyField()">Hiện / đổi</button>
         </div>
         <div id="aiKeyFieldWrap" style="display:none;margin-bottom:6px">
@@ -696,16 +696,16 @@ input:checked+.slider:before{transform:translateX(16px)}
       <div class="ai-result-meta" style="margin-bottom:12px">
         <span class="ai-tag" id="res_cat"></span>
         <span class="ai-kw" id="res_kw"></span>
-        <span class="ai-img-count" id="res_img_count" style="display:none">🖼 0 ảnh minh hoạ</span>
+        <span class="ai-img-count" id="res_img_count" style="display:none;align-items:center;gap:4px"><i data-lucide="image" class="licon"></i> <span id="res_img_count_text">0 ảnh minh hoạ</span></span>
       </div>
       <div class="ai-result-title" id="res_title"></div>
       <div class="ai-result-excerpt" id="res_excerpt"></div>
-      <div class="ai-seo-note">💡 <span id="res_seonote"></span></div>
+      <div class="ai-seo-note" style="display:flex;align-items:flex-start;gap:6px"><i data-lucide="lightbulb" class="licon" style="margin-top:1px;flex-shrink:0;color:#15803d"></i><span id="res_seonote"></span></div>
       <div style="margin-top:14px">
-        <div class="flabel" style="margin-bottom:6px">🖼 Ảnh thumbnail (AI tự tạo)</div>
+        <div class="flabel" style="margin-bottom:6px;display:flex;align-items:center;gap:5px"><i data-lucide="image" class="licon"></i> Ảnh thumbnail (AI tự tạo)</div>
         <div class="ai-thumb-wrap">
-          <div class="ai-thumb-loading" id="res_thumb_loading"><span class="ai-spinning">⏳</span> Đang tạo ảnh thumbnail...</div>
-          <img id="res_thumb" src="" alt="" style="display:none" onload="this.style.display='block';document.getElementById('res_thumb_loading').style.display='none'" onerror="document.getElementById('res_thumb_loading').textContent='⚠️ Không tải được ảnh thumbnail'">
+          <div class="ai-thumb-loading" id="res_thumb_loading" style="display:flex;align-items:center;justify-content:center;gap:8px"><span class="ai-spinning" style="display:flex"><i data-lucide="loader-2" style="width:16px;height:16px;stroke-width:2"></i></span> Đang tạo ảnh thumbnail...</div>
+          <img id="res_thumb" src="" alt="" style="display:none" onload="this.style.display='block';document.getElementById('res_thumb_loading').style.display='none'" onerror="document.getElementById('res_thumb_loading').textContent='Không tải được ảnh thumbnail'">
         </div>
       </div>
       <details style="margin-top:12px">
@@ -716,7 +716,7 @@ input:checked+.slider:before{transform:translateX(16px)}
   </div>
   <div class="modal-foot" id="aiFootWrite">
     <button class="btn-outline" onclick="closeModal('aiWriterModal')">Đóng</button>
-    <button class="btn-primary" id="btnRunAi" onclick="runAiWriter()">✍️ Viết bài →</button>
+    <button class="btn-primary" id="btnRunAi" onclick="runAiWriter()" style="display:inline-flex;align-items:center;gap:7px"><i data-lucide="wand-2" class="licon"></i> Viết bài</button>
   </div>
   <div class="modal-foot" id="aiFootResult" style="display:none">
     <span id="res_img_note" style="font-size:12px;color:#737373;flex:1"></span>
@@ -726,12 +726,12 @@ input:checked+.slider:before{transform:translateX(16px)}
 </div>
 </div>
 
-<!-- ── IMPORT PREVIEW MODAL ───────────── -->
+<!--  IMPORT PREVIEW MODAL  -->
 <div class="modal-overlay" id="importModal" style="display:none" onclick="bkClose(event,'importModal')">
 <div class="modal-box lg">
   <div class="modal-head">
     <span class="modal-title">Xem trước dữ liệu nhập</span>
-    <button class="modal-close" onclick="closeModal('importModal')">✕</button>
+    <button class="modal-close" onclick="closeModal('importModal')"></button>
   </div>
   <div class="modal-body">
     <div id="importPreview"></div>
@@ -744,16 +744,16 @@ input:checked+.slider:before{transform:translateX(16px)}
 </div>
 </div>
 
-<!-- ── CONFIRM DELETE ─────────────────── -->
+<!--  CONFIRM DELETE  -->
 <div class="modal-overlay" id="confirmModal" style="display:none" onclick="bkClose(event,'confirmModal')">
 <div class="modal-box sm">
   <div class="modal-head">
     <span class="modal-title">Xác nhận xoá</span>
-    <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+    <button class="modal-close" onclick="closeModal('confirmModal')"></button>
   </div>
   <div class="modal-body">
     <p>Bạn có chắc muốn xoá <strong id="delName"></strong>?</p>
-    <p style="color:#ef4444;font-size:12px;margin-top:10px">⚠️ Hành động này không thể hoàn tác.</p>
+    <p style="color:#ef4444;font-size:12px;margin-top:10px;display:flex;align-items:center;gap:5px"><i data-lucide="alert-triangle" style="width:13px;height:13px;stroke-width:2;flex-shrink:0"></i> Hành động này không thể hoàn tác.</p>
   </div>
   <div class="modal-foot">
     <button class="btn-outline" onclick="closeModal('confirmModal')">Hủy</button>
@@ -782,7 +782,7 @@ let quillProductEditor = null // mô tả sản phẩm
 
 const APPS_SCRIPT_KEY = 'td_apps_script_url'
 
-// ── AUTH ─────────────────────────────────────────────
+//  AUTH 
 
 async function doLogin() {
   const email = document.getElementById('email').value.trim()
@@ -812,7 +812,7 @@ async function startAdmin(user) {
   if (window.lucide) lucide.createIcons()
 }
 
-// ── NAV ──────────────────────────────────────────────
+//  NAV 
 
 function showTab(name) {
   ;['dashboard','products','posts'].forEach(t => {
@@ -824,7 +824,7 @@ function showTab(name) {
   if (name === 'posts'    && !allPo.length) loadPosts()
 }
 
-// ── REFERENCE DATA ────────────────────────────────────
+//  REFERENCE DATA 
 
 async function loadBrands() {
   const { data } = await db.from('brands').select('id,name').order('name')
@@ -841,7 +841,7 @@ async function loadPostCats() {
   postCats = data || []
 }
 
-// ── DASHBOARD ─────────────────────────────────────────
+//  DASHBOARD 
 
 async function loadDashboard() {
   const [
@@ -865,16 +865,17 @@ async function loadDashboard() {
 
   const wrap = document.getElementById('lowWrap')
   wrap.innerHTML = !low?.length
-    ? '<div class="empty"><div class="empty-icon">✅</div><p>Tất cả sản phẩm đều đủ hàng!</p></div>'
+    ? '<div class="empty"><div class="empty-icon"><i data-lucide="circle-check" style="width:32px;height:32px;stroke-width:1.5;color:#22c55e"></i></div><p>Tất cả sản phẩm đều đủ hàng!</p></div>'
     : `<table><thead><tr><th>Sản phẩm</th><th>Số lượng</th><th></th></tr></thead><tbody>
       ${low.map(p => `<tr><td><span class="rname">${p.name}</span></td>
         <td><span class="badge b-red">${p.stock_quantity} còn lại</span></td>
         <td><button class="btn-ghost" style="font-size:12px" onclick="showTab('products')">Cập nhật →</button></td>
       </tr>`).join('')}
     </tbody></table>`
+  if (window.lucide) lucide.createIcons()
 }
 
-// ── PRODUCTS ─────────────────────────────────────────
+//  PRODUCTS 
 
 async function loadProducts() {
   document.getElementById('pCount').textContent = 'Đang tải...'
@@ -897,7 +898,7 @@ function renderP(list, total) {
     : `${list.length} sản phẩm`
   const tbody = document.getElementById('pBody')
   if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="9"><div class="empty"><div class="empty-icon">📦</div><p>Không có sản phẩm</p></div></td></tr>'
+    tbody.innerHTML = '<tr><td colspan="9"><div class="empty"><div class="empty-icon"><i data-lucide="package" style="width:32px;height:32px;stroke-width:1.5"></i></div><p>Không có sản phẩm</p></div></td></tr>'
     return
   }
   tbody.innerHTML = list.map(p => {
@@ -950,8 +951,8 @@ function pFilter(val, key) {
 
 async function qSet(table, field, val, id) {
   const { error } = await db.from(table).update({ [field]: val }).eq('id', id)
-  if (error) { toast('❌ Lỗi cập nhật', 'err'); return }
-  toast('✅ Đã lưu!')
+  if (error) { toast('Lỗi cập nhật', 'err'); return }
+  toast('Đã lưu!')
   const arr = table === 'products' ? allP : allPo
   const row = arr.find(r => r.id === id)
   if (row) { row[field] = val; if (table === 'products') pStore[id] = { ...pStore[id], [field]: val } }
@@ -1010,7 +1011,7 @@ async function saveProduct() {
   const name  = gv('p_name').trim()
   const slug  = gv('p_slug').trim()
   const price = parseInt(gv('p_price'))
-  if (!name || !slug || !price) { toast('⚠️ Nhập đầy đủ tên, slug và giá', 'err'); return }
+  if (!name || !slug || !price) { toast('Nhập đầy đủ tên, slug và giá', 'err'); return }
 
   const specs    = [...document.querySelectorAll('#specsList .spec-item input')].map(i => i.value.trim()).filter(Boolean)
   const vehicles = [...document.querySelectorAll('#vehiclesList .spec-item input')].map(i => i.value.trim()).filter(Boolean)
@@ -1043,10 +1044,10 @@ async function saveProduct() {
   let productId = editPId
   if (editPId) {
     const { error } = await db.from('products').update(payload).eq('id', editPId)
-    if (error) { toast('❌ ' + error.message, 'err'); return }
+    if (error) { toast('' + error.message, 'err'); return }
   } else {
     const { data, error } = await db.from('products').insert(payload).select('id').single()
-    if (error) { toast('❌ ' + error.message, 'err'); return }
+    if (error) { toast('' + error.message, 'err'); return }
     productId = data.id
   }
 
@@ -1062,51 +1063,51 @@ async function saveProduct() {
     const { error: insImgErr } = await db.from('product_images').insert(galleryItems)
     if (insImgErr) {
       console.error('❌ [Admin] Lỗi lưu ảnh gallery (product_images):', { code: insImgErr.code, message: insImgErr.message })
-      toast('⚠️ Sản phẩm đã lưu nhưng ảnh gallery bị lỗi — xem Console (F12)', 'err')
+      toast('Sản phẩm đã lưu nhưng ảnh gallery bị lỗi — xem Console (F12)', 'err')
     }
   }
 
-  toast(editPId ? '✅ Đã cập nhật sản phẩm!' : '✅ Đã thêm sản phẩm mới!')
+  toast(editPId ? ' Đã cập nhật sản phẩm!' : ' Đã thêm sản phẩm mới!')
   closeModal('productModal')
   allP = []; await loadProducts(); loadDashboard()
 }
 
-// ── IMAGE UPLOAD ──────────────────────────────────────
+//  IMAGE UPLOAD 
 
 async function uploadProductImg(input) {
   const file = input.files[0]; input.value = ''
   if (!file) return
   const note = document.getElementById('p_upload_note')
-  note.textContent = '⏳ Đang tải lên...'
+  note.textContent = 'Đang tải lên...'
   const path = `products/${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi,'-')}`
   const { data, error } = await db.storage.from('product-images').upload(path, file, { upsert: false })
-  if (error) { note.textContent = '❌ Upload thất bại'; toast('❌ ' + error.message, 'err'); return }
+  if (error) { note.textContent = 'Upload thất bại'; toast('' + error.message, 'err'); return }
   const { data: { publicUrl } } = db.storage.from('product-images').getPublicUrl(data.path)
   sv('p_thumb', publicUrl); prevImg('p_thumb', 'p_prev')
-  note.textContent = '✅ Đã tải lên!'
-  toast('✅ Ảnh đã được lưu!')
+  note.textContent = 'Đã tải lên!'
+  toast('Ảnh đã được lưu!')
 }
 
 async function uploadPostCover(input) {
   const file = input.files[0]; input.value = ''
   if (!file) return
   const note = document.getElementById('po_upload_note')
-  note.textContent = '⏳ Đang tải lên...'
+  note.textContent = 'Đang tải lên...'
   const path = `covers/${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi,'-')}`
   const { data, error } = await db.storage.from('post-images').upload(path, file, { upsert: false })
-  if (error) { note.textContent = '❌ Upload thất bại'; toast('❌ ' + error.message, 'err'); return }
+  if (error) { note.textContent = 'Upload thất bại'; toast('' + error.message, 'err'); return }
   const { data: { publicUrl } } = db.storage.from('post-images').getPublicUrl(data.path)
   sv('po_cover', publicUrl); prevImg('po_cover', 'po_prev')
-  note.textContent = '✅ Đã tải lên!'
-  toast('✅ Ảnh bìa đã được lưu!')
+  note.textContent = 'Đã tải lên!'
+  toast('Ảnh bìa đã được lưu!')
 }
 
-// ── CSV / EXCEL IMPORT ────────────────────────────────
+//  CSV / EXCEL IMPORT 
 
 async function handleImport(input) {
   const file = input.files[0]; input.value = ''
   if (!file) return
-  toast('📂 Đang đọc file...')
+  toast('Đang đọc file...')
 
   try {
     const buf = await file.arrayBuffer()
@@ -1114,7 +1115,7 @@ async function handleImport(input) {
     const ws  = wb.Sheets[wb.SheetNames[0]]
     const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' })
 
-    if (rows.length < 2) { toast('⚠️ File không có dữ liệu', 'err'); return }
+    if (rows.length < 2) { toast('File không có dữ liệu', 'err'); return }
 
     const hdrs = rows[0].map(h => String(h).toLowerCase().trim())
     const get  = (row, keys) => {
@@ -1140,11 +1141,11 @@ async function handleImport(input) {
       }))
       .filter(r => r.name && r.price > 0)
 
-    if (!importRows.length) { toast('⚠️ Không tìm thấy dữ liệu hợp lệ. Kiểm tra tên cột.', 'err'); return }
+    if (!importRows.length) { toast('Không tìm thấy dữ liệu hợp lệ. Kiểm tra tên cột.', 'err'); return }
 
     showImportPreview()
   } catch (e) {
-    toast('❌ Không đọc được file: ' + e.message, 'err')
+    toast('Không đọc được file: ' + e.message, 'err')
   }
 }
 
@@ -1153,10 +1154,10 @@ function showImportPreview(opts = {}) {
   const errRows  = importRows.filter(r => !r.name || !r.price)
   const sourceLabel = opts.source === 'sheet' ? 'từ Google Sheet' : 'từ file'
   document.getElementById('importPreview').innerHTML = `
-    <div class="import-info">✅ Tìm thấy <strong>${importRows.length}</strong> sản phẩm hợp lệ ${sourceLabel}. Xem trước 5 dòng đầu:</div>
-    ${opts.skippedNote ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#c2410c">⚠️ ${opts.skippedNote}</div>` : ''}
-    ${!opts.skippedNote && errRows.length ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#c2410c">⚠️ Đã bỏ qua ${errRows.length} dòng thiếu tên hoặc giá</div>` : ''}
-    ${importRows.length > 2000 ? `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#1e40af">ℹ️ Số lượng lớn — quá trình nhập sẽ chạy theo từng lô, có thể mất vài phút. Đừng đóng trang trong khi đang nhập.</div>` : ''}
+    <div class="import-info">Tìm thấy <strong>${importRows.length}</strong> sản phẩm hợp lệ ${sourceLabel}. Xem trước 5 dòng đầu:</div>
+    ${opts.skippedNote ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#c2410c">${opts.skippedNote}</div>` : ''}
+    ${!opts.skippedNote && errRows.length ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#c2410c">Đã bỏ qua ${errRows.length} dòng thiếu tên hoặc giá</div>` : ''}
+    ${importRows.length > 2000 ? `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#1e40af">Số lượng lớn — quá trình nhập sẽ chạy theo từng lô, có thể mất vài phút. Đừng đóng trang trong khi đang nhập.</div>` : ''}
     <div style="overflow-x:auto">
       <table class="import-preview-table">
         <thead><tr><th>Tên sản phẩm</th><th>Giá</th><th>Tồn kho</th><th>Thương hiệu</th><th>Danh mục</th><th>Thông số</th></tr></thead>
@@ -1214,7 +1215,7 @@ async function confirmImport() {
   const { data: { session: sess } } = await db.auth.getSession()
   if (!sess) {
     console.error('❌ [Admin] CHƯA ĐĂNG NHẬP: Phiên Supabase đã hết hạn. Hãy đăng xuất và đăng nhập lại.')
-    toast('❌ Phiên đăng nhập hết hạn — vui lòng đăng xuất và đăng nhập lại', 'err')
+    toast('Phiên đăng nhập hết hạn — vui lòng đăng xuất và đăng nhập lại', 'err')
     confirmBtn.disabled = false; confirmBtn.innerHTML = oldLabel
     return
   }
@@ -1224,25 +1225,25 @@ async function confirmImport() {
     const chunk = payload.slice(i, i + BATCH)
     const batNum = Math.floor(i / BATCH) + 1
     const toIdx  = Math.min(i + BATCH, payload.length)
-    confirmBtn.textContent = `⏳ Đang nhập ${toIdx}/${payload.length}...`
+    confirmBtn.textContent = `Đang nhập ${toIdx}/${payload.length}...`
     const { error } = await db.from('products').upsert(chunk, { onConflict: 'slug', ignoreDuplicates: false })
     if (error) {
-      // ── GIẢI THÍCH LỖI SUPABASE BẰNG TIẾNG VIỆT ──────────────────
+      //  GIẢI THÍCH LỖI SUPABASE BẰNG TIẾNG VIỆT 
       let giaithich = ''
       if (error.code === '42501')
-        giaithich = '⛔ LỖI QUYỀN (RLS/42501): Tài khoản không có quyền ghi vào bảng "products".\n  → Vào Supabase Dashboard > Authentication > Policies > products, kiểm tra policy "admin insert products" có tồn tại không.'
+        giaithich = ' LỖI QUYỀN (RLS/42501): Tài khoản không có quyền ghi vào bảng "products".\n  → Vào Supabase Dashboard > Authentication > Policies > products, kiểm tra policy "admin insert products" có tồn tại không.'
       else if (error.code === '23505')
-        giaithich = `⚠️ LỖI TRÙNG DỮ LIỆU (23505): Cột UNIQUE bị trùng.\n  → Chi tiết: ${error.details}\n  → Kiểm tra cột "slug" có bị trùng trong file Sheet không.`
+        giaithich = `️ LỖI TRÙNG DỮ LIỆU (23505): Cột UNIQUE bị trùng.\n  → Chi tiết: ${error.details}\n  → Kiểm tra cột "slug" có bị trùng trong file Sheet không.`
       else if (error.code === '23502')
-        giaithich = `⚠️ LỖI THIẾU GIÁ TRỊ BẮT BUỘC (23502): Một cột NOT NULL đang để trống.\n  → Chi tiết: ${error.details || error.message}`
+        giaithich = `️ LỖI THIẾU GIÁ TRỊ BẮT BUỘC (23502): Một cột NOT NULL đang để trống.\n  → Chi tiết: ${error.details || error.message}`
       else if (error.code === '22P02')
-        giaithich = `⚠️ LỖI KIỂU DỮ LIỆU (22P02): Giá trị không đúng định dạng cột.\n  → Chi tiết: ${error.details || error.message}\n  → Kiểm tra cột Giá có phải số không, cột trạng thái kho chỉ nhận: in_stock / out_of_stock / preorder.`
+        giaithich = `️ LỖI KIỂU DỮ LIỆU (22P02): Giá trị không đúng định dạng cột.\n  → Chi tiết: ${error.details || error.message}\n  → Kiểm tra cột Giá có phải số không, cột trạng thái kho chỉ nhận: in_stock / out_of_stock / preorder.`
       else if (error.code === 'PGRST301' || error.message?.includes('JWT'))
-        giaithich = '⛔ LỖI XÁC THỰC (JWT): Token đăng nhập không hợp lệ hoặc hết hạn.\n  → Hãy đăng xuất và đăng nhập lại.'
+        giaithich = ' LỖI XÁC THỰC (JWT): Token đăng nhập không hợp lệ hoặc hết hạn.\n  → Hãy đăng xuất và đăng nhập lại.'
       else if (!navigator.onLine)
-        giaithich = '🌐 LỖI MẠNG: Máy tính không có kết nối internet.'
+        giaithich = ' LỖI MẠNG: Máy tính không có kết nối internet.'
       else if (error.message?.toLowerCase().includes('fetch'))
-        giaithich = '🌐 LỖI KẾT NỐI SUPABASE: Không gọi được API. Thử lại sau vài giây.'
+        giaithich = ' LỖI KẾT NỐI SUPABASE: Không gọi được API. Thử lại sau vài giây.'
       else
         giaithich = `Mã lỗi chưa biết: ${error.code || 'không có'} — Xem dòng "Lỗi đầy đủ" bên dưới.`
 
@@ -1264,11 +1265,11 @@ async function confirmImport() {
   confirmBtn.innerHTML = oldLabel
 
   if (errors.length) {
-    document.getElementById('importErrNote').innerHTML = errors.map(e => `⚠️ ${e}`).join('<br>')
+    document.getElementById('importErrNote').innerHTML = errors.join('<br>')
     console.error('Tất cả lỗi:', errors)
-    toast(`⚠️ Đã nhập ${inserted}/${payload.length} — ${errors.length} lô lỗi (xem chi tiết bên dưới)`, 'err')
+    toast(`️ Đã nhập ${inserted}/${payload.length} — ${errors.length} lô lỗi (xem chi tiết bên dưới)`, 'err')
   } else {
-    toast(`✅ Đã nhập/cập nhật ${inserted} sản phẩm!`)
+    toast(` Đã nhập/cập nhật ${inserted} sản phẩm!`)
   }
 
   if (inserted > 0) {
@@ -1277,7 +1278,7 @@ async function confirmImport() {
   }
 }
 
-// ── GOOGLE SHEET SYNC ─────────────────────────────────
+//  GOOGLE SHEET SYNC 
 // Sheet "file-kho-admin" — tab "san-pham-da-map" (đã map đúng cột với form nhập)
 // Sheet phải ở chế độ chia sẻ "Anyone with the link – Viewer" để fetch CSV công khai.
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1cwEq5aNw4Q1IX_aFc5dq4qefrWzobjQWxRpOA9ubFug/export?format=csv&gid=1214637496'
@@ -1315,7 +1316,7 @@ function parseVNPrice(raw) {
 async function syncFromSheet() {
   const btn = document.getElementById('btnSyncSheet')
   const oldLabel = btn.textContent
-  btn.disabled = true; btn.textContent = '⏳ Đang tải từ Sheet...'
+  btn.disabled = true; btn.textContent = 'Đang tải từ Sheet...'
 
   try {
     const res = await fetch(SHEET_CSV_URL + '&t=' + Date.now())
@@ -1324,7 +1325,7 @@ async function syncFromSheet() {
     if (text.trim().startsWith('<')) throw new Error('Sheet chưa public hoặc link không đúng — nhận về HTML thay vì CSV.')
 
     const rows = parseCSV(text)
-    if (rows.length < 2) { toast('⚠️ Sheet không có dữ liệu', 'err'); return }
+    if (rows.length < 2) { toast('Sheet không có dữ liệu', 'err'); return }
 
     // Chuẩn hoá header: xóa BOM, NFC, lowercase, trim, rồi strip dấu tiếng Việt để match linh hoạt hơn
     const normHdr = h => String(h).replace(/^﻿/, '').normalize('NFC').toLowerCase().trim()
@@ -1389,7 +1390,7 @@ async function syncFromSheet() {
 
     if (!importRows.length) {
       const detected = hdrs.filter(Boolean).join(', ') || '(không có)'
-      toast(`⚠️ Không tìm thấy dữ liệu hợp lệ. Cột Sheet: [${detected}]. Cần có: "Tên sản phẩm", "Giá"`, 'err')
+      toast(`️ Không tìm thấy dữ liệu hợp lệ. Cột Sheet: [${detected}]. Cần có: "Tên sản phẩm", "Giá"`, 'err')
       console.warn('[Sheet Sync] Headers phát hiện:', hdrs)
       return
     }
@@ -1399,7 +1400,7 @@ async function syncFromSheet() {
       : ''
     showImportPreview({ source: 'sheet', skippedNote: skippedMsg })
   } catch (e) {
-    toast('❌ Đồng bộ thất bại: ' + e.message, 'err')
+    toast('Đồng bộ thất bại: ' + e.message, 'err')
     console.error('[Sheet Sync] Lỗi:', e)
   } finally {
     btn.disabled = false; btn.textContent = oldLabel
@@ -1417,7 +1418,7 @@ function dlTemplate() {
   a.click()
 }
 
-// ── PUSH ADMIN → GOOGLE SHEET ────────────────────────
+//  PUSH ADMIN → GOOGLE SHEET 
 
 async function pushToSheet() {
   let url = localStorage.getItem(APPS_SCRIPT_KEY) || ''
@@ -1429,7 +1430,7 @@ async function pushToSheet() {
 
   const btn = document.getElementById('btnPushSheet')
   const oldLabel = btn.textContent
-  btn.disabled = true; btn.textContent = '⏳ Đang đẩy lên Sheet...'
+  btn.disabled = true; btn.textContent = 'Đang đẩy lên Sheet...'
 
   try {
     // Lấy đầy đủ dữ liệu sản phẩm
@@ -1462,10 +1463,10 @@ async function pushToSheet() {
       body: JSON.stringify({ action: 'updateProducts', data: rows }),
     })
     // no-cors luôn trả về opaque response (không đọc được) nhưng request đã đến server
-    toast(`✅ Đã đẩy ${rows.length} sản phẩm lên Google Sheet!`)
+    toast(` Đã đẩy ${rows.length} sản phẩm lên Google Sheet!`)
   } catch (e) {
     const msg = e.message || ''
-    toast('❌ Lỗi gửi lên Sheet: ' + msg, 'err')
+    toast('Lỗi gửi lên Sheet: ' + msg, 'err')
     if (msg.includes('404') || msg.includes('script.google')) {
       if (confirm('URL Apps Script có vẻ sai. Muốn nhập lại không?')) {
         localStorage.removeItem(APPS_SCRIPT_KEY)
@@ -1476,7 +1477,7 @@ async function pushToSheet() {
   }
 }
 
-// ── POSTS ─────────────────────────────────────────────
+//  POSTS 
 
 async function loadPosts() {
   document.getElementById('poCount').textContent = 'Đang tải...'
@@ -1492,8 +1493,8 @@ function renderPo(list) {
   document.getElementById('poCount').textContent = `${list.length} bài viết`
   const tbody = document.getElementById('poBody')
   if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">📝</div><p>Chưa có bài viết</p></div></td></tr>'
-    return
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon"><i data-lucide="file-text" style="width:32px;height:32px;stroke-width:1.5"></i></div><p>Chưa có bài viết</p></div></td></tr>'
+    if (window.lucide) lucide.createIcons(); return
   }
   tbody.innerHTML = list.map(p => {
     const d  = new Date(p.published_at)
@@ -1509,12 +1510,13 @@ function renderPo(list) {
       <td style="color:#a0a0a0;white-space:nowrap">${dt}</td>
       <td><label class="toggle"><input type="checkbox" ${p.is_published?'checked':''} onchange="qSet('posts','is_published',this.checked,'${p.id}')"><span class="slider"></span></label></td>
       <td style="text-align:right;white-space:nowrap">
-        <a class="btn-ghost" href="https://ototiendu.com/tin-tuc-chi-tiet.html?slug=${p.slug}" target="_blank" title="Xem trang">🔗</a>
-        <button class="btn-ghost" onclick="openPostModal(poStore['${p.id}'])" title="Sửa">✏️</button>
-        <button class="btn-del"   onclick="confirmDel('posts','${p.id}','${esc(p.title)}')" title="Xoá">🗑️</button>
+        <a class="btn-ghost" href="https://ototiendu.com/tin-tuc-chi-tiet.html?slug=${p.slug}" target="_blank" title="Xem trang" style="display:inline-flex;align-items:center"><i data-lucide="external-link" style="width:14px;height:14px;stroke-width:2"></i></a>
+        <button class="btn-ghost" onclick="openPostModal(poStore['${p.id}'])" title="Sửa" style="display:inline-flex;align-items:center"><i data-lucide="pencil" style="width:14px;height:14px;stroke-width:2"></i></button>
+        <button class="btn-del"   onclick="confirmDel('posts','${p.id}','${esc(p.title)}')" title="Xoá" style="display:inline-flex;align-items:center"><i data-lucide="trash-2" style="width:14px;height:14px;stroke-width:2"></i></button>
       </td>
     </tr>`
   }).join('')
+  if (window.lucide) lucide.createIcons()
 }
 
 function poFilter(q) {
@@ -1555,7 +1557,7 @@ function openPostModal(p = null) {
 async function savePost() {
   const title = gv('po_title').trim()
   const slug  = gv('po_slug').trim()
-  if (!title || !slug) { toast('⚠️ Nhập đầy đủ tiêu đề và slug', 'err'); return }
+  if (!title || !slug) { toast('Nhập đầy đủ tiêu đề và slug', 'err'); return }
 
   const content = quillEditor?.root.innerHTML || ''
 
@@ -1572,13 +1574,13 @@ async function savePost() {
     ? await db.from('posts').update(payload).eq('id', editPoId)
     : await db.from('posts').insert(payload)
 
-  if (error) { toast('❌ ' + error.message, 'err'); return }
-  toast(editPoId ? '✅ Đã cập nhật bài viết!' : '✅ Đã thêm bài viết mới!')
+  if (error) { toast('' + error.message, 'err'); return }
+  toast(editPoId ? ' Đã cập nhật bài viết!' : ' Đã thêm bài viết mới!')
   closeModal('postModal')
   allPo = []; await loadPosts()
 }
 
-// ── QUILL EDITOR ──────────────────────────────────────
+//  QUILL EDITOR 
 
 function makeToolbar(imgHandler) {
   return {
@@ -1621,15 +1623,15 @@ async function quillImgHandler() {
   input.onchange = async () => {
     const file = input.files[0]
     if (!file) return
-    toast('⏳ Đang tải ảnh lên...')
+    toast('Đang tải ảnh lên...')
     const path = `content/${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi,'-')}`
     const { data, error } = await db.storage.from('post-images').upload(path, file, { upsert: false })
-    if (error) { toast('❌ Upload thất bại: ' + error.message, 'err'); return }
+    if (error) { toast('Upload thất bại: ' + error.message, 'err'); return }
     const { data: { publicUrl } } = db.storage.from('post-images').getPublicUrl(data.path)
     const range = quillEditor.getSelection() || { index: quillEditor.getLength() }
     quillEditor.insertEmbed(range.index, 'image', publicUrl)
     quillEditor.setSelection(range.index + 1)
-    toast('✅ Đã chèn ảnh!')
+    toast('Đã chèn ảnh!')
   }
   input.click()
 }
@@ -1640,20 +1642,20 @@ async function quillProductImgHandler() {
   input.onchange = async () => {
     const file = input.files[0]
     if (!file) return
-    toast('⏳ Đang tải ảnh lên...')
+    toast('Đang tải ảnh lên...')
     const path = `products/desc-${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi,'-')}`
     const { data, error } = await db.storage.from('product-images').upload(path, file, { upsert: false })
-    if (error) { toast('❌ Upload thất bại: ' + error.message, 'err'); return }
+    if (error) { toast('Upload thất bại: ' + error.message, 'err'); return }
     const { data: { publicUrl } } = db.storage.from('product-images').getPublicUrl(data.path)
     const range = quillProductEditor.getSelection() || { index: quillProductEditor.getLength() }
     quillProductEditor.insertEmbed(range.index, 'image', publicUrl)
     quillProductEditor.setSelection(range.index + 1)
-    toast('✅ Đã chèn ảnh!')
+    toast('Đã chèn ảnh!')
   }
   input.click()
 }
 
-// ── DELETE ────────────────────────────────────────────
+//  DELETE 
 
 function confirmDel(table, id, name) {
   delTarget = { table, id }
@@ -1663,14 +1665,14 @@ function confirmDel(table, id, name) {
 
 async function execDelete() {
   const { error } = await db.from(delTarget.table).delete().eq('id', delTarget.id)
-  if (error) { toast('❌ Xoá thất bại: ' + error.message, 'err'); return }
-  toast('🗑️ Đã xoá!')
+  if (error) { toast('Xoá thất bại: ' + error.message, 'err'); return }
+  toast('Đã xoá!')
   closeModal('confirmModal')
   if (delTarget.table === 'products') { allP = []; await loadProducts(); loadDashboard() }
   else { allPo = []; await loadPosts() }
 }
 
-// ── SPECS ─────────────────────────────────────────────
+//  SPECS 
 
 function addSpec(val = '') {
   const div = document.createElement('div')
@@ -1719,25 +1721,25 @@ async function uploadGalleryImgs(input) {
   const files = [...input.files]; input.value = ''
   if (!files.length) return
   const note = document.getElementById('gallery_note')
-  note.textContent = `⏳ Đang tải ${files.length} ảnh...`
+  note.textContent = `Đang tải ${files.length} ảnh...`
   let uploaded = 0
   for (const file of files) {
     const path = `products/${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '-')}`
     const { data, error } = await db.storage.from('product-images').upload(path, file, { upsert: false })
-    if (error) { note.textContent = '❌ ' + error.message; continue }
+    if (error) { note.textContent = 'Lỗi: ' + error.message; continue }
     const { data: { publicUrl } } = db.storage.from('product-images').getPublicUrl(data.path)
     addGalleryItem(publicUrl)
     uploaded++
   }
-  note.textContent = uploaded === files.length ? `✅ Đã tải lên ${uploaded} ảnh` : `⚠️ Tải lên ${uploaded}/${files.length} ảnh`
+  note.textContent = `Đã tải lên ${uploaded}/${files.length} ảnh`
 }
 
-// ── MODAL ─────────────────────────────────────────────
+//  MODAL 
 
 function closeModal(id) { document.getElementById(id).style.display = 'none' }
 function bkClose(e, id) { if (e.target.id === id) closeModal(id) }
 
-// ── SLUG AUTO ─────────────────────────────────────────
+//  SLUG AUTO 
 
 const VI = {'à':'a','á':'a','ả':'a','ã':'a','ạ':'a','ă':'a','ắ':'a','ặ':'a','ằ':'a','ẳ':'a','ẵ':'a','â':'a','ấ':'a','ầ':'a','ẩ':'a','ẫ':'a','ậ':'a','è':'e','é':'e','ẻ':'e','ẽ':'e','ẹ':'e','ê':'e','ế':'e','ề':'e','ể':'e','ễ':'e','ệ':'e','ì':'i','í':'i','ỉ':'i','ĩ':'i','ị':'i','ò':'o','ó':'o','ỏ':'o','õ':'o','ọ':'o','ô':'o','ố':'o','ồ':'o','ổ':'o','ỗ':'o','ộ':'o','ơ':'o','ớ':'o','ờ':'o','ở':'o','ỡ':'o','ợ':'o','ù':'u','ú':'u','ủ':'u','ũ':'u','ụ':'u','ư':'u','ứ':'u','ừ':'u','ử':'u','ữ':'u','ự':'u','ỳ':'y','ý':'y','ỷ':'y','ỹ':'y','ỵ':'y','đ':'d'}
 
@@ -1755,7 +1757,7 @@ document.addEventListener('input', e => {
   if (e.target.id === 'p_slug' || e.target.id === 'po_slug') e.target._manual = true
 })
 
-// ── IMAGE PREVIEW ─────────────────────────────────────
+//  IMAGE PREVIEW 
 
 function prevImg(inputId, imgId) {
   const url = document.getElementById(inputId).value.trim()
@@ -1763,7 +1765,7 @@ function prevImg(inputId, imgId) {
   if (url) { img.src = url; img.classList.add('on') } else img.classList.remove('on')
 }
 
-// ── DEBUG: gõ testConnection() trong Console trình duyệt để kiểm tra ──
+//  DEBUG: gõ testConnection() trong Console trình duyệt để kiểm tra 
 window.testConnection = async function () {
   console.group('🔍 [Admin] Kiểm tra kết nối Supabase')
 
@@ -1807,7 +1809,7 @@ window.testConnection = async function () {
 }
 console.log('💡 Gõ testConnection() trong Console này để kiểm tra kết nối Supabase')
 
-// ── DASHBOARD SEARCH ──────────────────────────────────
+//  DASHBOARD SEARCH 
 
 let _dashTimer = null
 async function runDashSearch(q) {
@@ -1838,7 +1840,7 @@ async function runDashSearch(q) {
 
     let html = ''
     if (pResults.length) {
-      html += `<div style="padding:8px 14px 4px;font-size:10px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #f5f5f5">📦 Sản phẩm</div>`
+      html += `<div style="padding:8px 14px 4px;font-size:10px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #f5f5f5">Sản phẩm</div>`
       html += pResults.map(p => `
         <div onclick="openFromDashSearch('products','${p.id}')"
           style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;border-bottom:1px solid #f9f9f9;transition:background .1s"
@@ -1851,7 +1853,7 @@ async function runDashSearch(q) {
         </div>`).join('')
     }
     if (poResults.length) {
-      html += `<div style="padding:8px 14px 4px;font-size:10px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #f5f5f5;border-top:${pResults.length?'1px solid #f0f0f0':'none'}">📝 Bài viết</div>`
+      html += `<div style="padding:8px 14px 4px;font-size:10px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #f5f5f5;border-top:${pResults.length?'1px solid #f0f0f0':'none'}">Bài viết</div>`
       html += poResults.map(p => `
         <div onclick="openFromDashSearch('posts','${p.id}')"
           style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:background .1s"
@@ -1910,7 +1912,7 @@ async function openFromDashSearch(tab, id) {
   }
 }
 
-// ── AI BLOG WRITER ────────────────────────────────────
+//  AI BLOG WRITER 
 
 const AI_SYSTEM_PROMPT = `Bạn là chuyên gia content SEO tiếng Việt cho Tiên Du Phụ Tùng Ô Tô — cửa hàng phụ tùng ô tô bán sỉ & lẻ tại Nha Trang.
 
@@ -1970,11 +1972,11 @@ function openAiWriter() {
   document.getElementById('aiError').style.display = 'none'
   const key = localStorage.getItem('td_claude_key')
   const status = document.getElementById('aiKeyStatus')
-  status.textContent = key ? '✅ API key đã lưu (...' + key.slice(-6) + ')' : '⚠️ Chưa có API key — nhấn "Hiện / đổi" để nhập'
+  status.textContent = key ? 'API key đã lưu (..·' + key.slice(-6) + ')' : 'Chưa có API key — nhấn "Hiện / đổi" để nhập'
   status.style.color = key ? '#15803d' : '#dc2626'
   document.getElementById('aiKeyFieldWrap').style.display = 'none'
   document.getElementById('btnRunAi').disabled = false
-  document.getElementById('btnRunAi').textContent = '✍️ Viết bài →'
+  document.getElementById('btnRunAi').innerHTML = '<i data-lucide="wand-2" style="width:14px;height:14px;stroke-width:2"></i> Viết bài'; if(window.lucide)lucide.createIcons()
   document.getElementById('aiWriterModal').style.display = 'flex'
 }
 
@@ -1987,11 +1989,11 @@ function saveAiKey() {
   const val = document.getElementById('ai_key_input').value.trim()
   if (!val.startsWith('sk-')) { toast('Key phải bắt đầu bằng sk-', 'err'); return }
   localStorage.setItem('td_claude_key', val)
-  document.getElementById('aiKeyStatus').textContent = '✅ API key đã lưu (...' + val.slice(-6) + ')'
+  document.getElementById('aiKeyStatus').textContent = 'API key đã lưu (..·' + val.slice(-6) + ')'
   document.getElementById('aiKeyStatus').style.color = '#15803d'
   document.getElementById('aiKeyFieldWrap').style.display = 'none'
   document.getElementById('ai_key_input').value = ''
-  toast('✅ Đã lưu API key!')
+  toast('Đã lưu API key!')
 }
 
 async function runAiWriter() {
@@ -2002,7 +2004,7 @@ async function runAiWriter() {
 
   const btn = document.getElementById('btnRunAi')
   btn.disabled = true
-  btn.innerHTML = '<span class="ai-spinning">⏳</span> Đang viết...'
+  btn.innerHTML = '<span class="ai-spinning" style="display:inline-flex"><i data-lucide="loader-2" style="width:14px;height:14px;stroke-width:2"></i></span> Đang viết...'; if(window.lucide)lucide.createIcons()
   document.getElementById('aiError').style.display = 'none'
 
   const catHint = document.getElementById('ai_cat').value
@@ -2040,10 +2042,10 @@ async function runAiWriter() {
     showAiResult(article)
   } catch (e) {
     const errEl = document.getElementById('aiError')
-    errEl.textContent = '❌ ' + e.message
+    errEl.textContent = e.message
     errEl.style.display = ''
     btn.disabled = false
-    btn.textContent = '✍️ Viết bài →'
+    btn.innerHTML = '<i data-lucide="wand-2" style="width:14px;height:14px;stroke-width:2"></i> Viết bài'; if(window.lucide)lucide.createIcons()
   }
 }
 
@@ -2106,7 +2108,7 @@ function parseAiJson(raw) {
 
 function showAiResult(a) {
   document.getElementById('res_cat').textContent = AI_CAT_NAMES[a.category_slug] || a.category_slug
-  document.getElementById('res_kw').textContent = '🔑 ' + (a.focus_keyword || '')
+  document.getElementById('res_kw').textContent = a.focus_keyword || ''
   document.getElementById('res_title').textContent = a.title
   document.getElementById('res_excerpt').textContent = a.excerpt
   document.getElementById('res_seonote').textContent = a.seo_notes || ''
@@ -2114,7 +2116,7 @@ function showAiResult(a) {
   // Image count badge
   const badge = document.getElementById('res_img_count')
   if (a._imgCount > 0) {
-    badge.textContent = `🖼 ${a._imgCount} ảnh minh hoạ`
+    document.getElementById('res_img_count_text').textContent = `${a._imgCount} ảnh minh hoạ`
     badge.style.display = ''
   } else {
     badge.style.display = 'none'
@@ -2125,13 +2127,13 @@ function showAiResult(a) {
   if (a._thumbUrl) {
     thumbImg.style.display = 'none'
     thumbLoading.style.display = ''
-    thumbLoading.innerHTML = '<span class="ai-spinning">⏳</span> Đang tạo ảnh thumbnail...'
+    thumbLoading.innerHTML = '<span class="ai-spinning" style="display:inline-flex"><i data-lucide="loader-2" style="width:16px;height:16px;stroke-width:2"></i></span> Đang tạo ảnh thumbnail...'; if(window.lucide)lucide.createIcons()
     thumbImg.src = a._thumbUrl
   } else {
     thumbLoading.textContent = '— Không có thumbnail —'
   }
   document.getElementById('res_img_note').textContent = a._imgCount > 0
-    ? `🖼 ${a._imgCount} ảnh AI sẽ tải sau ~15 giây trong editor`
+    ? `${a._imgCount} ảnh AI sẽ tải sau ~15 giây trong editor`
     : ''
   document.getElementById('aiFormPanel').style.display = 'none'
   document.getElementById('aiResultPanel').style.display = ''
@@ -2147,7 +2149,7 @@ function resetAiWriter() {
   document.getElementById('aiFootResult').style.display = 'none'
   const btn = document.getElementById('btnRunAi')
   btn.disabled = false
-  btn.textContent = '✍️ Viết bài →'
+  btn.innerHTML = '<i data-lucide="wand-2" style="width:14px;height:14px;stroke-width:2"></i> Viết bài'; if(window.lucide)lucide.createIcons()
 }
 
 function fillFromAi() {
@@ -2170,7 +2172,7 @@ function fillFromAi() {
   if (quillEditor && a.content) quillEditor.root.innerHTML = a.content
 }
 
-// ── RIGHT DRAWER ──────────────────────────────────────
+//  RIGHT DRAWER 
 
 let qeProduct = null
 
@@ -2211,7 +2213,7 @@ function calcPricing() {
 }
 
 function applyPriceToProduct() {
-  if (!qeProduct) { toast('Chưa chọn sản phẩm — nhấn ⚡ trên một sản phẩm', 'err'); return }
+  if (!qeProduct) { toast('Chưa chọn sản phẩm — nhấn  trên một sản phẩm', 'err'); return }
   const cost = parseFloat(document.getElementById('dc_cost').value)
   if (!cost) { toast('Nhập giá nhập trước', 'err'); return }
   const r1 = parseFloat(document.getElementById('dc_r1').value) || 35
@@ -2221,7 +2223,7 @@ function applyPriceToProduct() {
   const selling = Math.ceil(cost * (1 + rate / 100))
   document.getElementById('qe_price').value = selling
   switchRdTab('edit')
-  toast(`✅ Giá ${new Intl.NumberFormat('vi-VN').format(selling)} ₫ đã áp vào ô Giá bán`)
+  toast(` Giá ${new Intl.NumberFormat('vi-VN').format(selling)} ₫ đã áp vào ô Giá bán`)
 }
 
 function loadProductToDrawer(p) {
@@ -2301,14 +2303,14 @@ async function saveQuickEdit() {
   }
   const { error } = await db.from('products').update(updates).eq('id', qeProduct.id)
   btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="licon"></i> Lưu thay đổi'; lucide.createIcons()
-  if (error) { toast('❌ Lỗi: ' + error.message, 'err'); return }
+  if (error) { toast('Lỗi: ' + error.message, 'err'); return }
   Object.assign(qeProduct, updates)
   pStore[qeProduct.id] = qeProduct
   document.getElementById('qeChip').textContent  = updates.name
   document.getElementById('advChip').textContent = updates.name
   updateAdvLabels(qeProduct)
   await loadProducts()
-  toast('✅ Đã lưu thay đổi!')
+  toast('Đã lưu thay đổi!')
 }
 
 async function advDuplicate() {
@@ -2321,8 +2323,8 @@ async function advDuplicate() {
   copy.sku  = copy.sku ? copy.sku + '-COPY' : null
   copy.is_published = false
   const { data, error } = await db.from('products').insert(copy).select().single()
-  if (error) { toast('❌ Lỗi: ' + error.message, 'err'); return }
-  toast('✅ Đã tạo bản sao!')
+  if (error) { toast('Lỗi: ' + error.message, 'err'); return }
+  toast('Đã tạo bản sao!')
   await loadProducts()
   if (data) loadProductToDrawer(data)
 }
@@ -2331,24 +2333,24 @@ async function advTogglePublish() {
   if (!qeProduct) return
   const v = !qeProduct.is_published
   const { error } = await db.from('products').update({ is_published: v }).eq('id', qeProduct.id)
-  if (error) { toast('❌ Lỗi', 'err'); return }
+  if (error) { toast('Lỗi', 'err'); return }
   qeProduct.is_published = v; pStore[qeProduct.id] = qeProduct
   document.getElementById('qe_published').checked = v
   updateAdvLabels(qeProduct)
   await loadProducts()
-  toast(v ? '✅ Đã hiện sản phẩm' : '✅ Đã ẩn sản phẩm')
+  toast(v ? ' Đã hiện sản phẩm' : ' Đã ẩn sản phẩm')
 }
 
 async function advToggleFeatured() {
   if (!qeProduct) return
   const v = !qeProduct.is_featured
   const { error } = await db.from('products').update({ is_featured: v }).eq('id', qeProduct.id)
-  if (error) { toast('❌ Lỗi', 'err'); return }
+  if (error) { toast('Lỗi', 'err'); return }
   qeProduct.is_featured = v; pStore[qeProduct.id] = qeProduct
   document.getElementById('qe_featured').checked = v
   updateAdvLabels(qeProduct)
   await loadProducts()
-  toast(v ? '⭐ Đã đánh dấu nổi bật' : '✅ Đã bỏ nổi bật')
+  toast(v ? '⭐ Đã đánh dấu nổi bật' : ' Đã bỏ nổi bật')
 }
 
 async function advAdjustPrice() {
@@ -2361,16 +2363,16 @@ async function advAdjustPrice() {
     : Math.ceil(qeProduct.price * (1 - pct / 100))
   if (!confirm(`Đổi giá: ${fmtP(qeProduct.price)} → ${fmtP(np)}?`)) return
   const { error } = await db.from('products').update({ price: np }).eq('id', qeProduct.id)
-  if (error) { toast('❌ Lỗi', 'err'); return }
+  if (error) { toast('Lỗi', 'err'); return }
   qeProduct.price = np; pStore[qeProduct.id] = qeProduct
   document.getElementById('qe_price').value = np
   document.getElementById('adv_pct').value = ''
   updateAdvPricePreview()
   await loadProducts()
-  toast(`✅ Giá mới: ${fmtP(np)}`)
+  toast(` Giá mới: ${fmtP(np)}`)
 }
 
-// ── UTILS ─────────────────────────────────────────────
+//  UTILS 
 
 const fmtP = n => new Intl.NumberFormat('vi-VN').format(n) + ' ₫'
 const gv   = id => document.getElementById(id).value
@@ -2386,7 +2388,7 @@ function toast(msg, type = 'ok') {
 }
 </script>
 
-<!-- ── Right Drawer ── -->
+<!--  Right Drawer  -->
 <div id="rightDrawer" class="rdrawer">
   <button class="rdrawer-toggle" onclick="toggleDrawer()" title="Công cụ sản phẩm">
     <i data-lucide="settings" class="licon-lg"></i>
@@ -2394,7 +2396,7 @@ function toast(msg, type = 'ok') {
   </button>
   <div class="rdrawer-head">
     <span class="rdrawer-title">Công cụ sản phẩm</span>
-    <button class="modal-close" onclick="toggleDrawer()">✕</button>
+    <button class="modal-close" onclick="toggleDrawer()"></button>
   </div>
   <div class="rdrawer-tabs">
     <button class="rdtab active" id="rdtab-price" onclick="switchRdTab('price')"><i data-lucide="calculator" class="licon"></i> Tính giá</button>
@@ -2403,7 +2405,7 @@ function toast(msg, type = 'ok') {
   </div>
   <div class="rdrawer-body">
 
-    <!-- ─ Tab: Tính giá ─ -->
+    <!--  Tab: Tính giá  -->
     <div class="rdtab-panel active" id="rdpanel-price">
       <div class="dc-section-title">Giá nhập (VND)</div>
       <input type="number" class="finput" id="dc_cost" placeholder="VD: 350000" oninput="calcPricing()" style="margin-bottom:12px">
@@ -2441,7 +2443,7 @@ function toast(msg, type = 'ok') {
       </div>
     </div>
 
-    <!-- ─ Tab: Sửa nhanh ─ -->
+    <!--  Tab: Sửa nhanh  -->
     <div class="rdtab-panel" id="rdpanel-edit">
       <div id="qeNoSel" class="qe-no-sel">
         <i data-lucide="mouse-pointer-2" class="licon-xl" style="margin:0 auto 10px"></i>
@@ -2501,7 +2503,7 @@ function toast(msg, type = 'ok') {
       </div>
     </div>
 
-    <!-- ─ Tab: Nâng cao ─ -->
+    <!--  Tab: Nâng cao  -->
     <div class="rdtab-panel" id="rdpanel-adv">
       <div id="advNoSel" class="adv-no-sel">
         Nhấn nút <strong>Công cụ</strong> trên một sản phẩm<br>để mở tính năng nâng cao.
