@@ -293,6 +293,24 @@ input:checked+.slider:before{transform:translateX(16px)}
 .dc-apply-bulk-btn:hover:not(:disabled){opacity:.85}
 .dc-apply-bulk-btn:disabled{opacity:.45;cursor:not-allowed}
 .dc-bulk-empty{text-align:center;font-size:12px;color:#737373;padding:14px;background:#f9f9f9;border-radius:8px;margin-top:8px}
+.qe-ai-btn{width:100%;background:#fffbe6;border:1.5px solid #fecd27;border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;color:#7a5c00;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .12s}
+.qe-ai-btn:hover:not(:disabled){background:#fecd27;color:#000}
+.qe-ai-btn:disabled{opacity:.5;cursor:not-allowed}
+.qe-ai-result{background:#f9f9f9;border:1px solid #ebebeb;border-radius:8px;padding:10px;margin-top:8px}
+.qe-ai-section{font-size:10px;font-weight:800;color:#a0a0a0;text-transform:uppercase;letter-spacing:.8px;margin:9px 0 5px}
+.qe-ai-chips{display:flex;flex-wrap:wrap;gap:4px}
+.qe-ai-chip{border-radius:4px;padding:2px 7px;font-size:11px;font-weight:500}
+.qe-ai-chip-vehicle{background:#e0f2fe;color:#0369a1}
+.qe-ai-chip-spec{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.qe-ai-confidence{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block}
+.qe-ai-confidence.high{background:#dcfce7;color:#15803d}
+.qe-ai-confidence.medium{background:#fef3c7;color:#92400e}
+.qe-ai-confidence.low{background:#fee2e2;color:#991b1b}
+.qe-ai-specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 8px;font-size:11px;line-height:1.7}
+.qe-ai-specs-key{color:#a0a0a0}
+.qe-ai-specs-val{color:#252b42;font-weight:500}
+.qe-ai-apply-btn{width:100%;background:#101010;border:none;border-radius:8px;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;color:#fecd27;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .12s}
+.qe-ai-apply-btn:hover{opacity:.85}
 .qe-no-sel{text-align:center;padding:40px 16px;color:#a0a0a0;font-size:13px;line-height:1.7}
 .qe-no-sel-icon{font-size:34px;margin-bottom:8px}
 .qe-product-chip{font-size:12px;font-weight:700;color:#7a5c00;background:#fffbe6;border-left:3px solid #fecd27;border-radius:0 6px 6px 0;padding:7px 10px;margin-bottom:12px;line-height:1.4;word-break:break-word}
@@ -2466,6 +2484,129 @@ async function advAdjustPrice() {
   toast(` Giá mới: ${fmtP(np)}`)
 }
 
+// ── AI Product Description ─────────────────────────────────────────
+const AI_PRODUCT_PROMPT = `Bạn là chuyên gia phụ tùng ô tô với kiến thức kỹ thuật sâu về thị trường Việt Nam.
+Dựa trên tên sản phẩm, mã SKU và danh mục, hãy tra cứu và tạo nội dung mô tả phụ tùng đầy đủ bằng tiếng Việt.
+
+ĐẦU RA: Trả về DUY NHẤT một JSON object hợp lệ (KHÔNG kèm markdown, KHÔNG giải thích), theo schema:
+{
+  "excerpt": "Mô tả ngắn 1-2 câu, nêu công dụng chính và điểm nổi bật",
+  "short_specs": ["Đặc điểm 1", "Đặc điểm 2", "Đặc điểm 3"],
+  "detailed_specs": [{"key": "Chất liệu", "value": "..."}, {"key": "Trọng lượng", "value": "..."}],
+  "compatible_vehicles": ["Toyota Vios thế hệ 3 (2014–2023)", "Honda City 2014–2021"],
+  "description_html": "<p>Mô tả đầy đủ HTML...</p>",
+  "confidence": "high"
+}
+
+QUY TẮC:
+- excerpt: 1–2 câu súc tích, bao gồm công dụng và lợi ích chính
+- short_specs: 3–5 đặc điểm nổi bật ngắn gọn (dưới 10 từ/điểm)
+- detailed_specs: 4–8 thông số kỹ thuật key-value (vật liệu, kích thước, tiêu chuẩn, OEM code...)
+- compatible_vehicles: liệt kê CHỈ những đời xe THỰC SỰ tương thích — không đoán mò. Nếu không chắc, trả về []
+- description_html: 150–300 từ, dùng <p> <ul> <li> <strong>, KHÔNG dùng <h1>/<h2>, KHÔNG CSS inline
+- confidence: "high" nếu chắc chắn, "medium" nếu có thể đúng, "low" nếu ước lượng`
+
+let qeAiData = null
+
+async function aiGenerateDesc() {
+  if (!qeProduct) { toast('Chưa chọn sản phẩm', 'err'); return }
+  const key = localStorage.getItem('td_claude_key')
+  if (!key) { toast('Cần nhập Claude API key — mở "AI Viết Blog" để thiết lập', 'err'); return }
+
+  const name  = document.getElementById('qe_name').value.trim() || qeProduct.name
+  const sku   = document.getElementById('qe_sku').value.trim()  || qeProduct.sku || ''
+  const cat   = qeProduct.categories?.name || ''
+  const brand = qeProduct.brands?.name || ''
+
+  const btn = document.getElementById('qeAiDescBtn')
+  btn.disabled = true
+  btn.innerHTML = '<i data-lucide="loader-2" style="width:13px;height:13px;stroke-width:2;animation:spin 1s linear infinite"></i> Đang tìm kiếm...'
+  if (window.lucide) lucide.createIcons()
+  document.getElementById('qeAiResult').style.display = 'none'
+
+  try {
+    const userMsg = [
+      `Tên sản phẩm: ${name}`,
+      sku   ? `Mã SKU: ${sku}`        : '',
+      cat   ? `Danh mục: ${cat}`      : '',
+      brand ? `Hãng xe: ${brand}`     : '',
+    ].filter(Boolean).join('\n')
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-5',
+        max_tokens: 2000,
+        system: AI_PRODUCT_PROMPT,
+        messages: [{ role: 'user', content: userMsg }],
+      })
+    })
+
+    if (!resp.ok) { const t = await resp.text(); throw new Error(`API ${resp.status}: ${t.slice(0,200)}`) }
+    const data = await resp.json()
+    let raw = data.content.map(b => b.type === 'text' ? b.text : '').join('').trim()
+    const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/)
+    if (fence) raw = fence[1].trim()
+    const fi = raw.indexOf('{'), li = raw.lastIndexOf('}')
+    if (fi !== -1 && li !== -1) raw = raw.slice(fi, li + 1)
+    qeAiData = JSON.parse(raw)
+
+    document.getElementById('qe_excerpt').value = qeAiData.excerpt || ''
+    renderAiDescPreview(qeAiData)
+  } catch (e) {
+    toast('Lỗi AI: ' + (e.message || 'không rõ'), 'err')
+  } finally {
+    btn.disabled = false
+    btn.innerHTML = '<i data-lucide="wand-2" style="width:13px;height:13px;stroke-width:2"></i> Viết lại'
+    if (window.lucide) lucide.createIcons()
+  }
+}
+
+function renderAiDescPreview(d) {
+  const el = document.getElementById('qeAiResult')
+  const conf = d.confidence || 'medium'
+  const confLabel = { high: 'Độ chính xác cao', medium: 'Có thể đúng — nên kiểm tra', low: 'Ước lượng — cần xác nhận' }[conf] || ''
+
+  el.innerHTML = `<div class="qe-ai-result">
+    <span class="qe-ai-confidence ${conf}">${confLabel}</span>
+    ${d.short_specs?.length ? `
+      <div class="qe-ai-section">Đặc điểm nổi bật</div>
+      <div class="qe-ai-chips">${d.short_specs.map(s => `<span class="qe-ai-chip qe-ai-chip-spec">${s}</span>`).join('')}</div>` : ''}
+    ${d.compatible_vehicles?.length ? `
+      <div class="qe-ai-section">Đời xe tương thích</div>
+      <div class="qe-ai-chips">${d.compatible_vehicles.map(v => `<span class="qe-ai-chip qe-ai-chip-vehicle">${v}</span>`).join('')}</div>` : ''}
+    ${d.detailed_specs?.length ? `
+      <div class="qe-ai-section">Thông số kỹ thuật</div>
+      <div class="qe-ai-specs-grid">${d.detailed_specs.map(s => `<span class="qe-ai-specs-key">${s.key}</span><span class="qe-ai-specs-val">${s.value}</span>`).join('')}</div>` : ''}
+    <button class="qe-ai-apply-btn" onclick="applyAiToProductModal()">
+      <i data-lucide="square-pen" style="width:13px;height:13px;stroke-width:2"></i>
+      Mở form đầy đủ với dữ liệu AI
+    </button>
+  </div>`
+
+  el.style.display = 'block'
+  if (window.lucide) lucide.createIcons()
+}
+
+function applyAiToProductModal() {
+  if (!qeProduct || !qeAiData) return
+  const enriched = {
+    ...qeProduct,
+    excerpt:             qeAiData.excerpt             || qeProduct.excerpt,
+    short_specs:         qeAiData.short_specs         || qeProduct.short_specs,
+    detailed_specs:      qeAiData.detailed_specs      || qeProduct.detailed_specs,
+    compatible_vehicles: qeAiData.compatible_vehicles || qeProduct.compatible_vehicles,
+    description:         qeAiData.description_html    || qeProduct.description,
+  }
+  openProductModal(enriched)
+}
+
 let bulkChanges = []
 
 async function scanBulkPrices() {
@@ -2697,6 +2838,16 @@ function toast(msg, type = 'ok') {
           <label class="flabel">Mô tả ngắn</label>
           <textarea class="ftextarea" id="qe_excerpt" rows="2" style="min-height:56px"></textarea>
         </div>
+
+        <div class="dc-divider" style="margin:10px 0"></div>
+        <div class="dc-section-title" style="margin-bottom:4px">AI Viết mô tả sản phẩm</div>
+        <div style="font-size:11px;color:#737373;margin-bottom:8px;line-height:1.6">Tự tìm thông số kỹ thuật và đời xe tương thích dựa trên tên & mã SP.</div>
+        <button class="qe-ai-btn" id="qeAiDescBtn" onclick="aiGenerateDesc()">
+          <i data-lucide="wand-2" style="width:13px;height:13px;stroke-width:2"></i> Tự viết mô tả bằng AI
+        </button>
+        <div id="qeAiResult" style="display:none"></div>
+
+        <div class="dc-divider" style="margin:12px 0 10px"></div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
           <label class="flabel" style="margin:0;flex:1">Nổi bật</label>
           <label class="toggle"><input type="checkbox" id="qe_featured"><span class="slider"></span></label>
