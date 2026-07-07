@@ -278,6 +278,21 @@ input:checked+.slider:before{transform:translateX(16px)}
 .adv-tier-preview{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:#737373;background:#f9f9f9;border-radius:8px;padding:8px 10px;margin-bottom:8px;line-height:1.5}
 .adv-tier-preview.match{color:#15803d;background:#f0fdf4}
 .adv-tier-preview.no-match{color:#b45309;background:#fffbe6}
+.dc-scan-btn{width:100%;background:#f9f9f9;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:#252b42;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .12s}
+.dc-scan-btn:hover{border-color:#fecd27;background:#fffbe6;color:#b45309}
+.dc-scan-btn:disabled{opacity:.5;cursor:not-allowed}
+.dc-bulk-summary{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 10px;margin:8px 0 6px;font-size:12px;color:#15803d;line-height:1.6}
+.dc-bulk-list{max-height:180px;overflow-y:auto;border:1px solid #ebebeb;border-radius:8px;margin-bottom:6px}
+.dc-bulk-item{display:flex;align-items:center;padding:6px 9px;border-bottom:1px solid #f5f5f5;gap:6px}
+.dc-bulk-item:last-child{border-bottom:none}
+.dc-bulk-item-name{flex:1;font-size:11px;color:#252b42;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dc-bulk-item-arrow{font-size:10px;color:#a0a0a0;flex-shrink:0}
+.dc-bulk-item-new{font-size:11px;font-weight:700;color:#101010;white-space:nowrap}
+.dc-bulk-item-rate{font-size:10px;font-weight:700;color:#15803d;white-space:nowrap;background:#dcfce7;border-radius:4px;padding:1px 5px}
+.dc-apply-bulk-btn{width:100%;background:#101010;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:#fecd27;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .12s;margin-top:4px}
+.dc-apply-bulk-btn:hover:not(:disabled){opacity:.85}
+.dc-apply-bulk-btn:disabled{opacity:.45;cursor:not-allowed}
+.dc-bulk-empty{text-align:center;font-size:12px;color:#737373;padding:14px;background:#f9f9f9;border-radius:8px;margin-top:8px}
 .qe-no-sel{text-align:center;padding:40px 16px;color:#a0a0a0;font-size:13px;line-height:1.7}
 .qe-no-sel-icon{font-size:34px;margin-bottom:8px}
 .qe-product-chip{font-size:12px;font-weight:700;color:#7a5c00;background:#fffbe6;border-left:3px solid #fecd27;border-radius:0 6px 6px 0;padding:7px 10px;margin-bottom:12px;line-height:1.4;word-break:break-word}
@@ -2451,6 +2466,102 @@ async function advAdjustPrice() {
   toast(` Giá mới: ${fmtP(np)}`)
 }
 
+let bulkChanges = []
+
+async function scanBulkPrices() {
+  const btn = document.getElementById('dcScanBtn')
+  btn.disabled = true
+  btn.innerHTML = '<i data-lucide="loader-2" style="width:13px;height:13px;stroke-width:2;animation:spin 1s linear infinite"></i> Đang quét...'
+  if (window.lucide) lucide.createIcons()
+
+  if (!allP.length) {
+    const { data } = await db.from('products').select('id,name,price').order('created_at', { ascending: false }).limit(500)
+    if (data) data.forEach(p => { allP.push(p); pStore[p.id] = { ...pStore[p.id], ...p } })
+  }
+
+  const fmt = v => new Intl.NumberFormat('vi-VN').format(v)
+  bulkChanges = []
+  for (const p of allP) {
+    const tier = dcFindTier(p.price)
+    if (!tier) continue
+    const newPrice = Math.ceil(p.price * (1 + tier.rate / 100))
+    if (newPrice !== p.price) bulkChanges.push({ id: p.id, name: p.name, oldPrice: p.price, newPrice, rate: tier.rate })
+  }
+
+  btn.disabled = false
+  btn.innerHTML = '<i data-lucide="scan-line" style="width:13px;height:13px;stroke-width:2"></i> Quét lại'
+  if (window.lucide) lucide.createIcons()
+  renderBulkPreview()
+}
+
+function renderBulkPreview() {
+  const wrap    = document.getElementById('bulkPreviewWrap')
+  const content = document.getElementById('bulkPreviewContent')
+  const applyBtn = document.getElementById('bulkApplyBtn')
+  const fmt     = v => new Intl.NumberFormat('vi-VN').format(v)
+  wrap.style.display = 'block'
+
+  if (!bulkChanges.length) {
+    content.innerHTML = '<div class="dc-bulk-empty">Không có sản phẩm nào cần cập nhật<br>theo bảng khoảng giá hiện tại.</div>'
+    applyBtn.style.display = 'none'
+    return
+  }
+
+  const byRate = {}
+  bulkChanges.forEach(c => { byRate[c.rate] = (byRate[c.rate] || 0) + 1 })
+  const tierLines = Object.entries(byRate).map(([r, n]) => `${n} SP lãi ${r}%`).join(' · ')
+
+  content.innerHTML = `
+    <div class="dc-bulk-summary">
+      <strong>${bulkChanges.length} sản phẩm</strong> sẽ được cập nhật giá<br>
+      <span style="font-size:11px;opacity:.85">${tierLines}</span>
+    </div>
+    <div class="dc-bulk-list">
+      ${bulkChanges.map(c => `
+        <div class="dc-bulk-item">
+          <span class="dc-bulk-item-name" title="${c.name}">${c.name}</span>
+          <span class="dc-bulk-item-arrow">→</span>
+          <span class="dc-bulk-item-new">${fmt(c.newPrice)} ₫</span>
+          <span class="dc-bulk-item-rate">+${c.rate}%</span>
+        </div>`).join('')}
+    </div>
+    <div style="font-size:11px;color:#b45309;text-align:center;margin-bottom:4px">Xem kỹ trước khi áp — không thể hoàn tác</div>`
+
+  document.getElementById('bulkCount').textContent = bulkChanges.length
+  applyBtn.style.display = 'flex'
+}
+
+async function confirmBulkApply() {
+  if (!bulkChanges.length) return
+  if (!confirm(`Áp giá mới cho ${bulkChanges.length} sản phẩm?\n\nThao tác này không thể hoàn tác.`)) return
+
+  const btn = document.getElementById('bulkApplyBtn')
+  btn.disabled = true
+  btn.innerHTML = '<i data-lucide="loader-2" style="width:14px;height:14px;stroke-width:2;animation:spin 1s linear infinite"></i> Đang cập nhật...'
+  if (window.lucide) lucide.createIcons()
+
+  const results = await Promise.all(bulkChanges.map(c => db.from('products').update({ price: c.newPrice }).eq('id', c.id)))
+  const errors  = results.filter(r => r.error)
+
+  for (const c of bulkChanges) {
+    if (pStore[c.id]) pStore[c.id].price = c.newPrice
+    const idx = allP.findIndex(p => p.id === c.id)
+    if (idx !== -1) allP[idx].price = c.newPrice
+  }
+
+  const done = bulkChanges.length - errors.length
+  bulkChanges = []
+  document.getElementById('bulkPreviewWrap').style.display = 'none'
+  document.getElementById('dcScanBtn').innerHTML = '<i data-lucide="scan-line" style="width:13px;height:13px;stroke-width:2"></i> Quét & xem danh sách bị ảnh hưởng'
+  if (window.lucide) lucide.createIcons()
+
+  if (allP.length) renderP(allP, allP.length)
+  if (qeProduct && pStore[qeProduct.id]) { qeProduct = pStore[qeProduct.id]; updateAdvLabels(qeProduct) }
+
+  if (errors.length) toast(`Cập nhật ${done}/${done + errors.length} SP — ${errors.length} lỗi`, 'err')
+  else toast(`Đã cập nhật giá cho ${done} sản phẩm`)
+}
+
 async function advApplyTierPrice() {
   if (!qeProduct) { toast('Chưa chọn sản phẩm', 'err'); return }
   const fmt  = v => new Intl.NumberFormat('vi-VN').format(v)
@@ -2530,11 +2641,16 @@ function toast(msg, type = 'ok') {
       <button class="dc-apply-btn" id="dcApplyBtn" onclick="applyPriceToProduct()" disabled>Áp vào sản phẩm đang chọn</button>
 
       <div class="dc-divider" style="margin-top:16px"></div>
-      <div class="dc-section-title">Công thức</div>
-      <div style="font-size:12px;color:#737373;line-height:1.8">
-        Giá bán = Giá nhập × (1 + lãi%)<br>
-        Tỷ lệ áp tự động theo mức giá nhập.<br>
-        <span style="color:#b45309;font-weight:600">Tỷ lệ có thể chỉnh tùy ý.</span>
+      <div class="dc-section-title">Áp đồng loạt tất cả sản phẩm</div>
+      <button class="dc-scan-btn" id="dcScanBtn" onclick="scanBulkPrices()">
+        <i data-lucide="scan-line" style="width:13px;height:13px;stroke-width:2"></i> Quét & xem danh sách bị ảnh hưởng
+      </button>
+      <div id="bulkPreviewWrap" style="display:none">
+        <div id="bulkPreviewContent"></div>
+        <button class="dc-apply-bulk-btn" id="bulkApplyBtn" onclick="confirmBulkApply()" style="display:none">
+          <i data-lucide="zap" style="width:14px;height:14px;stroke-width:2"></i>
+          Áp giá cho <span id="bulkCount">0</span> sản phẩm
+        </button>
       </div>
     </div>
 
