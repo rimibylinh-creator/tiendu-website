@@ -181,7 +181,8 @@ p { margin: 0; }
   color: #d2d2d2;
   transition: color 0.15s ease;
 }
-.nav-link:hover { color: var(--color-white); }
+.nav-link:hover,
+.nav-link.active { color: var(--color-primary); }
 .nav-call-btn {
   font-size: 14px;
   flex-shrink: 0;

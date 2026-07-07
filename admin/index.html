@@ -11,6 +11,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Lucide icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,-apple-system,sans-serif;background:#f5f5f5;color:#252b42;font-size:14px;height:100vh;overflow:hidden}
@@ -274,12 +276,17 @@ input:checked+.slider:before{transform:translateX(16px)}
 .adv-tool-btn{display:flex;align-items:center;gap:10px;width:100%;background:#fafafa;border:1.5px solid #ebebeb;border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;color:#252b42;cursor:pointer;margin-bottom:6px;transition:all .12s;text-align:left}
 .adv-tool-btn:hover:not(:disabled){background:#fff;border-color:#fecd27}
 .adv-tool-btn:disabled{opacity:.4;cursor:not-allowed}
-.adv-tool-icon{font-size:16px;width:22px;text-align:center;flex-shrink:0}
+.adv-tool-icon{width:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#737373}
 .adv-tool-text{flex:1;min-width:0}
 .adv-tool-name{font-weight:600;font-size:13px}
 .adv-tool-desc{font-size:11px;color:#a0a0a0;margin-top:1px}
 .adv-no-sel{text-align:center;padding:36px 16px;color:#a0a0a0;font-size:12px;line-height:1.7}
+.qe-no-sel-icon{display:flex;justify-content:center;color:#c0c0c0;margin-bottom:10px}
 .rdrawer-fg{display:flex;flex-direction:column;gap:4px;margin-bottom:9px}
+.licon{width:14px;height:14px;stroke-width:2;vertical-align:-2px;flex-shrink:0;display:inline-block}
+.licon-md{width:16px;height:16px;stroke-width:2;vertical-align:-3px;flex-shrink:0;display:inline-block}
+.licon-lg{width:20px;height:20px;stroke-width:1.75;flex-shrink:0;display:block}
+.licon-xl{width:28px;height:28px;stroke-width:1.5;flex-shrink:0;display:block}
 
 /* ── Responsive ── */
 @media(max-width:820px){
@@ -802,6 +809,7 @@ async function startAdmin(user) {
   await Promise.all([loadBrands(), loadCats(), loadPostCats()])
   initQuill()
   loadDashboard()
+  if (window.lucide) lucide.createIcons()
 }
 
 // ── NAV ──────────────────────────────────────────────
@@ -908,12 +916,13 @@ function renderP(list, total) {
       <td><label class="toggle"><input type="checkbox" ${p.is_featured?'checked':''} onchange="qSet('products','is_featured',this.checked,'${p.id}')"><span class="slider"></span></label></td>
       <td><label class="toggle"><input type="checkbox" ${p.is_published?'checked':''} onchange="qSet('products','is_published',this.checked,'${p.id}')"><span class="slider"></span></label></td>
       <td style="text-align:right;white-space:nowrap">
-        <button class="btn-ghost" onclick="loadProductToDrawer(pStore['${p.id}'])" title="Công cụ nhanh">⚡</button>
-        <button class="btn-ghost" onclick="openProductModal(pStore['${p.id}'])" title="Sửa">✏️</button>
-        <button class="btn-del"   onclick="confirmDel('products','${p.id}','${esc(p.name)}')" title="Xoá">🗑️</button>
+        <button class="btn-ghost" onclick="loadProductToDrawer(pStore['${p.id}'])" title="Công cụ nhanh" style="display:inline-flex;align-items:center"><i data-lucide="sliders-horizontal" style="width:14px;height:14px;stroke-width:2"></i></button>
+        <button class="btn-ghost" onclick="openProductModal(pStore['${p.id}'])" title="Sửa" style="display:inline-flex;align-items:center"><i data-lucide="pencil" style="width:14px;height:14px;stroke-width:2"></i></button>
+        <button class="btn-del"   onclick="confirmDel('products','${p.id}','${esc(p.name)}')" title="Xoá" style="display:inline-flex;align-items:center"><i data-lucide="trash-2" style="width:14px;height:14px;stroke-width:2"></i></button>
       </td>
     </tr>`
   }).join('')
+  if (window.lucide) lucide.createIcons()
 }
 
 let pFilterTimer = null
@@ -2250,9 +2259,15 @@ function qeThumbPreview() {
 }
 
 function updateAdvLabels(p) {
-  document.getElementById('advPubIcon').textContent  = p.is_published ? '🙈' : '👁️'
+  const pubEye    = document.getElementById('advPubIconEye')
+  const pubEyeOff = document.getElementById('advPubIconEyeOff')
+  if (pubEye)    pubEye.style.display    = p.is_published ? 'none' : ''
+  if (pubEyeOff) pubEyeOff.style.display = p.is_published ? ''     : 'none'
   document.getElementById('advPubLabel').textContent = p.is_published ? 'Ẩn sản phẩm' : 'Hiện sản phẩm'
-  document.getElementById('advFeatIcon').textContent  = p.is_featured ? '✨' : '⭐'
+  const featStar    = document.getElementById('advFeatIconStar')
+  const featStarOff = document.getElementById('advFeatIconStarOff')
+  if (featStar)    featStar.style.display    = p.is_featured ? 'none' : ''
+  if (featStarOff) featStarOff.style.display = p.is_featured ? ''     : 'none'
   document.getElementById('advFeatLabel').textContent = p.is_featured ? 'Bỏ nổi bật' : 'Đánh dấu nổi bật'
   updateAdvPricePreview()
 }
@@ -2272,7 +2287,7 @@ function updateAdvPricePreview() {
 async function saveQuickEdit() {
   if (!qeProduct) return
   const btn = document.getElementById('qeSaveBtn')
-  btn.disabled = true; btn.textContent = '⏳ Đang lưu...'
+  btn.disabled = true; btn.textContent = 'Đang lưu...'
   const updates = {
     name:           document.getElementById('qe_name').value.trim(),
     price:          parseFloat(document.getElementById('qe_price').value) || 0,
@@ -2285,7 +2300,7 @@ async function saveQuickEdit() {
     is_published:   document.getElementById('qe_published').checked,
   }
   const { error } = await db.from('products').update(updates).eq('id', qeProduct.id)
-  btn.disabled = false; btn.textContent = '💾 Lưu thay đổi'
+  btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="licon"></i> Lưu thay đổi'; lucide.createIcons()
   if (error) { toast('❌ Lỗi: ' + error.message, 'err'); return }
   Object.assign(qeProduct, updates)
   pStore[qeProduct.id] = qeProduct
@@ -2374,7 +2389,7 @@ function toast(msg, type = 'ok') {
 <!-- ── Right Drawer ── -->
 <div id="rightDrawer" class="rdrawer">
   <button class="rdrawer-toggle" onclick="toggleDrawer()" title="Công cụ sản phẩm">
-    <span>⚙️</span>
+    <i data-lucide="settings" class="licon-lg"></i>
     <span class="rdtoggle-label">TOOLS</span>
   </button>
   <div class="rdrawer-head">
@@ -2382,9 +2397,9 @@ function toast(msg, type = 'ok') {
     <button class="modal-close" onclick="toggleDrawer()">✕</button>
   </div>
   <div class="rdrawer-tabs">
-    <button class="rdtab active" id="rdtab-price" onclick="switchRdTab('price')">💰 Tính giá</button>
-    <button class="rdtab" id="rdtab-edit" onclick="switchRdTab('edit')">✏️ Sửa nhanh</button>
-    <button class="rdtab" id="rdtab-adv" onclick="switchRdTab('adv')">⚡ Nâng cao</button>
+    <button class="rdtab active" id="rdtab-price" onclick="switchRdTab('price')"><i data-lucide="calculator" class="licon"></i> Tính giá</button>
+    <button class="rdtab" id="rdtab-edit" onclick="switchRdTab('edit')"><i data-lucide="pencil" class="licon"></i> Sửa nhanh</button>
+    <button class="rdtab" id="rdtab-adv" onclick="switchRdTab('adv')"><i data-lucide="zap" class="licon"></i> Nâng cao</button>
   </div>
   <div class="rdrawer-body">
 
@@ -2415,7 +2430,7 @@ function toast(msg, type = 'ok') {
         <div class="dc-result-price" id="dc_result_price">—</div>
         <div class="dc-result-margin" id="dc_result_margin">Nhập giá nhập để tính</div>
       </div>
-      <button class="dc-apply-btn" id="dcApplyBtn" onclick="applyPriceToProduct()" disabled>Áp vào sản phẩm đang chọn →</button>
+      <button class="dc-apply-btn" id="dcApplyBtn" onclick="applyPriceToProduct()" disabled>Áp vào sản phẩm đang chọn</button>
 
       <div class="dc-divider" style="margin-top:16px"></div>
       <div class="dc-section-title">Công thức</div>
@@ -2429,8 +2444,8 @@ function toast(msg, type = 'ok') {
     <!-- ─ Tab: Sửa nhanh ─ -->
     <div class="rdtab-panel" id="rdpanel-edit">
       <div id="qeNoSel" class="qe-no-sel">
-        <div class="qe-no-sel-icon">👆</div>
-        Nhấn <strong>⚡</strong> cạnh một sản phẩm<br>trong bảng để sửa nhanh tại đây.
+        <i data-lucide="mouse-pointer-2" class="licon-xl" style="margin:0 auto 10px"></i>
+        Nhấn nút <strong>Công cụ</strong> cạnh một sản phẩm<br>trong bảng để sửa nhanh tại đây.
       </div>
       <div id="qeForm" style="display:none">
         <div id="qeChip" class="qe-product-chip"></div>
@@ -2477,38 +2492,48 @@ function toast(msg, type = 'ok') {
           <label class="flabel" style="margin:0;flex:1">Hiển thị trên web</label>
           <label class="toggle"><input type="checkbox" id="qe_published"><span class="slider"></span></label>
         </div>
-        <button class="qe-save-btn" id="qeSaveBtn" onclick="saveQuickEdit()">💾 Lưu thay đổi</button>
-        <button class="btn-outline" style="width:100%;margin-top:8px;font-size:12px" onclick="openProductModal(qeProduct)">🖊 Mở form đầy đủ</button>
+        <button class="qe-save-btn" id="qeSaveBtn" onclick="saveQuickEdit()">
+          <i data-lucide="save" class="licon"></i> Lưu thay đổi
+        </button>
+        <button class="btn-outline" style="width:100%;margin-top:8px;font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px" onclick="openProductModal(qeProduct)">
+          <i data-lucide="square-pen" class="licon"></i> Mở form đầy đủ
+        </button>
       </div>
     </div>
 
     <!-- ─ Tab: Nâng cao ─ -->
     <div class="rdtab-panel" id="rdpanel-adv">
       <div id="advNoSel" class="adv-no-sel">
-        Nhấn ⚡ trên một sản phẩm<br>để mở tính năng nâng cao.
+        Nhấn nút <strong>Công cụ</strong> trên một sản phẩm<br>để mở tính năng nâng cao.
       </div>
       <div id="advTools" style="display:none">
         <div id="advChip" class="qe-product-chip"></div>
 
         <div class="dc-section-title">Thao tác nhanh</div>
         <button class="adv-tool-btn" onclick="advDuplicate()">
-          <span class="adv-tool-icon">📋</span>
+          <span class="adv-tool-icon"><i data-lucide="copy" class="licon-md"></i></span>
           <div class="adv-tool-text">
             <div class="adv-tool-name">Nhân đôi sản phẩm</div>
             <div class="adv-tool-desc">Tạo bản sao với tên "(Copy)"</div>
           </div>
         </button>
         <button class="adv-tool-btn" onclick="advTogglePublish()">
-          <span class="adv-tool-icon" id="advPubIcon">👁️</span>
+          <span class="adv-tool-icon">
+            <i data-lucide="eye" id="advPubIconEye" class="licon-md"></i>
+            <i data-lucide="eye-off" id="advPubIconEyeOff" class="licon-md" style="display:none"></i>
+          </span>
           <div class="adv-tool-text">
-            <div class="adv-tool-name" id="advPubLabel">Hiện / Ẩn</div>
+            <div class="adv-tool-name" id="advPubLabel">Hiện sản phẩm</div>
             <div class="adv-tool-desc">Bật tắt hiển thị trên website</div>
           </div>
         </button>
         <button class="adv-tool-btn" onclick="advToggleFeatured()">
-          <span class="adv-tool-icon" id="advFeatIcon">⭐</span>
+          <span class="adv-tool-icon">
+            <i data-lucide="star" id="advFeatIconStar" class="licon-md"></i>
+            <i data-lucide="star-off" id="advFeatIconStarOff" class="licon-md" style="display:none"></i>
+          </span>
           <div class="adv-tool-text">
-            <div class="adv-tool-name" id="advFeatLabel">Nổi bật</div>
+            <div class="adv-tool-name" id="advFeatLabel">Đánh dấu nổi bật</div>
             <div class="adv-tool-desc">Hiển thị ưu tiên trên trang chủ</div>
           </div>
         </button>
@@ -2524,7 +2549,7 @@ function toast(msg, type = 'ok') {
         </div>
         <div style="font-size:12px;color:#a0a0a0;margin-bottom:8px" id="advPricePreview"></div>
         <button class="adv-tool-btn" onclick="advAdjustPrice()">
-          <span class="adv-tool-icon">💱</span>
+          <span class="adv-tool-icon"><i data-lucide="trending-up" class="licon-md"></i></span>
           <div class="adv-tool-text">
             <div class="adv-tool-name">Áp điều chỉnh giá</div>
             <div class="adv-tool-desc">Cập nhật ngay vào Supabase</div>
@@ -2534,7 +2559,7 @@ function toast(msg, type = 'ok') {
         <div class="dc-divider"></div>
         <div class="dc-section-title" style="color:#dc2626">Nguy hiểm</div>
         <button class="adv-tool-btn" style="border-color:#fecaca;background:#fff9f9" onclick="qeProduct&&confirmDel('products',qeProduct.id,qeProduct.name)">
-          <span class="adv-tool-icon">🗑️</span>
+          <span class="adv-tool-icon"><i data-lucide="trash-2" class="licon-md" style="color:#dc2626"></i></span>
           <div class="adv-tool-text">
             <div class="adv-tool-name" style="color:#dc2626">Xóa sản phẩm này</div>
             <div class="adv-tool-desc">Không thể hoàn tác</div>
