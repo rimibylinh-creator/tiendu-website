@@ -275,6 +275,9 @@ input:checked+.slider:before{transform:translateX(16px)}
 .dc-add-tier-btn{width:100%;background:none;border:1.5px dashed #d2d2d2;border-radius:8px;padding:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:#a0a0a0;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .12s;margin-top:3px}
 .dc-add-tier-btn:hover{border-color:#fecd27;color:#b45309;background:#fffbe6}
 .dc-tier-hdr{display:flex;gap:5px;font-size:10px;color:#b0b0b0;font-weight:700;letter-spacing:.3px;margin-bottom:4px;padding:0 9px}
+.adv-tier-preview{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:#737373;background:#f9f9f9;border-radius:8px;padding:8px 10px;margin-bottom:8px;line-height:1.5}
+.adv-tier-preview.match{color:#15803d;background:#f0fdf4}
+.adv-tier-preview.no-match{color:#b45309;background:#fffbe6}
 .qe-no-sel{text-align:center;padding:40px 16px;color:#a0a0a0;font-size:13px;line-height:1.7}
 .qe-no-sel-icon{font-size:34px;margin-bottom:8px}
 .qe-product-chip{font-size:12px;font-weight:700;color:#7a5c00;background:#fffbe6;border-left:3px solid #fecd27;border-radius:0 6px 6px 0;padding:7px 10px;margin-bottom:12px;line-height:1.4;word-break:break-word}
@@ -2325,6 +2328,29 @@ function updateAdvLabels(p) {
   if (featStarOff) featStarOff.style.display = p.is_featured ? ''     : 'none'
   document.getElementById('advFeatLabel').textContent = p.is_featured ? 'Bỏ nổi bật' : 'Đánh dấu nổi bật'
   updateAdvPricePreview()
+  updateAdvTierPreview(p)
+}
+
+function updateAdvTierPreview(p) {
+  const box  = document.getElementById('advTierPreview')
+  const text = document.getElementById('advTierPreviewText')
+  if (!box || !text) return
+  if (!p) {
+    box.className = 'adv-tier-preview'
+    text.textContent = 'Chưa có sản phẩm được chọn'
+    return
+  }
+  const fmt  = v => new Intl.NumberFormat('vi-VN').format(v)
+  const tier = dcFindTier(p.price)
+  if (!tier) {
+    box.className = 'adv-tier-preview no-match'
+    text.textContent = `Giá ${fmt(p.price)} ₫ không nằm trong khoảng nào. Kiểm tra lại bảng tính giá.`
+    return
+  }
+  const label    = tier.to ? `${fmt(tier.from)} – ${fmt(tier.to)} ₫` : `Trên ${fmt(tier.from)} ₫`
+  const newPrice = Math.ceil(p.price * (1 + tier.rate / 100))
+  box.className = 'adv-tier-preview match'
+  text.innerHTML = `Giá hiện tại <strong>${fmt(p.price)} ₫</strong> thuộc khoảng <strong>${label}</strong> → Lãi <strong>${tier.rate}%</strong> → Giá mới <strong>${fmt(newPrice)} ₫</strong>`
 }
 
 function updateAdvPricePreview() {
@@ -2423,6 +2449,27 @@ async function advAdjustPrice() {
   updateAdvPricePreview()
   await loadProducts()
   toast(` Giá mới: ${fmtP(np)}`)
+}
+
+async function advApplyTierPrice() {
+  if (!qeProduct) { toast('Chưa chọn sản phẩm', 'err'); return }
+  const fmt  = v => new Intl.NumberFormat('vi-VN').format(v)
+  const tier = dcFindTier(qeProduct.price)
+  if (!tier) {
+    toast(`Giá ${fmt(qeProduct.price)} ₫ không nằm trong khoảng nào — kiểm tra lại bảng tính giá`, 'err')
+    return
+  }
+  const label    = tier.to ? `${fmt(tier.from)}–${fmt(tier.to)} ₫` : `Trên ${fmt(tier.from)} ₫`
+  const newPrice = Math.ceil(qeProduct.price * (1 + tier.rate / 100))
+  if (!confirm(`Khoảng: ${label}\nLãi: ${tier.rate}%\n\n${fmt(qeProduct.price)} ₫  →  ${fmt(newPrice)} ₫\n\nXác nhận áp giá mới?`)) return
+  const { error } = await db.from('products').update({ price: newPrice }).eq('id', qeProduct.id)
+  if (error) { toast('Lỗi: ' + error.message, 'err'); return }
+  qeProduct.price = newPrice
+  pStore[qeProduct.id] = qeProduct
+  document.getElementById('qe_price').value = newPrice
+  updateAdvLabels(qeProduct)
+  await loadProducts()
+  toast(`Đã áp giá ${fmt(newPrice)} ₫ (lãi ${tier.rate}%)`)
 }
 
 //  UTILS 
@@ -2603,6 +2650,20 @@ function toast(msg, type = 'ok') {
           <div class="adv-tool-text">
             <div class="adv-tool-name">Áp điều chỉnh giá</div>
             <div class="adv-tool-desc">Cập nhật ngay vào Supabase</div>
+          </div>
+        </button>
+
+        <div class="dc-divider"></div>
+        <div class="dc-section-title">Tính theo bảng khoảng giá</div>
+        <div class="adv-tier-preview" id="advTierPreview">
+          <i data-lucide="info" style="width:13px;height:13px;stroke-width:2;vertical-align:-2px;flex-shrink:0"></i>
+          <span id="advTierPreviewText">Chưa có sản phẩm được chọn</span>
+        </div>
+        <button class="adv-tool-btn" onclick="advApplyTierPrice()">
+          <span class="adv-tool-icon"><i data-lucide="calculator" class="licon-md"></i></span>
+          <div class="adv-tool-text">
+            <div class="adv-tool-name">Tự tính & áp giá bán</div>
+            <div class="adv-tool-desc">Tìm khoảng phù hợp, tính và lưu giá mới</div>
           </div>
         </button>
 
