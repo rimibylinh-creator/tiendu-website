@@ -265,6 +265,16 @@ input:checked+.slider:before{transform:translateX(16px)}
 .dc-apply-btn:hover:not(:disabled){opacity:.85}
 .dc-apply-btn:disabled{opacity:.4;cursor:not-allowed}
 .dc-divider{height:1px;background:#f0f0f0;margin:12px 0}
+.dc-tier-row{display:flex;align-items:center;gap:5px;padding:5px 7px;background:#f9f9f9;border-radius:8px;margin-bottom:4px;border:1px solid #f0f0f0}
+.dc-tier-inp{width:72px;border:1.5px solid #d2d2d2;border-radius:6px;padding:5px 4px;font-size:12px;font-family:inherit;outline:none;text-align:center;color:#252b42;background:#fff;min-width:0}
+.dc-tier-inp:focus{border-color:#fecd27}
+.dc-tier-inp::placeholder{color:#c8c8c8}
+.dc-tier-sep{font-size:11px;color:#c0c0c0;flex-shrink:0}
+.dc-tier-del{background:none;border:none;cursor:pointer;color:#d1d5db;padding:2px;border-radius:4px;display:flex;align-items:center;flex-shrink:0;transition:color .12s}
+.dc-tier-del:hover{color:#ef4444}
+.dc-add-tier-btn{width:100%;background:none;border:1.5px dashed #d2d2d2;border-radius:8px;padding:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:#a0a0a0;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .12s;margin-top:3px}
+.dc-add-tier-btn:hover{border-color:#fecd27;color:#b45309;background:#fffbe6}
+.dc-tier-hdr{display:flex;gap:5px;font-size:10px;color:#b0b0b0;font-weight:700;letter-spacing:.3px;margin-bottom:4px;padding:0 9px}
 .qe-no-sel{text-align:center;padding:40px 16px;color:#a0a0a0;font-size:13px;line-height:1.7}
 .qe-no-sel-icon{font-size:34px;margin-bottom:8px}
 .qe-product-chip{font-size:12px;font-weight:700;color:#7a5c00;background:#fffbe6;border-left:3px solid #fecd27;border-radius:0 6px 6px 0;padding:7px 10px;margin-bottom:12px;line-height:1.4;word-break:break-word}
@@ -802,6 +812,7 @@ async function startAdmin(user) {
   document.getElementById('uEmail').textContent = user.email
   await Promise.all([loadBrands(), loadCats(), loadPostCats()])
   initQuill()
+  renderDcTiers()
   loadDashboard()
   if (window.lucide) lucide.createIcons()
 }
@@ -2186,6 +2197,52 @@ function switchRdTab(name) {
   })
 }
 
+let dcTiers = [
+  { from: 0,       to: 500000,  rate: 35 },
+  { from: 500000,  to: 1000000, rate: 25 },
+  { from: 1000000, to: null,    rate: 20 },
+]
+
+function renderDcTiers() {
+  const list = document.getElementById('dcTierList')
+  if (!list) return
+  const fmt = v => new Intl.NumberFormat('vi-VN').format(v)
+  list.innerHTML = dcTiers.map((t, i) => `
+    <div class="dc-tier-row">
+      <input type="number" class="dc-tier-inp" value="${t.from}" min="0" placeholder="0"
+        oninput="dcTiers[${i}].from=parseFloat(this.value)||0;calcPricing()" title="Từ giá (₫)">
+      <span class="dc-tier-sep">–</span>
+      <input type="number" class="dc-tier-inp" value="${t.to ?? ''}" min="0" placeholder="∞"
+        oninput="dcTiers[${i}].to=this.value.trim()?parseFloat(this.value):null;calcPricing()" title="Đến giá (₫), để trống = không giới hạn">
+      <input type="number" class="dc-tier-rate" value="${t.rate}" min="0" max="999" style="width:46px"
+        oninput="dcTiers[${i}].rate=parseFloat(this.value)||0;calcPricing()">
+      <span class="dc-tier-pct">%</span>
+      <button class="dc-tier-del" onclick="dcRemoveTier(${i})" title="Xoá khoảng này">
+        <i data-lucide="x" style="width:13px;height:13px;stroke-width:2.5"></i>
+      </button>
+    </div>`).join('')
+  if (window.lucide) lucide.createIcons()
+}
+
+function dcAddTier() {
+  const last = dcTiers[dcTiers.length - 1]
+  const newFrom = last ? (last.to ?? last.from + 1000000) : 0
+  dcTiers.push({ from: newFrom, to: null, rate: 20 })
+  renderDcTiers()
+  calcPricing()
+}
+
+function dcRemoveTier(i) {
+  if (dcTiers.length <= 1) { toast('Cần ít nhất 1 khoảng giá', 'err'); return }
+  dcTiers.splice(i, 1)
+  renderDcTiers()
+  calcPricing()
+}
+
+function dcFindTier(cost) {
+  return dcTiers.find(t => cost >= t.from && (t.to === null || cost < t.to))
+}
+
 function calcPricing() {
   const cost = parseFloat(document.getElementById('dc_cost').value)
   if (!cost || cost <= 0) {
@@ -2194,15 +2251,19 @@ function calcPricing() {
     document.getElementById('dcApplyBtn').disabled = true
     return
   }
-  const r1 = parseFloat(document.getElementById('dc_r1').value) || 35
-  const r2 = parseFloat(document.getElementById('dc_r2').value) || 25
-  const r3 = parseFloat(document.getElementById('dc_r3').value) || 20
-  const rate = cost < 500000 ? r1 : cost < 1000000 ? r2 : r3
-  const tier = cost < 500000 ? 'Dưới 500k' : cost < 1000000 ? '500k–1tr' : 'Trên 1tr'
-  const selling = Math.ceil(cost * (1 + rate / 100))
+  const tier = dcFindTier(cost)
+  if (!tier) {
+    document.getElementById('dc_result_price').textContent = '—'
+    document.getElementById('dc_result_margin').textContent = 'Không có khoảng giá phù hợp'
+    document.getElementById('dcApplyBtn').disabled = true
+    return
+  }
+  const fmt = v => new Intl.NumberFormat('vi-VN').format(v)
+  const label = tier.to ? `${fmt(tier.from)}–${fmt(tier.to)}` : `Trên ${fmt(tier.from)}`
+  const selling = Math.ceil(cost * (1 + tier.rate / 100))
   const profit  = selling - cost
-  document.getElementById('dc_result_price').textContent = new Intl.NumberFormat('vi-VN').format(selling) + ' ₫'
-  document.getElementById('dc_result_margin').textContent = `Lãi ${rate}% (${tier}) · Lời +${new Intl.NumberFormat('vi-VN').format(profit)} ₫`
+  document.getElementById('dc_result_price').textContent = fmt(selling) + ' ₫'
+  document.getElementById('dc_result_margin').textContent = `Lãi ${tier.rate}% (${label}) · Lời +${fmt(profit)} ₫`
   document.getElementById('dcApplyBtn').disabled = !qeProduct
 }
 
@@ -2210,11 +2271,9 @@ function applyPriceToProduct() {
   if (!qeProduct) { toast('Chưa chọn sản phẩm — nhấn  trên một sản phẩm', 'err'); return }
   const cost = parseFloat(document.getElementById('dc_cost').value)
   if (!cost) { toast('Nhập giá nhập trước', 'err'); return }
-  const r1 = parseFloat(document.getElementById('dc_r1').value) || 35
-  const r2 = parseFloat(document.getElementById('dc_r2').value) || 25
-  const r3 = parseFloat(document.getElementById('dc_r3').value) || 20
-  const rate = cost < 500000 ? r1 : cost < 1000000 ? r2 : r3
-  const selling = Math.ceil(cost * (1 + rate / 100))
+  const tier = dcFindTier(cost)
+  if (!tier) { toast('Không có khoảng giá phù hợp', 'err'); return }
+  const selling = Math.ceil(cost * (1 + tier.rate / 100))
   document.getElementById('qe_price').value = selling
   switchRdTab('edit')
   toast(` Giá ${new Intl.NumberFormat('vi-VN').format(selling)} ₫ đã áp vào ô Giá bán`)
@@ -2404,22 +2463,17 @@ function toast(msg, type = 'ok') {
       <div class="dc-section-title">Giá nhập (VND)</div>
       <input type="number" class="finput" id="dc_cost" placeholder="VD: 350000" oninput="calcPricing()" style="margin-bottom:12px">
 
-      <div class="dc-section-title">Tỷ lệ lãi theo mức giá nhập</div>
-      <div class="dc-tier">
-        <div class="dc-tier-label">Dưới 500.000 ₫</div>
-        <input type="number" class="dc-tier-rate" id="dc_r1" value="35" min="1" max="500" oninput="calcPricing()">
-        <span class="dc-tier-pct">%</span>
+      <div class="dc-section-title">Tỷ lệ lãi theo khoảng giá nhập</div>
+      <div class="dc-tier-hdr">
+        <span style="width:72px;text-align:center">Từ (₫)</span>
+        <span style="width:10px"></span>
+        <span style="width:72px;text-align:center">Đến (₫)</span>
+        <span style="width:46px;text-align:center">Lãi</span>
       </div>
-      <div class="dc-tier">
-        <div class="dc-tier-label">500k – 1.000.000 ₫</div>
-        <input type="number" class="dc-tier-rate" id="dc_r2" value="25" min="1" max="500" oninput="calcPricing()">
-        <span class="dc-tier-pct">%</span>
-      </div>
-      <div class="dc-tier">
-        <div class="dc-tier-label">Trên 1.000.000 ₫</div>
-        <input type="number" class="dc-tier-rate" id="dc_r3" value="20" min="1" max="500" oninput="calcPricing()">
-        <span class="dc-tier-pct">%</span>
-      </div>
+      <div id="dcTierList"></div>
+      <button class="dc-add-tier-btn" onclick="dcAddTier()">
+        <i data-lucide="plus" style="width:13px;height:13px;stroke-width:2.5"></i> Thêm khoảng giá
+      </button>
 
       <div class="dc-result-box">
         <div class="dc-result-label">Giá bán đề xuất</div>
