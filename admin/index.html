@@ -3075,10 +3075,14 @@ async function agentProcessProduct(p, key, overwrite) {
   }
   raw = raw.slice(fi, li + 1)
 
+  // Escape literal control chars that Claude sometimes emits inside string values (e.g. description_html)
+  const sanitized = raw.replace(/"(?:[^"\\]|\\.)*"/g, m =>
+    m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
+  )
   let d
-  try { d = JSON.parse(raw) }
+  try { d = JSON.parse(sanitized) }
   catch (pe) {
-    console.error('[agent] JSON parse error:', pe.message, '\nraw:', raw)
+    console.error('[agent] JSON parse error:', pe.message, '\nraw:', raw.slice(0, 300))
     throw new Error('JSON lỗi: ' + pe.message)
   }
 
@@ -3102,8 +3106,12 @@ async function agentProcessProduct(p, key, overwrite) {
 
   if (!Object.keys(upd).length) return 'skip'
 
+  console.debug('[agent] upd payload:', JSON.stringify(upd).slice(0, 200))
   const { error } = await db.from('products').update(upd).eq('id', p.id)
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[agent] supabase error:', error)
+    throw new Error(`Supabase ${error.code || 400}: ${error.message} — ${error.details || ''}`)
+  }
 
   const idx = allP.findIndex(x => x.id === p.id)
   if (idx >= 0) Object.assign(allP[idx], upd)
