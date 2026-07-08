@@ -3043,11 +3043,16 @@ Giá bán: ${p.price || '—'}`
   }
 
   const data = await resp.json()
-  const raw = data.content?.[0]?.text || ''
-  const match = raw.match(/\{[\s\S]*\}/)
-  if (!match) throw new Error('Không parse được JSON từ AI')
+  let raw = (data.content || []).map(b => b.type === 'text' ? b.text : '').join('').trim()
+  const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/)
+  if (fence) raw = fence[1].trim()
+  const fi = raw.indexOf('{'), li = raw.lastIndexOf('}')
+  if (fi === -1 || li === -1) throw new Error('Không parse được JSON từ AI — raw: ' + raw.slice(0, 120))
+  raw = raw.slice(fi, li + 1)
 
-  const d = JSON.parse(match[0])
+  let d
+  try { d = JSON.parse(raw) }
+  catch(pe) { throw new Error('JSON lỗi: ' + pe.message + ' — ' + raw.slice(0, 80)) }
 
   // Build update payload based on selected fields
   const upd = {}
