@@ -2888,6 +2888,7 @@ async function updateAgentScopeCounts() {
 }
 
 async function startBulkAI() {
+  if (agentRunning) { toast('Agent đang chạy rồi', 'err'); return }
   const key = localStorage.getItem('td_claude_key')
   if (!key) { toast('Chưa có Claude API key', 'err'); return }
   if (!allP.length) await loadProducts()
@@ -3005,69 +3006,97 @@ function stopBulkAI() {
 async function agentProcessProduct(p, key, overwrite) {
   const fields = getAgentFields()
 
-  // Check if we should skip
+  // Skip only if ALL selected fields already have content (per-field check)
   if (!overwrite) {
-    const hasContent = (p.excerpt && p.excerpt.trim()) ||
-                       (p.short_specs && p.short_specs.length) ||
-                       (p.detailed_specs && p.detailed_specs.length) ||
-                       (p.compatible_vehicles && p.compatible_vehicles.length)
-    if (hasContent) return 'skip'
+    const allFilled =
+      (!fields.overview    || (p.excerpt && p.excerpt.trim())) &&
+      (!fields.short_specs || (Array.isArray(p.short_specs) && p.short_specs.length)) &&
+      (!fields.detailed_specs || (Array.isArray(p.detailed_specs) && p.detailed_specs.length)) &&
+      (!fields.vehicles    || (Array.isArray(p.compatible_vehicles) && p.compatible_vehicles.length)) &&
+      (!fields.description || (p.description && p.description.trim()))
+    if (allFilled) return 'skip'
   }
 
-  const userMsg = `Sản phẩm: ${p.name || '(không có tên)'}
-SKU: ${p.sku || '—'}
-Danh mục: ${p.category_id || '—'}
-Thương hiệu: ${p.brand_id || '—'}
-Giá nhập: ${p.cost_price || '—'}
-Giá bán: ${p.price || '—'}`
+  // Use human-readable names for better AI output
+  const brandName = (brands || []).find(b => b.id === p.brand_id)?.name || ''
+  const catName   = (cats   || []).find(c => c.id === p.category_id)?.name || ''
 
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-5',
-      max_tokens: 2000,
-      system: AI_PRODUCT_PROMPT,
-      messages: [{ role: 'user', content: userMsg }],
-    }),
-  })
+  const userMsg = [
+    `Tên sản phẩm: ${p.name || '(không có tên)'}`,
+    p.sku     ? `Mã SKU: ${p.sku}`     : '',
+    catName   ? `Danh mục: ${catName}` : '',
+    brandName ? `Hãng xe: ${brandName}`: '',
+  ].filter(Boolean).join('\n')
+
+  // Fetch with one 429 retry
+  let resp, attempt = 0
+  while (true) {
+    resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-5',
+        max_tokens: 2000,
+        system: AI_PRODUCT_PROMPT,
+        messages: [{ role: 'user', content: userMsg }],
+      }),
+    })
+    if (resp.status === 429 && attempt < 1) {
+      attempt++
+      await new Promise(r => setTimeout(r, 10000))
+      continue
+    }
+    break
+  }
 
   if (!resp.ok) {
     const txt = await resp.text()
-    throw new Error(`API ${resp.status}: ${txt.slice(0,100)}`)
+    throw new Error(`API ${resp.status}: ${txt.slice(0, 120)}`)
   }
 
   const data = await resp.json()
+  if (data.stop_reason === 'max_tokens')
+    throw new Error('Phản hồi bị cắt ngắn — bỏ chọn "Mô tả chi tiết HTML" để giảm độ dài')
+
   let raw = (data.content || []).map(b => b.type === 'text' ? b.text : '').join('').trim()
   const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/)
   if (fence) raw = fence[1].trim()
   const fi = raw.indexOf('{'), li = raw.lastIndexOf('}')
-  if (fi === -1 || li === -1) throw new Error('Không parse được JSON từ AI — raw: ' + raw.slice(0, 120))
+  if (fi === -1 || li === -1) throw new Error('Không parse được JSON — raw: ' + raw.slice(0, 120))
   raw = raw.slice(fi, li + 1)
 
   let d
   try { d = JSON.parse(raw) }
-  catch(pe) { throw new Error('JSON lỗi: ' + pe.message + ' — ' + raw.slice(0, 80)) }
+  catch (pe) { throw new Error('JSON lỗi: ' + pe.message + ' — ' + raw.slice(0, 80)) }
 
-  // Build update payload based on selected fields
+  // Build update payload — per-field overwrite check after API call
   const upd = {}
-  if (fields.overview    && d.excerpt)           upd.excerpt              = d.excerpt
-  if (fields.short_specs && d.short_specs)       upd.short_specs          = d.short_specs
-  if (fields.detailed_specs && d.detailed_specs) upd.detailed_specs       = d.detailed_specs
-  if (fields.vehicles    && d.compatible_vehicles) upd.compatible_vehicles = d.compatible_vehicles
-  if (fields.description && d.description_html)  upd.description          = d.description_html
+  if (fields.overview && d.excerpt?.trim())
+    if (overwrite || !p.excerpt?.trim())
+      upd.excerpt = d.excerpt.trim()
+  if (fields.short_specs && Array.isArray(d.short_specs) && d.short_specs.length)
+    if (overwrite || !p.short_specs?.length)
+      upd.short_specs = d.short_specs
+  if (fields.detailed_specs && Array.isArray(d.detailed_specs) && d.detailed_specs.length)
+    if (overwrite || !p.detailed_specs?.length)
+      upd.detailed_specs = d.detailed_specs
+  if (fields.vehicles && Array.isArray(d.compatible_vehicles) && d.compatible_vehicles.length)
+    if (overwrite || !p.compatible_vehicles?.length)
+      upd.compatible_vehicles = d.compatible_vehicles
+  if (fields.description && d.description_html?.trim())
+    if (overwrite || !p.description?.trim())
+      upd.description = d.description_html.trim()
 
   if (!Object.keys(upd).length) return 'skip'
 
   const { error } = await db.from('products').update(upd).eq('id', p.id)
   if (error) throw new Error(error.message)
 
-  // Update local cache
   const idx = allP.findIndex(x => x.id === p.id)
   if (idx >= 0) Object.assign(allP[idx], upd)
   return 'ok'
