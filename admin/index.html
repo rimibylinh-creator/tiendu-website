@@ -2434,7 +2434,7 @@ function loadProductToDrawer(p) {
   document.getElementById('qe_qty').value      = p.stock_quantity ?? ''
   document.getElementById('qe_stock').value    = p.stock_status || 'in_stock'
   document.getElementById('qe_thumb').value    = p.thumbnail_url || ''
-  document.getElementById('qe_excerpt').value  = p.excerpt || ''
+  document.getElementById('qe_excerpt').value  = p.overview || ''
   document.getElementById('qe_featured').checked  = !!p.is_featured
   document.getElementById('qe_published').checked = !!p.is_published
   qeThumbPreview()
@@ -2514,7 +2514,7 @@ async function saveQuickEdit() {
     stock_quantity: parseInt(document.getElementById('qe_qty').value) || 0,
     stock_status:   document.getElementById('qe_stock').value,
     thumbnail_url:  document.getElementById('qe_thumb').value.trim() || null,
-    excerpt:        document.getElementById('qe_excerpt').value.trim() || null,
+    overview:       document.getElementById('qe_excerpt').value.trim() || null,
     is_featured:    document.getElementById('qe_featured').checked,
     is_published:   document.getElementById('qe_published').checked,
   }
@@ -2871,7 +2871,7 @@ function getAgentDelay() {
 
 async function updateAgentScopeCounts() {
   if (!allP.length) await loadProducts()
-  const missing    = allP.filter(p => !p.excerpt || p.excerpt.trim() === '')
+  const missing    = allP.filter(p => !p.overview || p.overview.trim() === '')
   const noVehicles = allP.filter(p => !p.compatible_vehicles || (Array.isArray(p.compatible_vehicles) && p.compatible_vehicles.length === 0))
   const smEl = document.getElementById('scopeMissingCount')
   const svEl = document.getElementById('scopeNoVehiclesCount')
@@ -2903,7 +2903,7 @@ async function startBulkAI() {
   } else if (scope === 'no_vehicles') {
     queue = allP.filter(p => !p.compatible_vehicles || (Array.isArray(p.compatible_vehicles) && p.compatible_vehicles.length === 0))
   } else {
-    queue = allP.filter(p => !p.excerpt || p.excerpt.trim() === '')
+    queue = allP.filter(p => !p.overview || p.overview.trim() === '')
   }
 
   if (!queue.length) { toast('Không có sản phẩm nào cần xử lý', 'err'); return }
@@ -3009,7 +3009,7 @@ async function agentProcessProduct(p, key, overwrite) {
   // Skip only if ALL selected fields already have content (per-field check)
   if (!overwrite) {
     const allFilled =
-      (!fields.overview    || (p.excerpt && p.excerpt.trim())) &&
+      (!fields.overview    || (p.overview && p.overview.trim())) &&
       (!fields.short_specs || (Array.isArray(p.short_specs) && p.short_specs.length)) &&
       (!fields.detailed_specs || (Array.isArray(p.detailed_specs) && p.detailed_specs.length)) &&
       (!fields.vehicles    || (Array.isArray(p.compatible_vehicles) && p.compatible_vehicles.length)) &&
@@ -3089,8 +3089,8 @@ async function agentProcessProduct(p, key, overwrite) {
   // Build update payload — per-field overwrite check after API call
   const upd = {}
   if (fields.overview && d.excerpt?.trim())
-    if (overwrite || !p.excerpt?.trim())
-      upd.excerpt = d.excerpt.trim()
+    if (overwrite || !p.overview?.trim())
+      upd.overview = d.excerpt.trim()
   if (fields.short_specs && Array.isArray(d.short_specs) && d.short_specs.length)
     if (overwrite || !p.short_specs?.length)
       upd.short_specs = d.short_specs
