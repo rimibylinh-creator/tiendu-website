@@ -346,6 +346,43 @@ input:checked+.slider:before{transform:translateX(16px)}
   .fgrid{grid-template-columns:1fr}
   .fg.s2{grid-column:1}
 }
+
+/* AI Agent tab */
+@keyframes spin{to{transform:rotate(360deg)}}
+.agent-card{background:#fff;border:1px solid #e5e5e5;border-radius:10px;margin-bottom:16px;overflow:hidden}
+.agent-card-head{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:#555;padding:10px 16px;background:#f9f9f9;border-bottom:1px solid #e5e5e5}
+.agent-card-body{padding:16px}
+.agent-cfg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:12px}
+.agent-cfg-section{display:flex;flex-direction:column;gap:6px}
+.agent-cfg-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.agent-radio,.agent-check{display:flex;align-items:center;gap:7px;font-size:13px;color:#252b42;cursor:pointer}
+.agent-radio input,.agent-check input{accent-color:#fecd27;cursor:pointer}
+.agent-scope-count{font-size:11px;color:#888;background:#f0f0f0;border-radius:20px;padding:1px 7px}
+.agent-warn{display:flex;align-items:center;gap:8px;font-size:12px;color:#92400e;background:#fef3c7;border:1px solid #fde68a;border-radius:7px;padding:9px 12px}
+.agent-start-btn{display:inline-flex;align-items:center;gap:8px;background:#fecd27;color:#000;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+.agent-start-btn:hover{background:#e1ae01}
+.agent-start-btn:disabled{opacity:.5;cursor:not-allowed}
+.agent-stop-btn{display:inline-flex;align-items:center;gap:6px;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer}
+.agent-stop-btn:hover{background:#fee2e2}
+.agent-prog-bar-wrap{flex:1;height:8px;background:#f0f0f0;border-radius:99px;overflow:hidden}
+.agent-prog-bar{height:100%;background:linear-gradient(90deg,#fecd27,#e1ae01);border-radius:99px;transition:width .4s ease}
+.agent-prog-pct{font-size:13px;font-weight:700;color:#252b42;min-width:36px;text-align:right}
+.agent-stats-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+.agent-stat{display:flex;align-items:center;gap:5px;font-size:12px;padding:4px 10px;border-radius:20px}
+.agent-stat.ok{color:#166534;background:#dcfce7}
+.agent-stat.err{color:#991b1b;background:#fee2e2}
+.agent-stat.skip{color:#6b21a8;background:#f3e8ff}
+.agent-stat.eta{color:#555;background:#f0f0f0}
+.agent-current{display:flex;align-items:center;gap:8px;font-size:12px;color:#555;background:#f8f8f8;border:1px solid #e5e5e5;border-radius:6px;padding:7px 12px;margin-bottom:10px}
+.agent-log-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.agent-log{max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;font-size:12px}
+.agent-log-item{display:flex;align-items:flex-start;gap:8px;padding:5px 8px;border-radius:6px;background:#fafafa;border:1px solid #f0f0f0}
+.agent-log-item.ok{border-color:#bbf7d0}
+.agent-log-item.err{border-color:#fecaca;background:#fff5f5}
+.agent-log-item.skip{border-color:#e9d5ff}
+.agent-log-name{font-weight:600;color:#252b42;flex-shrink:0}
+.agent-log-msg{color:#737373}
+@media(max-width:860px){.agent-cfg-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -390,6 +427,11 @@ input:checked+.slider:before{transform:translateX(16px)}
     </button>
     <button class="nav-item" id="nav-posts" onclick="showTab('posts')">
       <span class="nav-icon"><i data-lucide="file-text" class="licon"></i></span> Bài viết
+    </button>
+    <div class="nav-div"></div>
+    <span class="nav-sec">Công cụ AI</span>
+    <button class="nav-item" id="nav-agent" onclick="showTab('agent')">
+      <span class="nav-icon"><i data-lucide="bot" class="licon"></i></span> AI Agent
     </button>
     <div class="nav-div"></div>
     <a class="nav-item" href="/" target="_blank">
@@ -481,6 +523,109 @@ input:checked+.slider:before{transform:translateX(16px)}
         </table>
       </div>
     </div>
+
+    <!-- AI AGENT TAB -->
+    <div id="tab-agent" style="display:none">
+      <div class="ph">
+        <div>
+          <div class="ph-title" style="display:flex;align-items:center;gap:8px">
+            <i data-lucide="bot" style="width:20px;height:20px;stroke-width:1.75"></i>
+            AI Agent — Viết mô tả hàng loạt
+          </div>
+          <div class="ph-sub">Tự động tạo mô tả, thông số kỹ thuật và đời xe tương thích cho toàn bộ sản phẩm</div>
+        </div>
+      </div>
+
+      <!-- Config card -->
+      <div class="agent-card" id="agentConfigCard">
+        <div class="agent-card-head">
+          <i data-lucide="settings-2" style="width:15px;height:15px;stroke-width:2"></i> Cấu hình
+        </div>
+        <div class="agent-card-body">
+          <div class="agent-cfg-grid">
+
+            <!-- Scope -->
+            <div class="agent-cfg-section">
+              <div class="agent-cfg-label">Phạm vi sản phẩm</div>
+              <label class="agent-radio"><input type="radio" name="agentScope" value="missing" checked> Chỉ SP chưa có mô tả <span class="agent-scope-count" id="scopeMissingCount"></span></label>
+              <label class="agent-radio"><input type="radio" name="agentScope" value="no_vehicles"> Chỉ SP chưa có đời xe tương thích <span class="agent-scope-count" id="scopeNoVehiclesCount"></span></label>
+              <label class="agent-radio"><input type="radio" name="agentScope" value="all"> Tất cả sản phẩm <span class="agent-scope-count" id="scopeAllCount"></span></label>
+            </div>
+
+            <!-- Fields -->
+            <div class="agent-cfg-section">
+              <div class="agent-cfg-label">Trường cần tạo</div>
+              <label class="agent-check"><input type="checkbox" id="fieldOverview" checked> Mô tả ngắn</label>
+              <label class="agent-check"><input type="checkbox" id="fieldShortSpecs" checked> Điểm nổi bật</label>
+              <label class="agent-check"><input type="checkbox" id="fieldDetailedSpecs" checked> Thông số kỹ thuật</label>
+              <label class="agent-check"><input type="checkbox" id="fieldVehicles" checked> Đời xe tương thích</label>
+              <label class="agent-check"><input type="checkbox" id="fieldDescription"> Mô tả chi tiết HTML <span style="font-size:10px;color:#a0a0a0">(chậm hơn)</span></label>
+            </div>
+
+            <!-- Speed & overwrite -->
+            <div class="agent-cfg-section">
+              <div class="agent-cfg-label">Tốc độ xử lý</div>
+              <label class="agent-radio"><input type="radio" name="agentDelay" value="2000" checked> Chuẩn — 2s / SP</label>
+              <label class="agent-radio"><input type="radio" name="agentDelay" value="1000"> Nhanh — 1s / SP</label>
+              <label class="agent-radio"><input type="radio" name="agentDelay" value="500"> Rất nhanh — 0.5s / SP <span style="font-size:10px;color:#b45309">(có thể bị rate limit)</span></label>
+              <div style="height:10px"></div>
+              <label class="agent-check"><input type="checkbox" id="agentOverwrite"> Ghi đè nội dung đã có</label>
+            </div>
+
+          </div>
+
+          <div id="agentKeyWarn" style="display:none" class="agent-warn">
+            <i data-lucide="alert-triangle" style="width:13px;height:13px;stroke-width:2;flex-shrink:0"></i>
+            Chưa có Claude API key. Mở <strong>AI Viết Blog</strong> để thiết lập.
+          </div>
+          <div style="margin-top:16px;display:flex;align-items:center;gap:10px">
+            <button class="agent-start-btn" id="agentStartBtn" onclick="startBulkAI()">
+              <i data-lucide="play" style="width:15px;height:15px;stroke-width:2"></i>
+              Bắt đầu Agent
+            </button>
+            <span id="agentReadyCount" style="font-size:13px;color:#737373"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress card -->
+      <div class="agent-card" id="agentProgressCard" style="display:none">
+        <div class="agent-card-head" style="justify-content:space-between">
+          <span style="display:flex;align-items:center;gap:8px">
+            <i data-lucide="loader-2" id="agentRunIcon" style="width:15px;height:15px;stroke-width:2;animation:spin 1s linear infinite"></i>
+            Tiến độ
+          </span>
+          <button class="agent-stop-btn" id="agentStopBtn" onclick="stopBulkAI()">
+            <i data-lucide="square" style="width:12px;height:12px;stroke-width:2;fill:currentColor"></i> Dừng
+          </button>
+        </div>
+        <div class="agent-card-body">
+          <!-- Progress bar -->
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <div class="agent-prog-bar-wrap">
+              <div class="agent-prog-bar" id="agentProgBar"></div>
+            </div>
+            <span class="agent-prog-pct" id="agentProgPct">0%</span>
+          </div>
+          <!-- Stats row -->
+          <div class="agent-stats-row">
+            <div class="agent-stat ok"><i data-lucide="check-circle" style="width:13px;height:13px;stroke-width:2"></i> <span id="agentCountOk">0</span> thành công</div>
+            <div class="agent-stat err"><i data-lucide="x-circle" style="width:13px;height:13px;stroke-width:2"></i> <span id="agentCountErr">0</span> lỗi</div>
+            <div class="agent-stat skip"><i data-lucide="skip-forward" style="width:13px;height:13px;stroke-width:2"></i> <span id="agentCountSkip">0</span> bỏ qua</div>
+            <div class="agent-stat eta"><i data-lucide="clock" style="width:13px;height:13px;stroke-width:2"></i> <span id="agentEta">—</span></div>
+          </div>
+          <!-- Current -->
+          <div class="agent-current" id="agentCurrent" style="display:none">
+            <i data-lucide="loader-2" style="width:12px;height:12px;stroke-width:2;animation:spin 1s linear infinite;flex-shrink:0"></i>
+            <span id="agentCurrentName">...</span>
+          </div>
+          <!-- Log -->
+          <div class="agent-log-label">Nhật ký</div>
+          <div class="agent-log" id="agentLog"></div>
+        </div>
+      </div>
+
+    </div><!-- /tab-agent -->
 
   </main>
 </div>
@@ -856,13 +1001,14 @@ async function startAdmin(user) {
 //  NAV 
 
 function showTab(name) {
-  ;['dashboard','products','posts'].forEach(t => {
+  ;['dashboard','products','posts','agent'].forEach(t => {
     document.getElementById('tab-' + t).style.display = t === name ? '' : 'none'
     const nav = document.getElementById('nav-' + t)
     if (nav) nav.classList.toggle('active', t === name)
   })
   if (name === 'products' && !allP.length)  loadProducts()
   if (name === 'posts'    && !allPo.length) loadPosts()
+  if (name === 'agent')                      initAgentTab()
 }
 
 //  REFERENCE DATA 
@@ -2690,6 +2836,251 @@ function toast(msg, type = 'ok') {
   clearTimeout(toastT)
   toastT = setTimeout(() => el.className = '', 3200)
 }
+
+// ── AI AGENT ──────────────────────────────────────────────────────────────────
+
+let agentRunning = false
+let agentStop = false
+let agentQueue = []
+
+function initAgentTab() {
+  const key = localStorage.getItem('td_claude_key')
+  document.getElementById('agentKeyWarn').style.display = key ? 'none' : 'flex'
+  document.getElementById('agentStartBtn').disabled = !key
+  updateAgentScopeCounts()
+  if (window.lucide) lucide.createIcons()
+}
+
+function getAgentScope() {
+  return document.querySelector('input[name="agentScope"]:checked')?.value || 'missing'
+}
+
+function getAgentFields() {
+  return {
+    overview:       document.getElementById('fieldOverview')?.checked,
+    short_specs:    document.getElementById('fieldShortSpecs')?.checked,
+    detailed_specs: document.getElementById('fieldDetailedSpecs')?.checked,
+    vehicles:       document.getElementById('fieldVehicles')?.checked,
+    description:    document.getElementById('fieldDescription')?.checked,
+  }
+}
+
+function getAgentDelay() {
+  return parseInt(document.querySelector('input[name="agentDelay"]:checked')?.value || '2000')
+}
+
+async function updateAgentScopeCounts() {
+  if (!allP.length) await loadProducts()
+  const missing    = allP.filter(p => !p.excerpt || p.excerpt.trim() === '')
+  const noVehicles = allP.filter(p => !p.compatible_vehicles || (Array.isArray(p.compatible_vehicles) && p.compatible_vehicles.length === 0))
+  const smEl = document.getElementById('scopeMissingCount')
+  const svEl = document.getElementById('scopeNoVehiclesCount')
+  const saEl = document.getElementById('scopeAllCount')
+  const rcEl = document.getElementById('agentReadyCount')
+  if (smEl) smEl.textContent = missing.length
+  if (svEl) svEl.textContent = noVehicles.length
+  if (saEl) saEl.textContent = allP.length
+  if (rcEl) {
+    const scope = getAgentScope()
+    const n = scope === 'all' ? allP.length : scope === 'no_vehicles' ? noVehicles.length : missing.length
+    rcEl.textContent = `${n} sản phẩm sẽ được xử lý`
+  }
+}
+
+async function startBulkAI() {
+  const key = localStorage.getItem('td_claude_key')
+  if (!key) { toast('Chưa có Claude API key', 'err'); return }
+  if (!allP.length) await loadProducts()
+
+  const scope     = getAgentScope()
+  const overwrite = document.getElementById('agentOverwrite')?.checked
+  const delay     = getAgentDelay()
+
+  let queue = []
+  if (scope === 'all') {
+    queue = [...allP]
+  } else if (scope === 'no_vehicles') {
+    queue = allP.filter(p => !p.compatible_vehicles || (Array.isArray(p.compatible_vehicles) && p.compatible_vehicles.length === 0))
+  } else {
+    queue = allP.filter(p => !p.excerpt || p.excerpt.trim() === '')
+  }
+
+  if (!queue.length) { toast('Không có sản phẩm nào cần xử lý', 'err'); return }
+
+  agentQueue = queue
+  agentRunning = true
+  agentStop = false
+
+  // Show progress card, hide config
+  document.getElementById('agentConfigCard').style.display = 'none'
+  const prog = document.getElementById('agentProgressCard')
+  prog.style.display = ''
+  if (window.lucide) lucide.createIcons()
+
+  // Reset counters
+  document.getElementById('agentCountOk').textContent   = '0'
+  document.getElementById('agentCountErr').textContent  = '0'
+  document.getElementById('agentCountSkip').textContent = '0'
+  document.getElementById('agentEta').textContent       = '—'
+  document.getElementById('agentLog').innerHTML         = ''
+  document.getElementById('agentProgBar').style.width   = '0%'
+  document.getElementById('agentProgPct').textContent   = '0%'
+
+  let ok = 0, err = 0, skip = 0
+  const total = queue.length
+  const startTs = Date.now()
+
+  for (let i = 0; i < queue.length; i++) {
+    if (agentStop) break
+    const p = queue[i]
+    const cur = document.getElementById('agentCurrent')
+    const curName = document.getElementById('agentCurrentName')
+    cur.style.display = 'flex'
+    curName.textContent = `${p.name || p.sku || p.id} (${i+1}/${total})`
+
+    try {
+      const result = await agentProcessProduct(p, key, overwrite)
+      if (result === 'skip') {
+        skip++
+        logAgentEntry('skip', p.name || p.id, 'Bỏ qua — đã có nội dung')
+      } else {
+        ok++
+        logAgentEntry('ok', p.name || p.id, 'Đã cập nhật thành công')
+      }
+    } catch(e) {
+      err++
+      logAgentEntry('err', p.name || p.id, e.message || 'Lỗi không xác định')
+    }
+
+    // Update stats
+    document.getElementById('agentCountOk').textContent   = ok
+    document.getElementById('agentCountErr').textContent  = err
+    document.getElementById('agentCountSkip').textContent = skip
+    const pct = Math.round(((i+1)/total)*100)
+    document.getElementById('agentProgBar').style.width  = pct + '%'
+    document.getElementById('agentProgPct').textContent  = pct + '%'
+
+    // ETA
+    const elapsed = (Date.now() - startTs) / 1000
+    const perItem = elapsed / (i+1)
+    const remaining = Math.round(perItem * (total - i - 1))
+    document.getElementById('agentEta').textContent = remaining > 0 ? `~${remaining}s còn lại` : '—'
+
+    if (i < queue.length - 1 && !agentStop) {
+      await new Promise(r => setTimeout(r, delay))
+    }
+  }
+
+  // Done
+  agentRunning = false
+  document.getElementById('agentCurrent').style.display = 'none'
+  const icon = document.getElementById('agentRunIcon')
+  if (icon) { icon.style.animation = 'none'; icon.setAttribute('data-lucide','check-circle') }
+  document.getElementById('agentStopBtn').style.display = 'none'
+  if (window.lucide) lucide.createIcons()
+  toast(`Agent hoàn thành — ${ok} thành công, ${err} lỗi, ${skip} bỏ qua`, ok > 0 ? 'ok' : 'err')
+
+  // Show config button again
+  const resetBtn = document.createElement('button')
+  resetBtn.className = 'agent-start-btn'
+  resetBtn.style.marginTop = '12px'
+  resetBtn.innerHTML = '<i data-lucide="refresh-cw" style="width:14px;height:14px"></i> Chạy lại'
+  resetBtn.onclick = () => {
+    document.getElementById('agentConfigCard').style.display = ''
+    prog.style.display = 'none'
+    resetBtn.remove()
+    document.getElementById('agentStopBtn').style.display = ''
+    if (window.lucide) lucide.createIcons()
+  }
+  document.getElementById('agentProgressCard').querySelector('.agent-card-body').appendChild(resetBtn)
+  if (window.lucide) lucide.createIcons()
+}
+
+function stopBulkAI() {
+  agentStop = true
+  agentRunning = false
+  toast('Đã yêu cầu dừng — sẽ dừng sau sản phẩm hiện tại', 'err')
+}
+
+async function agentProcessProduct(p, key, overwrite) {
+  const fields = getAgentFields()
+
+  // Check if we should skip
+  if (!overwrite) {
+    const hasContent = (p.excerpt && p.excerpt.trim()) ||
+                       (p.short_specs && p.short_specs.length) ||
+                       (p.detailed_specs && p.detailed_specs.length) ||
+                       (p.compatible_vehicles && p.compatible_vehicles.length)
+    if (hasContent) return 'skip'
+  }
+
+  const userMsg = `Sản phẩm: ${p.name || '(không có tên)'}
+SKU: ${p.sku || '—'}
+Danh mục: ${p.category_id || '—'}
+Thương hiệu: ${p.brand_id || '—'}
+Giá nhập: ${p.cost_price || '—'}
+Giá bán: ${p.price || '—'}`
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-5',
+      max_tokens: 2000,
+      system: AI_PRODUCT_PROMPT,
+      messages: [{ role: 'user', content: userMsg }],
+    }),
+  })
+
+  if (!resp.ok) {
+    const txt = await resp.text()
+    throw new Error(`API ${resp.status}: ${txt.slice(0,100)}`)
+  }
+
+  const data = await resp.json()
+  const raw = data.content?.[0]?.text || ''
+  const match = raw.match(/\{[\s\S]*\}/)
+  if (!match) throw new Error('Không parse được JSON từ AI')
+
+  const d = JSON.parse(match[0])
+
+  // Build update payload based on selected fields
+  const upd = {}
+  if (fields.overview    && d.excerpt)           upd.excerpt              = d.excerpt
+  if (fields.short_specs && d.short_specs)       upd.short_specs          = d.short_specs
+  if (fields.detailed_specs && d.detailed_specs) upd.detailed_specs       = d.detailed_specs
+  if (fields.vehicles    && d.compatible_vehicles) upd.compatible_vehicles = d.compatible_vehicles
+  if (fields.description && d.description_html)  upd.description          = d.description_html
+
+  if (!Object.keys(upd).length) return 'skip'
+
+  const { error } = await db.from('products').update(upd).eq('id', p.id)
+  if (error) throw new Error(error.message)
+
+  // Update local cache
+  const idx = allP.findIndex(x => x.id === p.id)
+  if (idx >= 0) Object.assign(allP[idx], upd)
+  return 'ok'
+}
+
+function logAgentEntry(type, name, msg) {
+  const log = document.getElementById('agentLog')
+  const icons = { ok: '✅', err: '❌', skip: '⏭' }
+  const item = document.createElement('div')
+  item.className = `agent-log-item ${type}`
+  item.innerHTML = `<span>${icons[type]}</span><span class="agent-log-name">${name}</span><span class="agent-log-msg">— ${msg}</span>`
+  log.insertBefore(item, log.firstChild)
+}
+
+// re-count when scope radio changes
+document.addEventListener('change', e => {
+  if (e.target.name === 'agentScope') updateAgentScopeCounts()
+})
 </script>
 
 <!--  Right Drawer  -->
