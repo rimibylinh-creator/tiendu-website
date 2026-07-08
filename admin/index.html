@@ -3060,6 +3060,8 @@ async function agentProcessProduct(p, key, overwrite) {
   }
 
   const data = await resp.json()
+  console.debug('[agent] API response:', JSON.stringify(data).slice(0, 400))
+
   if (data.stop_reason === 'max_tokens')
     throw new Error('Phản hồi bị cắt ngắn — bỏ chọn "Mô tả chi tiết HTML" để giảm độ dài')
 
@@ -3067,12 +3069,18 @@ async function agentProcessProduct(p, key, overwrite) {
   const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/)
   if (fence) raw = fence[1].trim()
   const fi = raw.indexOf('{'), li = raw.lastIndexOf('}')
-  if (fi === -1 || li === -1) throw new Error('Không parse được JSON — raw: ' + raw.slice(0, 120))
+  if (fi === -1 || li === -1) {
+    console.error('[agent] raw response (no JSON found):', raw)
+    throw new Error('Không parse được JSON — xem Console F12 để biết raw response')
+  }
   raw = raw.slice(fi, li + 1)
 
   let d
   try { d = JSON.parse(raw) }
-  catch (pe) { throw new Error('JSON lỗi: ' + pe.message + ' — ' + raw.slice(0, 80)) }
+  catch (pe) {
+    console.error('[agent] JSON parse error:', pe.message, '\nraw:', raw)
+    throw new Error('JSON lỗi: ' + pe.message)
+  }
 
   // Build update payload — per-field overwrite check after API call
   const upd = {}
