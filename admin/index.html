@@ -887,18 +887,28 @@ input:checked+.slider:before{transform:translateX(16px)}
         </select>
       </div>
       <div class="ai-key-box">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <label class="flabel" style="margin-bottom:0;display:flex;align-items:center;gap:5px"><i data-lucide="key" class="licon"></i> Claude API Key</label>
-          <button class="btn-ghost" style="font-size:11px;padding:3px 8px" onclick="toggleAiKeyField()">Hiện / đổi</button>
+        <div style="display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
+          <label class="flabel" style="margin-bottom:0;display:flex;align-items:center;gap:5px"><i data-lucide="key" class="licon"></i> AI Provider</label>
+          <label class="agent-radio"><input type="radio" name="blogProvider" value="gemini" onchange="onBlogProviderChange()"> Google Gemini <span style="font-size:10px;color:#15803d;background:#dcfce7;border-radius:20px;padding:1px 7px">Free</span></label>
+          <label class="agent-radio"><input type="radio" name="blogProvider" value="claude" onchange="onBlogProviderChange()"> Anthropic Claude</label>
         </div>
-        <div id="aiKeyFieldWrap" style="display:none;margin-bottom:6px">
-          <div class="finput-row">
-            <input class="finput" type="password" id="ai_key_input" placeholder="sk-ant-api03-...">
-            <button class="btn-outline" style="white-space:nowrap" onclick="saveAiKey()">Lưu</button>
+        <div id="blogGeminiKeyWrap">
+          <div class="finput-row" style="margin-bottom:4px">
+            <input class="finput" type="password" id="blog_gemini_input" placeholder="AIza..." style="font-size:13px">
+            <button class="btn-outline" style="white-space:nowrap;font-size:12px" onclick="saveBlogGeminiKey()">Lưu key</button>
           </div>
-          <span class="fnote">Chỉ lưu trong trình duyệt này (localStorage), không gửi lên server</span>
+        </div>
+        <div id="blogClaudeKeyWrap" style="display:none">
+          <div id="aiKeyFieldWrap" style="display:none;margin-bottom:4px">
+            <div class="finput-row">
+              <input class="finput" type="password" id="ai_key_input" placeholder="sk-ant-api03-...">
+              <button class="btn-outline" style="white-space:nowrap" onclick="saveAiKey()">Lưu</button>
+            </div>
+          </div>
+          <button class="btn-ghost" style="font-size:11px;padding:3px 8px;margin-bottom:4px" onclick="toggleAiKeyField()">Hiện / đổi Claude key</button>
         </div>
         <div id="aiKeyStatus" style="font-size:12px;color:#737373">Chưa có API key</div>
+        <span class="fnote">Chỉ lưu trong trình duyệt này (localStorage)</span>
       </div>
       <div id="aiError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:10px 12px;font-size:13px;color:#dc2626;margin-bottom:10px"></div>
     </div>
@@ -2142,11 +2152,11 @@ function openAiWriter() {
   document.getElementById('aiFootWrite').style.display = ''
   document.getElementById('aiFootResult').style.display = 'none'
   document.getElementById('aiError').style.display = 'none'
-  const key = localStorage.getItem('td_claude_key')
-  const status = document.getElementById('aiKeyStatus')
-  status.textContent = key ? 'API key đã lưu (..·' + key.slice(-6) + ')' : 'Chưa có API key — nhấn "Hiện / đổi" để nhập'
-  status.style.color = key ? '#15803d' : '#dc2626'
-  document.getElementById('aiKeyFieldWrap').style.display = 'none'
+  // Sync provider radio with saved preference
+  const savedProv = localStorage.getItem('td_ai_provider') || 'gemini'
+  const blogRadio = document.querySelector(`input[name="blogProvider"][value="${savedProv}"]`)
+  if (blogRadio) blogRadio.checked = true
+  onBlogProviderChange()
   document.getElementById('btnRunAi').disabled = false
   document.getElementById('btnRunAi').innerHTML = '<i data-lucide="wand-2" style="width:14px;height:14px;stroke-width:2"></i> Viết bài'; if(window.lucide)lucide.createIcons()
   document.getElementById('aiWriterModal').style.display = 'flex'
@@ -2161,18 +2171,61 @@ function saveAiKey() {
   const val = document.getElementById('ai_key_input').value.trim()
   if (!val.startsWith('sk-')) { toast('Key phải bắt đầu bằng sk-', 'err'); return }
   localStorage.setItem('td_claude_key', val)
-  document.getElementById('aiKeyStatus').textContent = 'API key đã lưu (..·' + val.slice(-6) + ')'
+  document.getElementById('aiKeyStatus').textContent = 'Claude key đã lưu (…' + val.slice(-6) + ')'
   document.getElementById('aiKeyStatus').style.color = '#15803d'
   document.getElementById('aiKeyFieldWrap').style.display = 'none'
   document.getElementById('ai_key_input').value = ''
-  toast('Đã lưu API key!')
+  toast('Đã lưu Claude API key!')
+}
+
+function saveBlogGeminiKey() {
+  const val = document.getElementById('blog_gemini_input').value.trim()
+  if (!val) { toast('Nhập Gemini key trước', 'err'); return }
+  localStorage.setItem('td_gemini_key', val)
+  localStorage.setItem('td_ai_provider', 'gemini')
+  document.getElementById('blog_gemini_input').value = ''
+  document.getElementById('aiKeyStatus').textContent = 'Gemini key đã lưu (…' + val.slice(-6) + ')'
+  document.getElementById('aiKeyStatus').style.color = '#15803d'
+  // Sync agent tab key status if visible
+  const agSt = document.getElementById('geminiKeyStatus')
+  if (agSt) agSt.textContent = 'Key đã lưu (…' + val.slice(-6) + ')'
+  toast('Đã lưu Gemini API key!')
+}
+
+function onBlogProviderChange() {
+  const prov = document.querySelector('input[name="blogProvider"]:checked')?.value || 'gemini'
+  localStorage.setItem('td_ai_provider', prov)
+  document.getElementById('blogGeminiKeyWrap').style.display = prov === 'gemini' ? '' : 'none'
+  document.getElementById('blogClaudeKeyWrap').style.display  = prov === 'claude'  ? '' : 'none'
+  const gKey = localStorage.getItem('td_gemini_key')
+  const cKey = localStorage.getItem('td_claude_key')
+  const key  = prov === 'gemini' ? gKey : cKey
+  const st   = document.getElementById('aiKeyStatus')
+  if (key) {
+    st.textContent = (prov === 'gemini' ? 'Gemini' : 'Claude') + ' key đã lưu (…' + key.slice(-6) + ')'
+    st.style.color = '#15803d'
+  } else {
+    st.textContent = prov === 'gemini' ? 'Chưa có Gemini key — nhập vào ô trên' : 'Chưa có Claude key — nhập và nhấn Lưu'
+    st.style.color = '#dc2626'
+  }
+  // Also sync agent tab radios if visible
+  const agRadio = document.querySelector(`input[name="agentProvider"][value="${prov}"]`)
+  if (agRadio) agRadio.checked = true
 }
 
 async function runAiWriter() {
   const topic = document.getElementById('ai_topic').value.trim()
   if (!topic) { toast('Vui lòng nhập chủ đề bài viết', 'err'); return }
-  const key = localStorage.getItem('td_claude_key')
-  if (!key) { toast('Vui lòng nhập Claude API key trước', 'err'); document.getElementById('aiKeyFieldWrap').style.display = ''; return }
+
+  const provider = localStorage.getItem('td_ai_provider') || 'gemini'
+  const key = provider === 'gemini'
+    ? localStorage.getItem('td_gemini_key')
+    : localStorage.getItem('td_claude_key')
+  if (!key) {
+    toast('Vui lòng nhập API key trước', 'err')
+    if (provider === 'claude') document.getElementById('aiKeyFieldWrap').style.display = ''
+    return
+  }
 
   const btn = document.getElementById('btnRunAi')
   btn.disabled = true
@@ -2188,27 +2241,7 @@ async function runAiWriter() {
   }
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-5',
-        max_tokens: 8000,
-        system: AI_SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: userMsg }],
-      }),
-    })
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}))
-      throw new Error(err?.error?.message || 'HTTP ' + resp.status)
-    }
-    const data = await resp.json()
-    const raw = (data.content || []).map(b => b.type === 'text' ? b.text : '').join('').trim()
+    const raw = await callAI(AI_SYSTEM_PROMPT, userMsg, key, provider, 8000)
     const article = processArticleImages(parseAiJson(raw))
     _aiArticle = article
     showAiResult(article)
@@ -2871,7 +2904,7 @@ let agentQueue = []
 
 function initAgentTab() {
   // Restore saved provider choice
-  const savedProvider = localStorage.getItem('td_agent_provider') || 'gemini'
+  const savedProvider = localStorage.getItem('td_ai_provider') || 'gemini'
   const radio = document.querySelector(`input[name="agentProvider"][value="${savedProvider}"]`)
   if (radio) radio.checked = true
   onProviderChange()
@@ -2881,7 +2914,7 @@ function initAgentTab() {
 
 function onProviderChange() {
   const provider = document.querySelector('input[name="agentProvider"]:checked')?.value || 'gemini'
-  localStorage.setItem('td_agent_provider', provider)
+  localStorage.setItem('td_ai_provider', provider)
   document.getElementById('geminiKeyBox').style.display  = provider === 'gemini' ? '' : 'none'
   document.getElementById('claudeKeyBox').style.display  = provider === 'claude' ? '' : 'none'
 
@@ -2954,7 +2987,7 @@ async function updateAgentScopeCounts() {
 
 async function startBulkAI() {
   if (agentRunning) { toast('Agent đang chạy rồi', 'err'); return }
-  const provider = localStorage.getItem('td_agent_provider') || 'gemini'
+  const provider = localStorage.getItem('td_ai_provider') || 'gemini'
   const key = provider === 'gemini'
     ? localStorage.getItem('td_gemini_key')
     : localStorage.getItem('td_claude_key')
@@ -3071,7 +3104,7 @@ function stopBulkAI() {
   toast('Đã yêu cầu dừng — sẽ dừng sau sản phẩm hiện tại', 'err')
 }
 
-async function callAI(systemPrompt, userMsg, key, provider) {
+async function callAI(systemPrompt, userMsg, key, provider, maxTokens = 4096) {
   async function doFetch() {
     if (provider === 'gemini') {
       const model = 'gemini-2.5-flash'
@@ -3081,7 +3114,7 @@ async function callAI(systemPrompt, userMsg, key, provider) {
         body: JSON.stringify({
           system_instruction: { parts: [{ text: systemPrompt }] },
           contents: [{ role: 'user', parts: [{ text: userMsg }] }],
-          generationConfig: { maxOutputTokens: 4096 },
+          generationConfig: { maxOutputTokens: maxTokens },
         }),
       })
     } else {
@@ -3095,7 +3128,7 @@ async function callAI(systemPrompt, userMsg, key, provider) {
         },
         body: JSON.stringify({
           model: 'claude-sonnet-5',
-          max_tokens: 2000,
+          max_tokens: maxTokens,
           system: systemPrompt,
           messages: [{ role: 'user', content: userMsg }],
         }),
