@@ -574,9 +574,35 @@ input:checked+.slider:before{transform:translateX(16px)}
 
           </div>
 
+          <!-- Provider + Key -->
+          <div style="border-top:1px solid #f0f0f0;margin-top:12px;padding-top:14px;display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end">
+
+            <div class="agent-cfg-section" style="flex:0 0 auto">
+              <div class="agent-cfg-label">AI Provider</div>
+              <label class="agent-radio"><input type="radio" name="agentProvider" value="gemini" id="providerGemini" onchange="onProviderChange()"> Google Gemini <span style="font-size:10px;color:#15803d;background:#dcfce7;border-radius:20px;padding:1px 7px">Free</span></label>
+              <label class="agent-radio"><input type="radio" name="agentProvider" value="claude" id="providerClaude" onchange="onProviderChange()"> Anthropic Claude</label>
+            </div>
+
+            <div style="flex:1;min-width:220px">
+              <div id="geminiKeyBox">
+                <div class="agent-cfg-label" style="margin-bottom:5px">Gemini API Key</div>
+                <div style="display:flex;gap:6px">
+                  <input type="password" class="finput" id="geminiKeyInput" placeholder="AIza..." style="flex:1;font-size:13px;padding:6px 10px;height:32px">
+                  <button class="agent-start-btn" style="padding:5px 12px;font-size:12px;height:32px" onclick="saveGeminiKey()">Lưu</button>
+                </div>
+                <div id="geminiKeyStatus" style="font-size:11px;color:#737373;margin-top:4px">Chưa có key</div>
+              </div>
+              <div id="claudeKeyBox" style="display:none">
+                <div class="agent-cfg-label" style="margin-bottom:5px">Claude API Key</div>
+                <div style="font-size:12px;color:#737373" id="claudeKeyStatusAgent">Chưa có key — mở AI Viết Blog để thiết lập</div>
+              </div>
+            </div>
+
+          </div>
+
           <div id="agentKeyWarn" style="display:none" class="agent-warn">
             <i data-lucide="alert-triangle" style="width:13px;height:13px;stroke-width:2;flex-shrink:0"></i>
-            Chưa có Claude API key. Mở <strong>AI Viết Blog</strong> để thiết lập.
+            <span id="agentKeyWarnMsg">Chưa có API key</span>
           </div>
           <div style="margin-top:16px;display:flex;align-items:center;gap:10px">
             <button class="agent-start-btn" id="agentStartBtn" onclick="startBulkAI()">
@@ -2844,11 +2870,50 @@ let agentStop = false
 let agentQueue = []
 
 function initAgentTab() {
-  const key = localStorage.getItem('td_claude_key')
-  document.getElementById('agentKeyWarn').style.display = key ? 'none' : 'flex'
-  document.getElementById('agentStartBtn').disabled = !key
+  // Restore saved provider choice
+  const savedProvider = localStorage.getItem('td_agent_provider') || 'gemini'
+  const radio = document.querySelector(`input[name="agentProvider"][value="${savedProvider}"]`)
+  if (radio) radio.checked = true
+  onProviderChange()
   updateAgentScopeCounts()
   if (window.lucide) lucide.createIcons()
+}
+
+function onProviderChange() {
+  const provider = document.querySelector('input[name="agentProvider"]:checked')?.value || 'gemini'
+  localStorage.setItem('td_agent_provider', provider)
+  document.getElementById('geminiKeyBox').style.display  = provider === 'gemini' ? '' : 'none'
+  document.getElementById('claudeKeyBox').style.display  = provider === 'claude' ? '' : 'none'
+
+  const gKey = localStorage.getItem('td_gemini_key')
+  const cKey = localStorage.getItem('td_claude_key')
+  if (provider === 'gemini') {
+    const st = document.getElementById('geminiKeyStatus')
+    if (st) st.textContent = gKey ? 'Key đã lưu (…' + gKey.slice(-6) + ')' : 'Chưa có key'
+  } else {
+    const st = document.getElementById('claudeKeyStatusAgent')
+    if (st) st.textContent = cKey ? 'Key đã lưu (…' + cKey.slice(-6) + ')' : 'Chưa có key — mở AI Viết Blog để thiết lập'
+  }
+
+  const hasKey = provider === 'gemini' ? !!gKey : !!cKey
+  document.getElementById('agentKeyWarn').style.display = hasKey ? 'none' : 'flex'
+  const warnMsg = document.getElementById('agentKeyWarnMsg')
+  if (warnMsg) warnMsg.textContent = provider === 'gemini'
+    ? 'Chưa có Gemini API key — nhập vào ô bên trên và nhấn Lưu'
+    : 'Chưa có Claude API key — mở AI Viết Blog để thiết lập'
+  document.getElementById('agentStartBtn').disabled = !hasKey
+}
+
+function saveGeminiKey() {
+  const val = document.getElementById('geminiKeyInput').value.trim()
+  if (!val) { toast('Nhập key trước', 'err'); return }
+  localStorage.setItem('td_gemini_key', val)
+  document.getElementById('geminiKeyInput').value = ''
+  document.getElementById('geminiKeyInput').type = 'password'
+  document.getElementById('geminiKeyStatus').textContent = 'Key đã lưu (…' + val.slice(-6) + ')'
+  document.getElementById('agentKeyWarn').style.display = 'none'
+  document.getElementById('agentStartBtn').disabled = false
+  toast('Đã lưu Gemini API key!')
 }
 
 function getAgentScope() {
@@ -2889,8 +2954,11 @@ async function updateAgentScopeCounts() {
 
 async function startBulkAI() {
   if (agentRunning) { toast('Agent đang chạy rồi', 'err'); return }
-  const key = localStorage.getItem('td_claude_key')
-  if (!key) { toast('Chưa có Claude API key', 'err'); return }
+  const provider = localStorage.getItem('td_agent_provider') || 'gemini'
+  const key = provider === 'gemini'
+    ? localStorage.getItem('td_gemini_key')
+    : localStorage.getItem('td_claude_key')
+  if (!key) { toast('Chưa có API key', 'err'); return }
   if (!allP.length) await loadProducts()
 
   const scope     = getAgentScope()
@@ -2940,7 +3008,7 @@ async function startBulkAI() {
     curName.textContent = `${p.name || p.sku || p.id} (${i+1}/${total})`
 
     try {
-      const result = await agentProcessProduct(p, key, overwrite)
+      const result = await agentProcessProduct(p, key, overwrite, provider)
       if (result === 'skip') {
         skip++
         logAgentEntry('skip', p.name || p.id, 'Bỏ qua — đã có nội dung')
@@ -3003,7 +3071,59 @@ function stopBulkAI() {
   toast('Đã yêu cầu dừng — sẽ dừng sau sản phẩm hiện tại', 'err')
 }
 
-async function agentProcessProduct(p, key, overwrite) {
+async function callAI(systemPrompt, userMsg, key, provider) {
+  async function doFetch() {
+    if (provider === 'gemini') {
+      const model = 'gemini-2.0-flash'
+      return fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: systemPrompt }] },
+          contents: [{ role: 'user', parts: [{ text: userMsg }] }],
+          generationConfig: { maxOutputTokens: 2048 },
+        }),
+      })
+    } else {
+      return fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': key,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-5',
+          max_tokens: 2000,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: userMsg }],
+        }),
+      })
+    }
+  }
+
+  let resp, attempt = 0
+  while (true) {
+    resp = await doFetch()
+    if (resp.status === 429 && attempt < 1) { attempt++; await new Promise(r => setTimeout(r, 10000)); continue }
+    break
+  }
+  if (!resp.ok) { const t = await resp.text(); throw new Error(`API ${resp.status}: ${t.slice(0, 120)}`) }
+
+  const data = await resp.json()
+  let raw
+  if (provider === 'gemini') {
+    if (data.promptFeedback?.blockReason) throw new Error('Gemini blocked: ' + data.promptFeedback.blockReason)
+    raw = (data.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim()
+  } else {
+    if (data.stop_reason === 'max_tokens') throw new Error('Phản hồi bị cắt ngắn — bỏ chọn "Mô tả chi tiết HTML"')
+    raw = (data.content || []).map(b => b.type === 'text' ? b.text : '').join('').trim()
+  }
+  return raw
+}
+
+async function agentProcessProduct(p, key, overwrite, provider = 'gemini') {
   const fields = getAgentFields()
 
   // Skip only if ALL selected fields already have content (per-field check)
@@ -3028,54 +3148,18 @@ async function agentProcessProduct(p, key, overwrite) {
     brandName ? `Hãng xe: ${brandName}`: '',
   ].filter(Boolean).join('\n')
 
-  // Fetch with one 429 retry
-  let resp, attempt = 0
-  while (true) {
-    resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-5',
-        max_tokens: 2000,
-        system: AI_PRODUCT_PROMPT,
-        messages: [{ role: 'user', content: userMsg }],
-      }),
-    })
-    if (resp.status === 429 && attempt < 1) {
-      attempt++
-      await new Promise(r => setTimeout(r, 10000))
-      continue
-    }
-    break
-  }
+  let raw = await callAI(AI_PRODUCT_PROMPT, userMsg, key, provider)
 
-  if (!resp.ok) {
-    const txt = await resp.text()
-    throw new Error(`API ${resp.status}: ${txt.slice(0, 120)}`)
-  }
-
-  const data = await resp.json()
-  console.debug('[agent] API response:', JSON.stringify(data).slice(0, 400))
-
-  if (data.stop_reason === 'max_tokens')
-    throw new Error('Phản hồi bị cắt ngắn — bỏ chọn "Mô tả chi tiết HTML" để giảm độ dài')
-
-  let raw = (data.content || []).map(b => b.type === 'text' ? b.text : '').join('').trim()
   const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/)
   if (fence) raw = fence[1].trim()
   const fi = raw.indexOf('{'), li = raw.lastIndexOf('}')
   if (fi === -1 || li === -1) {
-    console.error('[agent] raw response (no JSON found):', raw)
-    throw new Error('Không parse được JSON — xem Console F12 để biết raw response')
+    console.error('[agent] raw (no JSON):', raw)
+    throw new Error('Không parse được JSON — xem Console F12')
   }
   raw = raw.slice(fi, li + 1)
 
-  // Escape literal control chars that Claude sometimes emits inside string values (e.g. description_html)
+  // Escape literal control chars (e.g. newlines inside description_html string values)
   const sanitized = raw.replace(/"(?:[^"\\]|\\.)*"/g, m =>
     m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
   )
