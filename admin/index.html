@@ -2308,6 +2308,12 @@ function parseAiJson(raw) {
   if (fence) s = fence[1].trim()
   const first = s.indexOf('{'), last = s.lastIndexOf('}')
   if (first !== -1 && last !== -1) s = s.slice(first, last + 1)
+  // Escape literal control chars inside string values (Gemini emits unescaped newlines)
+  s = s.replace(/"(?:[^"\\]|\\.)*"/g, m =>
+    m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
+  )
+  // Strip trailing commas before ] or }
+  s = s.replace(/,(\s*[}\]])/g, '$1')
   return JSON.parse(s)
 }
 
