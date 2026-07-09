@@ -3081,7 +3081,7 @@ async function callAI(systemPrompt, userMsg, key, provider) {
         body: JSON.stringify({
           system_instruction: { parts: [{ text: systemPrompt }] },
           contents: [{ role: 'user', parts: [{ text: userMsg }] }],
-          generationConfig: { maxOutputTokens: 2048 },
+          generationConfig: { maxOutputTokens: 4096 },
         }),
       })
     } else {
@@ -3170,10 +3170,13 @@ async function agentProcessProduct(p, key, overwrite, provider = 'gemini') {
   }
   raw = raw.slice(fi, li + 1)
 
-  // Escape literal control chars (e.g. newlines inside description_html string values)
-  const sanitized = raw.replace(/"(?:[^"\\]|\\.)*"/g, m =>
+  // 1. Escape literal control chars inside string values (newlines in description_html)
+  let sanitized = raw.replace(/"(?:[^"\\]|\\.)*"/g, m =>
     m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
   )
+  // 2. Remove trailing commas before ] or } (Gemini sometimes emits these)
+  sanitized = sanitized.replace(/,(\s*[}\]])/g, '$1')
+
   let d
   try { d = JSON.parse(sanitized) }
   catch (pe) {
