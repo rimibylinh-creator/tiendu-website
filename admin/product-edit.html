@@ -345,7 +345,7 @@ input:checked+.slider:before{transform:translateX(16px)}
         </div>
         <div class="pe-card-body">
           <div id="aiKeyNote" class="ai-key-note" style="display:none;margin-bottom:14px">
-            <strong>Chưa có Claude API key.</strong> Mở <a href="index.html" style="color:#fecd27">Admin</a>, nhấn "AI Viết Blog" và nhập key một lần — key được lưu trên trình duyệt này.
+            <strong>Chưa có API key.</strong> Mở <a href="index.html" style="color:#fecd27">Admin</a> → tab AI Agent để nhập Gemini hoặc Claude key.
           </div>
           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px">
             <button class="ai-run-btn" id="aiRunBtn" onclick="aiGenerateDesc()">
@@ -525,7 +525,9 @@ async function init() {
 
   document.getElementById('loadingOverlay').classList.add('hidden')
   document.getElementById('peLayout').style.display = 'grid'
-  if (!localStorage.getItem('td_claude_key')) {
+  const _prov = localStorage.getItem('td_ai_provider') || 'gemini'
+  const _hasKey = _prov === 'gemini' ? !!localStorage.getItem('td_gemini_key') : !!localStorage.getItem('td_claude_key')
+  if (!_hasKey) {
     document.getElementById('aiKeyNote').style.display = 'block'
   }
 }
@@ -800,18 +802,21 @@ QUY TẮC:
 - confidence: "high" nếu chắc chắn, "medium" nếu có thể đúng, "low" nếu ước lượng`
 
 async function aiGenerateDesc() {
-  const key = localStorage.getItem('td_claude_key')
+  const provider = localStorage.getItem('td_ai_provider') || 'gemini'
+  const key = provider === 'gemini'
+    ? localStorage.getItem('td_gemini_key')
+    : localStorage.getItem('td_claude_key')
   if (!key) {
     document.getElementById('aiKeyNote').style.display = 'block'
-    toast('Cần nhập Claude API key', 'err'); return
+    toast('Cần nhập API key — vào Admin → AI Agent để thiết lập', 'err'); return
   }
 
-  const name  = gv('p_name').trim()
-  const sku   = gv('p_sku').trim()
-  const catId = document.getElementById('p_cat').value
-  const cat   = cats.find(c => c.id == catId)?.name || ''
+  const name    = gv('p_name').trim()
+  const sku     = gv('p_sku').trim()
+  const catId   = document.getElementById('p_cat').value
+  const cat     = cats.find(c => c.id == catId)?.name || ''
   const brandId = document.getElementById('p_brand').value
-  const brand = brands.find(b => b.id == brandId)?.name || ''
+  const brand   = brands.find(b => b.id == brandId)?.name || ''
 
   if (!name) { toast('Nhập tên sản phẩm trước', 'err'); return }
 
@@ -827,29 +832,49 @@ async function aiGenerateDesc() {
       brand ? `Hãng xe: ${brand}` : '',
     ].filter(Boolean).join('\n')
 
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-5',
-        max_tokens: 2000,
-        system: AI_PRODUCT_PROMPT,
-        messages: [{ role: 'user', content: userMsg }],
-      })
-    })
+    let resp, attempt = 0
+    while (true) {
+      if (provider === 'gemini') {
+        resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: AI_PRODUCT_PROMPT }] },
+            contents: [{ role: 'user', parts: [{ text: userMsg }] }],
+            generationConfig: { maxOutputTokens: 4096 },
+          }),
+        })
+      } else {
+        resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': key,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true',
+          },
+          body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 2000, system: AI_PRODUCT_PROMPT, messages: [{ role: 'user', content: userMsg }] })
+        })
+      }
+      if (resp.status === 429 && attempt < 2) { attempt++; await new Promise(r => setTimeout(r, 10000)); continue }
+      break
+    }
 
     if (!resp.ok) { const t = await resp.text(); throw new Error(`API ${resp.status}: ${t.slice(0,200)}`) }
     const data = await resp.json()
-    let raw = data.content.map(b => b.type === 'text' ? b.text : '').join('').trim()
+    let raw = provider === 'gemini'
+      ? (data.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim()
+      : (data.content || []).map(b => b.type === 'text' ? b.text : '').join('').trim()
+
     const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/)
     if (fence) raw = fence[1].trim()
     const fi = raw.indexOf('{'), li = raw.lastIndexOf('}')
     if (fi !== -1 && li !== -1) raw = raw.slice(fi, li + 1)
+    // Sanitize: escape literal control chars + strip trailing commas
+    raw = raw.replace(/"(?:[^"\\]|\\.)*"/g, m =>
+      m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
+    ).replace(/,(\s*[}\]])/g, '$1')
+
     aiData = JSON.parse(raw)
     renderAiResult(aiData)
   } catch (e) {
