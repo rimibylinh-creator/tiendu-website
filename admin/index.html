@@ -3074,7 +3074,7 @@ function stopBulkAI() {
 async function callAI(systemPrompt, userMsg, key, provider) {
   async function doFetch() {
     if (provider === 'gemini') {
-      const model = 'gemini-2.0-flash'
+      const model = 'gemini-2.5-flash'
       return fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
