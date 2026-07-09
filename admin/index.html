@@ -492,12 +492,18 @@ tr.p-selected td{background:#fffbea}
         <select class="fsel-sm" onchange="pFilter(this.value,'cat')" id="catSel">
           <option value="">Tất cả danh mục</option>
         </select>
-        <select class="fsel-sm" onchange="pFilter(this.value,'stock')">
+        <select class="fsel-sm" onchange="pFilter(this.value,'brand')" id="brandSel">
+          <option value="">Tất cả hãng xe</option>
+        </select>
+        <select class="fsel-sm" onchange="pFilter(this.value,'stock')" id="stockSel">
           <option value="">Tất cả trạng thái</option>
           <option value="in_stock">Còn hàng</option>
           <option value="out_of_stock">Hết hàng</option>
           <option value="preorder">Đặt trước</option>
         </select>
+        <input class="fsel-sm" type="number" min="0" placeholder="Giá từ ₫" style="width:110px" oninput="pFilter(this.value,'priceMin')" id="priceMinInp">
+        <input class="fsel-sm" type="number" min="0" placeholder="Giá đến ₫" style="width:110px" oninput="pFilter(this.value,'priceMax')" id="priceMaxInp">
+        <button class="btn-ghost" onclick="clearPFilters()" title="Xoá bộ lọc" style="white-space:nowrap;padding:4px 10px;font-size:12px">✕ Xoá lọc</button>
       </div>
       <div class="tcard" style="overflow:visible">
         <div style="overflow-x:auto">
@@ -1020,7 +1026,7 @@ const db = createClient(SB_URL, SB_KEY)
 let brands = [], cats = [], postCats = []
 let allP = [], allPo = []
 const pStore = {}, poStore = {}
-const pF = { q: '', cat: '', stock: '' }
+const pF = { q: '', cat: '', stock: '', brand: '', priceMin: '', priceMax: '' }
 let editPId = null, editPoId = null
 let delTarget = {}
 let importRows = []
@@ -1078,6 +1084,8 @@ function showTab(name) {
 async function loadBrands() {
   const { data } = await db.from('brands').select('id,name').order('name')
   brands = data || []
+  const sel = document.getElementById('brandSel')
+  if (sel) brands.forEach(b => sel.insertAdjacentHTML('beforeend', `<option value="${b.id}">${b.name}</option>`))
 }
 async function loadCats() {
   const { data } = await db.from('categories').select('id,name,slug').order('name')
@@ -1181,25 +1189,38 @@ function renderP(list, total) {
 
 let pFilterTimer = null
 function pFilter(val, key) {
-  pF[key] = val.toLowerCase()
+  pF[key] = key === 'q' ? val.toLowerCase() : val
   clearTimeout(pFilterTimer)
   pFilterTimer = setTimeout(async () => {
-    const hasFilter = pF.q || pF.cat || pF.stock
+    const hasFilter = pF.q || pF.cat || pF.stock || pF.brand || pF.priceMin || pF.priceMax
     if (!hasFilter) { renderP(allP, null); return }
 
     let q = db.from('products')
       .select('*,brands(id,name),categories(id,name,slug)')
       .order('created_at', { ascending: false })
-    if (pF.q)     q = q.ilike('name', `%${pF.q}%`)
+    if (pF.q)        q = q.ilike('name', `%${pF.q}%`)
     if (pF.cat) {
       const catId = cats.find(c => c.slug === pF.cat)?.id
       if (catId) q = q.eq('category_id', catId)
     }
-    if (pF.stock) q = q.eq('stock_status', pF.stock)
+    if (pF.brand)    q = q.eq('brand_id', pF.brand)
+    if (pF.stock)    q = q.eq('stock_status', pF.stock)
+    if (pF.priceMin) q = q.gte('price', Number(pF.priceMin))
+    if (pF.priceMax) q = q.lte('price', Number(pF.priceMax))
     const { data } = await q.limit(200)
     if (data) data.forEach(p => { pStore[p.id] = p })
     renderP(data || [])
   }, 300)
+}
+function clearPFilters() {
+  pF.q = ''; pF.cat = ''; pF.stock = ''; pF.brand = ''; pF.priceMin = ''; pF.priceMax = ''
+  document.querySelector('.search-input').value = ''
+  document.getElementById('catSel').value = ''
+  document.getElementById('brandSel').value = ''
+  document.getElementById('stockSel').value = ''
+  document.getElementById('priceMinInp').value = ''
+  document.getElementById('priceMaxInp').value = ''
+  renderP(allP)
 }
 
 async function qSet(table, field, val, id) {
