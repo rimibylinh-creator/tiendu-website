@@ -134,6 +134,11 @@ tr.p-selected td{background:#fffbea}
 .btn-sheet{background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:#1e40af;white-space:nowrap;transition:all .12s}
 .btn-sheet:hover{background:#dbeafe;border-color:#93c5fd}
 .btn-sheet:disabled{opacity:.6;cursor:wait}
+.btn-drop{position:relative;display:inline-flex}
+.btn-drop-menu{display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1.5px solid #e0e0e0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:180px;z-index:300;overflow:hidden}
+.btn-drop-menu.open{display:block}
+.btn-drop-item{display:flex;align-items:center;gap:8px;padding:10px 16px;font-size:13px;font-weight:600;color:#1e40af;cursor:pointer;background:none;border:none;width:100%;font-family:inherit;text-decoration:none;white-space:nowrap;transition:background .1s}
+.btn-drop-item:hover{background:#eff6ff}
 
 /*  Upload button  */
 .upload-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border:1.5px solid #d2d2d2;border-radius:8px;cursor:pointer;font-size:18px;flex-shrink:0;transition:border-color .12s;background:#fff}
@@ -488,8 +493,15 @@ tr.p-selected td{background:#fffbea}
       <div class="ph">
         <div><div class="ph-title">Sản phẩm</div><div class="ph-sub" id="pCount">Đang tải...</div></div>
         <div class="ph-actions">
-          <button id="btnSyncSheet" class="btn-sheet" style="display:inline-flex;align-items:center;gap:6px" onclick="syncFromSheet()" title="Nhập sản phẩm từ Google Sheet vào hệ thống"><i data-lucide="download" class="licon"></i> Lấy lại kho gốc</button>
-          <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/1cwEq5aNw4Q1IX_aFc5dq4qefrWzobjQWxRpOA9ubFug/edit" target="_blank" rel="noopener" title="Mở file Google Sheet kho hàng" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px"><i data-lucide="table-2" class="licon"></i> Mở Sheet</a>
+          <div class="btn-drop" id="khoDropWrap">
+            <button class="btn-sheet" style="display:inline-flex;align-items:center;gap:6px" onclick="toggleDrop('khoDropWrap')">
+              <i data-lucide="database" class="licon"></i> Kho giá nhập <i data-lucide="chevron-down" style="width:13px;height:13px;stroke-width:2.5"></i>
+            </button>
+            <div class="btn-drop-menu" id="khoDropMenu">
+              <button id="btnSyncSheet" class="btn-drop-item" onclick="closeDrop('khoDropWrap');syncFromSheet()"><i data-lucide="download" class="licon"></i> Lấy lại kho gốc</button>
+              <a class="btn-drop-item" href="https://docs.google.com/spreadsheets/d/1cwEq5aNw4Q1IX_aFc5dq4qefrWzobjQWxRpOA9ubFug/edit" target="_blank" rel="noopener" onclick="closeDrop('khoDropWrap')"><i data-lucide="table-2" class="licon"></i> Mở Sheet</a>
+            </div>
+          </div>
           <button class="btn-primary" onclick="openProductModal()">+ Thêm sản phẩm</button>
         </div>
       </div>
@@ -1568,6 +1580,16 @@ function parseVNPrice(raw) {
   const n = parseFloat(cleaned)
   return Number.isFinite(n) ? Math.round(n) : 0
 }
+
+function toggleDrop(wrapId) {
+  const menu = document.getElementById(wrapId).querySelector('.btn-drop-menu')
+  const isOpen = menu.classList.toggle('open')
+  if (isOpen) {
+    const close = e => { if (!document.getElementById(wrapId).contains(e.target)) { menu.classList.remove('open'); document.removeEventListener('click', close) } }
+    setTimeout(() => document.addEventListener('click', close), 0)
+  }
+}
+function closeDrop(wrapId) { document.getElementById(wrapId).querySelector('.btn-drop-menu').classList.remove('open') }
 
 async function syncFromSheet() {
   const btn = document.getElementById('btnSyncSheet')
