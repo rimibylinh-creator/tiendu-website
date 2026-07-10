@@ -70,6 +70,12 @@ body{font-family:Inter,-apple-system,sans-serif;background:#f5f5f5;color:#252b42
 .search-input:focus{border-color:#fecd27}
 .fsel-sm{border:1.5px solid #d2d2d2;border-radius:8px;padding:8px 10px;font-size:13px;outline:none;background:#fff;font-family:inherit;cursor:pointer}
 .fsel-sm:focus{border-color:#fecd27}
+/*  Category tab bar  */
+.cat-tab-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none}
+.cat-tab-bar::-webkit-scrollbar{display:none}
+.cat-tab{border:1.5px solid #d2d2d2;background:#fff;border-radius:64px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;color:#737373;font-family:inherit;line-height:1.4}
+.cat-tab:hover{border-color:#fecd27;color:#252b42}
+.cat-tab.active{background:#fecd27;border-color:#fecd27;color:#101010}
 
 /*  Table  */
 .tcard{background:#fff;border-radius:12px;border:1px solid #ebebeb;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
@@ -486,6 +492,9 @@ tr.p-selected td{background:#fffbea}
           <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/1cwEq5aNw4Q1IX_aFc5dq4qefrWzobjQWxRpOA9ubFug/edit" target="_blank" rel="noopener" title="Mở file Google Sheet kho hàng" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px"><i data-lucide="table-2" class="licon"></i> Mở Sheet</a>
           <button class="btn-primary" onclick="openProductModal()">+ Thêm sản phẩm</button>
         </div>
+      </div>
+      <div class="cat-tab-bar" id="catTabBar">
+        <button class="cat-tab active" data-slug="" onclick="setPTab('')">Tất cả</button>
       </div>
       <div class="toolbar">
         <input class="search-input" placeholder="Tìm tên sản phẩm..." oninput="pFilter(this.value,'q')">
@@ -1091,7 +1100,11 @@ async function loadCats() {
   const { data } = await db.from('categories').select('id,name,slug').order('name')
   cats = data || []
   const sel = document.getElementById('catSel')
-  cats.forEach(c => sel.insertAdjacentHTML('beforeend', `<option value="${c.slug}">${c.name}</option>`))
+  const bar = document.getElementById('catTabBar')
+  cats.forEach(c => {
+    sel.insertAdjacentHTML('beforeend', `<option value="${c.slug}">${c.name}</option>`)
+    bar.insertAdjacentHTML('beforeend', `<button class="cat-tab" data-slug="${c.slug}" onclick="setPTab('${c.slug}')">${c.name}</button>`)
+  })
 }
 async function loadPostCats() {
   const { data } = await db.from('post_categories').select('id,name').order('name')
@@ -1187,9 +1200,18 @@ function renderP(list, total) {
   if (window.lucide) lucide.createIcons()
 }
 
+function setPTab(slug) {
+  document.querySelectorAll('.cat-tab').forEach(el => el.classList.toggle('active', el.dataset.slug === slug))
+  document.getElementById('catSel').value = slug
+  pFilter(slug, 'cat')
+}
+
 let pFilterTimer = null
 function pFilter(val, key) {
   pF[key] = key === 'q' ? val.toLowerCase() : val
+  if (key === 'cat') {
+    document.querySelectorAll('.cat-tab').forEach(el => el.classList.toggle('active', el.dataset.slug === val))
+  }
   clearTimeout(pFilterTimer)
   pFilterTimer = setTimeout(async () => {
     const hasFilter = pF.q || pF.cat || pF.stock || pF.brand || pF.priceMin || pF.priceMax
@@ -1214,12 +1236,13 @@ function pFilter(val, key) {
 }
 function clearPFilters() {
   pF.q = ''; pF.cat = ''; pF.stock = ''; pF.brand = ''; pF.priceMin = ''; pF.priceMax = ''
-  document.querySelector('.search-input').value = ''
+  document.querySelector('#tab-products .search-input').value = ''
   document.getElementById('catSel').value = ''
   document.getElementById('brandSel').value = ''
   document.getElementById('stockSel').value = ''
   document.getElementById('priceMinInp').value = ''
   document.getElementById('priceMaxInp').value = ''
+  document.querySelectorAll('.cat-tab').forEach(el => el.classList.toggle('active', el.dataset.slug === ''))
   renderP(allP)
 }
 
