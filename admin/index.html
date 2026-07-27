@@ -3641,9 +3641,9 @@ function getSRates() {
   }
 }
 
-function calcSP(gia1Ben) {
+function calcSP(gia1Ben, isPair = false) {
   const r = getSRates()
-  const cap      = gia1Ben * 2
+  const cap      = isPair ? gia1Ben * 2 : gia1Ben
   const laiRong  = cap * r.laiRong
   const niemYet  = cap + laiRong
   const shopee   = niemYet * (1 + r.markup)
@@ -3686,7 +3686,7 @@ function renderShopee(list) {
   }
 
   // Summary bar
-  const calcs = list.map(p => calcSP(p.gia_nhap_1_ben))
+  const calcs = list.map(p => calcSP(p.gia_nhap_1_ben, p.category === 'phuoc-giam-xoc'))
   const avgShopee = calcs.reduce((s, c) => s + c.shopee, 0) / calcs.length
   const avgLN     = calcs.reduce((s, c) => s + c.loiNhuan, 0) / calcs.length
   const avgPct    = calcs.reduce((s, c) => s + c.pctLN, 0) / calcs.length
@@ -3751,7 +3751,8 @@ function updateShopeePreview() {
   const gia = parseFloat(document.getElementById('sm_giaNhap').value)
   const prev = document.getElementById('shopeePreview')
   if (!gia || gia <= 0) { prev.style.display = 'none'; return }
-  const c = calcSP(gia)
+  const isPair = document.getElementById('sm_cat').value === 'phuoc-giam-xoc'
+  const c = calcSP(gia, isPair)
   prev.style.display = ''
   document.getElementById('pv_cap').textContent    = fmtP(c.cap)
   document.getElementById('pv_niemYet').textContent = fmtP(Math.round(c.niemYet))
@@ -3798,15 +3799,16 @@ async function deleteShopeeItem(id, name) {
 function showShopeeDetail(id) {
   const p = allShopee.find(x => x.id === id)
   if (!p) return
-  const c = calcSP(p.gia_nhap_1_ben)
+  const isPair = p.category === 'phuoc-giam-xoc'
+  const c = calcSP(p.gia_nhap_1_ben, isPair)
   document.getElementById('shopeeDetailTitle').textContent = p.ten_san_pham
   const row = (label, val, cls='') => `<tr><td style="color:#737373;font-size:12.5px;padding:6px 0">${label}</td><td style="text-align:right;font-weight:600;font-size:12.5px;padding:6px 0" class="${cls}">${val}</td></tr>`
   document.getElementById('shopeeDetailBody').innerHTML = `
     <table style="width:100%;border-collapse:collapse">
       <thead><tr><th colspan="2" style="text-align:left;font-size:11px;color:#a0a0a0;padding:0 0 8px;text-transform:uppercase">Cấu trúc giá</th></tr></thead>
       <tbody>
-        ${row('Giá nhập 1 BÊN', fmtP(p.gia_nhap_1_ben))}
-        ${row('Giá nhập 1 CẶP', fmtP(c.cap))}
+        ${isPair ? row('Giá nhập 1 BÊN', fmtP(p.gia_nhap_1_ben)) : row('Giá nhập', fmtP(p.gia_nhap_1_ben))}
+        ${isPair ? row('Giá nhập 1 CẶP', fmtP(c.cap)) : ''}
         ${row('Lãi ròng/SP', fmtP(Math.round(c.laiRong)))}
         ${row('Giá niêm yết cửa hàng', fmtP(Math.round(c.niemYet)))}
         ${row('Giá bán SHOPEE', fmtP(Math.round(c.shopee)), 'sp-ln-pos')}
