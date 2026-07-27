@@ -76,6 +76,23 @@ body{font-family:Inter,-apple-system,sans-serif;background:#f5f5f5;color:#252b42
 .cat-tab{border:1.5px solid #d2d2d2;background:#fff;border-radius:64px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;color:#737373;font-family:inherit;line-height:1.4}
 .cat-tab:hover{border-color:#fecd27;color:#252b42}
 .cat-tab.active{background:#fecd27;border-color:#fecd27;color:#101010}
+/*  Shopee tab  */
+.sp-rates{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:12px}
+.sp-rate-item{display:flex;flex-direction:column;gap:3px}
+.sp-rate-item label{font-size:11px;font-weight:600;color:#a0a0a0;text-transform:uppercase}
+.sp-rate-item input{border:1.5px solid #d2d2d2;border-radius:7px;padding:6px 10px;font-size:13px;font-family:inherit;outline:none;background:#fff}
+.sp-rate-item input:focus{border-color:#fecd27}
+.sp-tbl td{font-size:12.5px}
+.sp-tbl td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sp-tbl tr:hover .sp-actions{opacity:1}
+.sp-actions{opacity:0;transition:opacity .15s;white-space:nowrap}
+.sp-ln-pos{color:#15803d;font-weight:700}
+.sp-ln-neg{color:#dc2626;font-weight:700}
+.sp-sum-bar{display:flex;gap:20px;flex-wrap:wrap;padding:14px 20px;background:#fffef5;border:1.5px solid #fecd27;border-radius:10px;margin-bottom:14px}
+.sp-sum-item{display:flex;flex-direction:column;gap:2px}
+.sp-sum-label{font-size:11px;font-weight:700;color:#a0a0a0;text-transform:uppercase}
+.sp-sum-val{font-size:18px;font-weight:800;color:#101010}
+.sp-detail-row td{background:#fafff7;font-size:12px;color:#555;padding:6px 16px}
 
 /*  Table  */
 .tcard{background:#fff;border-radius:12px;border:1px solid #ebebeb;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
@@ -456,6 +473,11 @@ tr.p-selected td{background:#fffbea}
       <span class="nav-icon"><i data-lucide="bot" class="licon"></i></span> AI Agent
     </button>
     <div class="nav-div"></div>
+    <span class="nav-sec">Kênh bán</span>
+    <button class="nav-item" id="nav-shopee" onclick="showTab('shopee')">
+      <span class="nav-icon"><i data-lucide="shopping-bag" class="licon"></i></span> Kho Shopee
+    </button>
+    <div class="nav-div"></div>
     <a class="nav-item" href="/" target="_blank">
       <span class="nav-icon"><i data-lucide="external-link" class="licon"></i></span> Xem website
     </a>
@@ -705,6 +727,144 @@ tr.p-selected td{background:#fffbea}
       </div>
 
     </div><!-- /tab-agent -->
+
+    <!-- SHOPEE -->
+    <div id="tab-shopee" style="display:none">
+      <div class="ph">
+        <div><div class="ph-title">Kho Shopee</div><div class="ph-sub" id="shopeeCount">—</div></div>
+        <div class="ph-actions">
+          <button class="btn-primary" onclick="openShopeeModal()">+ Thêm sản phẩm</button>
+        </div>
+      </div>
+
+      <!-- Rates settings -->
+      <details class="tcard" style="padding:16px;margin-bottom:14px" id="shopeeRatesCard">
+        <summary style="cursor:pointer;font-weight:600;font-size:13px;color:#252b42;user-select:none">
+          ⚙️ Tỷ lệ tính giá &amp; phí sàn Shopee
+        </summary>
+        <div class="sp-rates">
+          <div class="sp-rate-item"><label>Lãi ròng/SP (%)</label><input type="number" id="sr_laiRong" value="80" step="0.1" onchange="renderShopee(allShopee)"></div>
+          <div class="sp-rate-item"><label>Markup Shopee (%)</label><input type="number" id="sr_markup" value="55" step="0.1" onchange="renderShopee(allShopee)"></div>
+          <div class="sp-rate-item"><label>Phí cố định (%)</label><input type="number" id="sr_phiCD" value="16" step="0.1" onchange="renderShopee(allShopee)"></div>
+          <div class="sp-rate-item"><label>Phí hạ tầng (₫ cố định)</label><input type="number" id="sr_phiHT" value="3000" step="100" onchange="renderShopee(allShopee)"></div>
+          <div class="sp-rate-item"><label>Phí thanh toán (%)</label><input type="number" id="sr_phiTT" value="4.9" step="0.1" onchange="renderShopee(allShopee)"></div>
+          <div class="sp-rate-item"><label>PiShip (₫ cố định)</label><input type="number" id="sr_piShip" value="1620" step="10" onchange="renderShopee(allShopee)"></div>
+          <div class="sp-rate-item"><label>Freeship Xtra (%)</label><input type="number" id="sr_freeship" value="4" step="0.1" onchange="renderShopee(allShopee)"></div>
+          <div class="sp-rate-item"><label>Freeship tối đa (₫)</label><input type="number" id="sr_freeshCap" value="50000" step="1000" onchange="renderShopee(allShopee)"></div>
+        </div>
+      </details>
+
+      <!-- Summary bar -->
+      <div class="sp-sum-bar" id="shopeeSumBar" style="display:none">
+        <div class="sp-sum-item"><span class="sp-sum-label">Số sản phẩm</span><span class="sp-sum-val" id="ss-count">—</span></div>
+        <div class="sp-sum-item"><span class="sp-sum-label">TB Giá Shopee</span><span class="sp-sum-val" id="ss-avgShopee">—</span></div>
+        <div class="sp-sum-item"><span class="sp-sum-label">TB Lợi nhuận</span><span class="sp-sum-val" id="ss-avgLN">—</span></div>
+        <div class="sp-sum-item"><span class="sp-sum-label">TB % LN</span><span class="sp-sum-val" id="ss-avgPct">—</span></div>
+      </div>
+
+      <!-- Category tabs -->
+      <div class="cat-tab-bar" id="shopeeTabBar">
+        <button class="cat-tab active" data-cat="" onclick="setShopeeTab('')">Tất cả</button>
+        <button class="cat-tab" data-cat="phuoc-giam-xoc" onclick="setShopeeTab('phuoc-giam-xoc')">Phuộc / Giảm xóc</button>
+        <button class="cat-tab" data-cat="dia-phanh" onclick="setShopeeTab('dia-phanh')">Đĩa phanh</button>
+        <button class="cat-tab" data-cat="he-thong-treo" onclick="setShopeeTab('he-thong-treo')">Hệ thống treo</button>
+        <button class="cat-tab" data-cat="day-chang" onclick="setShopeeTab('day-chang')">Dây chằng</button>
+        <button class="cat-tab" data-cat="loc-gio" onclick="setShopeeTab('loc-gio')">Lọc gió</button>
+        <button class="cat-tab" data-cat="nhien-lieu" onclick="setShopeeTab('nhien-lieu')">Nhiên liệu</button>
+        <button class="cat-tab" data-cat="khac" onclick="setShopeeTab('khac')">Khác</button>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <input class="search-input" placeholder="Tìm tên SP, dòng xe..." oninput="shopeeSearch(this.value)" id="shopeeSearchInp">
+      </div>
+
+      <!-- Table -->
+      <div class="tcard" style="overflow:visible">
+        <div style="overflow-x:auto">
+          <table class="sp-tbl">
+            <thead><tr>
+              <th>Dòng xe</th>
+              <th>Tên sản phẩm</th>
+              <th style="text-align:right">Nhập 1 BÊN</th>
+              <th style="text-align:right">Nhập 1 CẶP</th>
+              <th style="text-align:right">Niêm yết CH</th>
+              <th style="text-align:right">Giá SHOPEE</th>
+              <th style="text-align:right">Tổng phí</th>
+              <th style="text-align:right">Lợi nhuận</th>
+              <th style="text-align:right">% LN</th>
+              <th></th>
+            </tr></thead>
+            <tbody id="shopeeBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /tab-shopee -->
+
+    <!-- SHOPEE MODAL -->
+    <div class="modal-overlay" id="shopeeModalOverlay" onclick="if(event.target===this)closeShopeeModal()">
+      <div class="modal" style="max-width:480px">
+        <div class="modal-header">
+          <span class="modal-title" id="shopeeModalTitle">Thêm sản phẩm Shopee</span>
+          <button class="modal-close" onclick="closeShopeeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="frow">
+            <div class="fgroup" style="flex:1">
+              <label class="flabel">Danh mục *</label>
+              <select class="finput" id="sm_cat">
+                <option value="phuoc-giam-xoc">Phuộc / Giảm xóc</option>
+                <option value="dia-phanh">Đĩa phanh</option>
+                <option value="he-thong-treo">Hệ thống treo</option>
+                <option value="day-chang">Dây chằng</option>
+                <option value="loc-gio">Lọc gió</option>
+                <option value="nhien-lieu">Nhiên liệu</option>
+                <option value="khac">Khác</option>
+              </select>
+            </div>
+            <div class="fgroup" style="flex:1">
+              <label class="flabel">Dòng xe</label>
+              <input class="finput" id="sm_dongXe" placeholder="VD: SUZUKI, TOYOTA...">
+            </div>
+          </div>
+          <div class="fgroup">
+            <label class="flabel">Tên sản phẩm *</label>
+            <input class="finput" id="sm_tenSP" placeholder="VD: Phuộc giảm xóc sau ERTIGA XL7">
+          </div>
+          <div class="fgroup">
+            <label class="flabel">Giá nhập 1 BÊN (₫) *</label>
+            <input class="finput" type="number" id="sm_giaNhap" placeholder="0" min="0" oninput="updateShopeePreview()">
+          </div>
+          <!-- Live preview -->
+          <div id="shopeePreview" style="background:#f9fafb;border:1.5px solid #e5e5e5;border-radius:10px;padding:14px;margin-top:4px;display:none">
+            <div style="font-size:11px;font-weight:700;color:#a0a0a0;text-transform:uppercase;margin-bottom:10px">Xem trước kết quả</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12.5px">
+              <span style="color:#737373">Giá nhập 1 CẶP:</span><span id="pv_cap" style="text-align:right;font-weight:600">—</span>
+              <span style="color:#737373">Giá niêm yết CH:</span><span id="pv_niemYet" style="text-align:right;font-weight:600">—</span>
+              <span style="color:#737373">Giá bán SHOPEE:</span><span id="pv_shopee" style="text-align:right;font-weight:700;color:#e05c00;font-size:14px">—</span>
+              <span style="color:#737373">Tổng phí sàn:</span><span id="pv_phi" style="text-align:right;color:#dc2626">—</span>
+              <span style="color:#737373">Lợi nhuận:</span><span id="pv_ln" style="text-align:right;font-weight:700;font-size:14px">—</span>
+              <span style="color:#737373">Tỷ lệ LN:</span><span id="pv_pct" style="text-align:right;font-weight:700">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-ghost" onclick="closeShopeeModal()">Huỷ</button>
+          <button class="btn-primary" onclick="saveShopeeItem()">Lưu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHOPEE FEE DETAIL MODAL -->
+    <div class="modal-overlay" id="shopeeDetailOverlay" onclick="if(event.target===this)closeShopeeDetail()">
+      <div class="modal" style="max-width:420px">
+        <div class="modal-header">
+          <span class="modal-title" id="shopeeDetailTitle">Chi tiết phí sàn</span>
+          <button class="modal-close" onclick="closeShopeeDetail()">✕</button>
+        </div>
+        <div class="modal-body" id="shopeeDetailBody"></div>
+      </div>
+    </div>
 
   </main>
 </div>
@@ -1090,7 +1250,7 @@ async function startAdmin(user) {
 //  NAV 
 
 function showTab(name) {
-  ;['dashboard','products','posts','agent'].forEach(t => {
+  ;['dashboard','products','posts','agent','shopee'].forEach(t => {
     document.getElementById('tab-' + t).style.display = t === name ? '' : 'none'
     const nav = document.getElementById('nav-' + t)
     if (nav) nav.classList.toggle('active', t === name)
@@ -1098,6 +1258,7 @@ function showTab(name) {
   if (name === 'products' && !allP.length)  loadProducts()
   if (name === 'posts'    && !allPo.length) loadPosts()
   if (name === 'agent')                      initAgentTab()
+  if (name === 'shopee'   && !allShopee.length) loadShopee()
 }
 
 //  REFERENCE DATA 
@@ -3448,6 +3609,234 @@ function logAgentEntry(type, name, msg) {
 document.addEventListener('change', e => {
   if (e.target.name === 'agentScope') updateAgentScopeCounts()
 })
+
+// ─── SHOPEE KHO ────────────────────────────────────────────────────────────
+
+let allShopee = []
+let shopeeEditId = null
+let shopeeCurCat = ''
+let shopeeQ = ''
+
+const SHOPEE_CAT_LABELS = {
+  'phuoc-giam-xoc': 'Phuộc / Giảm xóc',
+  'dia-phanh':      'Đĩa phanh',
+  'he-thong-treo':  'Hệ thống treo',
+  'day-chang':      'Dây chằng',
+  'loc-gio':        'Lọc gió',
+  'nhien-lieu':     'Nhiên liệu',
+  'khac':           'Khác',
+}
+
+function getSRates() {
+  const n = id => parseFloat(document.getElementById(id)?.value) || 0
+  return {
+    laiRong:   n('sr_laiRong')   / 100,
+    markup:    n('sr_markup')    / 100,
+    phiCoDinh: n('sr_phiCD')    / 100,
+    phiHaTang: n('sr_phiHT'),
+    phiThanhToan: n('sr_phiTT') / 100,
+    piShip:    n('sr_piShip'),
+    freeship:  n('sr_freeship') / 100,
+    freeshCap: n('sr_freeshCap'),
+  }
+}
+
+function calcSP(gia1Ben) {
+  const r = getSRates()
+  const cap      = gia1Ben * 2
+  const laiRong  = cap * r.laiRong
+  const niemYet  = cap + laiRong
+  const shopee   = niemYet * (1 + r.markup)
+  const phiCD    = shopee * r.phiCoDinh
+  const phiHT    = r.phiHaTang
+  const phiTT    = shopee * r.phiThanhToan
+  const piship   = r.piShip
+  const freeship = Math.min(shopee * r.freeship, r.freeshCap)
+  const tongPhi  = phiCD + phiHT + phiTT + piship + freeship
+  const sauPhi   = shopee - tongPhi
+  const loiNhuan = sauPhi - cap
+  return { cap, laiRong, niemYet, shopee, phiCD, phiHT, phiTT, piship, freeship, tongPhi, sauPhi, loiNhuan,
+           pctLN: shopee > 0 ? loiNhuan / shopee : 0 }
+}
+
+async function loadShopee() {
+  document.getElementById('shopeeCount').textContent = 'Đang tải...'
+  const { data, error } = await db.from('shopee_products').select('*').order('created_at', { ascending: false })
+  allShopee = data || []
+  renderShopee(filteredShopee())
+}
+
+function filteredShopee() {
+  return allShopee.filter(p => {
+    const matchCat = !shopeeCurCat || p.category === shopeeCurCat
+    const q = shopeeQ.toLowerCase()
+    const matchQ = !q || p.ten_san_pham?.toLowerCase().includes(q) || p.dong_xe?.toLowerCase().includes(q)
+    return matchCat && matchQ
+  })
+}
+
+function renderShopee(list) {
+  document.getElementById('shopeeCount').textContent = `${list.length} sản phẩm`
+  const tbody = document.getElementById('shopeeBody')
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty"><div class="empty-icon"><i data-lucide="shopping-bag" style="width:32px;height:32px;stroke-width:1.5"></i></div><p>Chưa có sản phẩm nào</p></div></td></tr>`
+    document.getElementById('shopeeSumBar').style.display = 'none'
+    if (window.lucide) lucide.createIcons()
+    return
+  }
+
+  // Summary bar
+  const calcs = list.map(p => calcSP(p.gia_nhap_1_ben))
+  const avgShopee = calcs.reduce((s, c) => s + c.shopee, 0) / calcs.length
+  const avgLN     = calcs.reduce((s, c) => s + c.loiNhuan, 0) / calcs.length
+  const avgPct    = calcs.reduce((s, c) => s + c.pctLN, 0) / calcs.length
+  document.getElementById('ss-count').textContent   = list.length
+  document.getElementById('ss-avgShopee').textContent = fmtP(Math.round(avgShopee))
+  document.getElementById('ss-avgLN').textContent   = fmtP(Math.round(avgLN))
+  document.getElementById('ss-avgPct').textContent  = (avgPct * 100).toFixed(1) + '%'
+  document.getElementById('shopeeSumBar').style.display = ''
+
+  tbody.innerHTML = list.map((p, i) => {
+    const c = calcs[i]
+    const lnCls = c.loiNhuan >= 0 ? 'sp-ln-pos' : 'sp-ln-neg'
+    const catLabel = SHOPEE_CAT_LABELS[p.category] || p.category
+    return `<tr class="p-row" data-id="${p.id}">
+      <td><span class="chip" style="background:#f0f4ff;color:#3730a3">${esc(p.dong_xe || '—')}</span></td>
+      <td>
+        <div class="rname">${esc(p.ten_san_pham)}</div>
+        <div class="rmeta"><span class="chip">${catLabel}</span></div>
+      </td>
+      <td class="num">${fmtP(p.gia_nhap_1_ben)}</td>
+      <td class="num">${fmtP(c.cap)}</td>
+      <td class="num" style="color:#737373">${fmtP(Math.round(c.niemYet))}</td>
+      <td class="num" style="font-weight:700;color:#e05c00">${fmtP(Math.round(c.shopee))}</td>
+      <td class="num" style="color:#dc2626">${fmtP(Math.round(c.tongPhi))}</td>
+      <td class="num ${lnCls}">${fmtP(Math.round(c.loiNhuan))}</td>
+      <td class="num ${lnCls}">${(c.pctLN * 100).toFixed(1)}%</td>
+      <td class="sp-actions">
+        <button class="btn-ghost" onclick="showShopeeDetail('${p.id}')" title="Chi tiết phí" style="display:inline-flex;align-items:center"><i data-lucide="info" style="width:14px;height:14px;stroke-width:2"></i></button>
+        <button class="btn-ghost" onclick="openShopeeModal('${p.id}')" title="Sửa" style="display:inline-flex;align-items:center"><i data-lucide="pencil" style="width:14px;height:14px;stroke-width:2"></i></button>
+        <button class="btn-del"   onclick="deleteShopeeItem('${p.id}','${esc(p.ten_san_pham)}')" title="Xoá" style="display:inline-flex;align-items:center"><i data-lucide="trash-2" style="width:14px;height:14px;stroke-width:2"></i></button>
+      </td>
+    </tr>`
+  }).join('')
+  if (window.lucide) lucide.createIcons()
+}
+
+function setShopeeTab(cat) {
+  shopeeCurCat = cat
+  document.querySelectorAll('#shopeeTabBar .cat-tab').forEach(el => el.classList.toggle('active', el.dataset.cat === cat))
+  renderShopee(filteredShopee())
+}
+
+function shopeeSearch(val) {
+  shopeeQ = val
+  renderShopee(filteredShopee())
+}
+
+function openShopeeModal(id) {
+  shopeeEditId = id || null
+  const p = id ? allShopee.find(x => x.id === id) : null
+  document.getElementById('shopeeModalTitle').textContent = p ? 'Sửa sản phẩm Shopee' : 'Thêm sản phẩm Shopee'
+  document.getElementById('sm_cat').value    = p?.category || 'phuoc-giam-xoc'
+  document.getElementById('sm_dongXe').value = p?.dong_xe  || ''
+  document.getElementById('sm_tenSP').value  = p?.ten_san_pham || ''
+  document.getElementById('sm_giaNhap').value = p?.gia_nhap_1_ben || ''
+  updateShopeePreview()
+  document.getElementById('shopeeModalOverlay').style.display = 'flex'
+}
+
+function closeShopeeModal() {
+  document.getElementById('shopeeModalOverlay').style.display = 'none'
+  document.getElementById('shopeePreview').style.display = 'none'
+}
+
+function updateShopeePreview() {
+  const gia = parseFloat(document.getElementById('sm_giaNhap').value)
+  const prev = document.getElementById('shopeePreview')
+  if (!gia || gia <= 0) { prev.style.display = 'none'; return }
+  const c = calcSP(gia)
+  prev.style.display = ''
+  document.getElementById('pv_cap').textContent    = fmtP(c.cap)
+  document.getElementById('pv_niemYet').textContent = fmtP(Math.round(c.niemYet))
+  document.getElementById('pv_shopee').textContent  = fmtP(Math.round(c.shopee))
+  document.getElementById('pv_phi').textContent    = fmtP(Math.round(c.tongPhi))
+  const lnEl = document.getElementById('pv_ln')
+  lnEl.textContent  = fmtP(Math.round(c.loiNhuan))
+  lnEl.style.color  = c.loiNhuan >= 0 ? '#15803d' : '#dc2626'
+  const pctEl = document.getElementById('pv_pct')
+  pctEl.textContent = (c.pctLN * 100).toFixed(1) + '%'
+  pctEl.style.color = c.loiNhuan >= 0 ? '#15803d' : '#dc2626'
+}
+
+async function saveShopeeItem() {
+  const cat   = document.getElementById('sm_cat').value
+  const dongXe = document.getElementById('sm_dongXe').value.trim().toUpperCase()
+  const tenSP = document.getElementById('sm_tenSP').value.trim()
+  const gia   = parseFloat(document.getElementById('sm_giaNhap').value)
+  if (!tenSP || !gia) { toast('Nhập đầy đủ tên sản phẩm và giá nhập', 'err'); return }
+
+  const payload = { category: cat, dong_xe: dongXe, ten_san_pham: tenSP, gia_nhap_1_ben: gia }
+  let error
+  if (shopeeEditId) {
+    ;({ error } = await db.from('shopee_products').update(payload).eq('id', shopeeEditId))
+  } else {
+    ;({ error } = await db.from('shopee_products').insert(payload))
+  }
+  if (error) { toast('Lỗi lưu: ' + error.message, 'err'); return }
+  toast(shopeeEditId ? 'Đã cập nhật' : 'Đã thêm sản phẩm', 'ok')
+  closeShopeeModal()
+  allShopee = []
+  await loadShopee()
+}
+
+async function deleteShopeeItem(id, name) {
+  if (!confirm(`Xoá "${name}"?`)) return
+  const { error } = await db.from('shopee_products').delete().eq('id', id)
+  if (error) { toast('Lỗi xoá', 'err'); return }
+  toast('Đã xoá', 'ok')
+  allShopee = allShopee.filter(p => p.id !== id)
+  renderShopee(filteredShopee())
+}
+
+function showShopeeDetail(id) {
+  const p = allShopee.find(x => x.id === id)
+  if (!p) return
+  const c = calcSP(p.gia_nhap_1_ben)
+  document.getElementById('shopeeDetailTitle').textContent = p.ten_san_pham
+  const row = (label, val, cls='') => `<tr><td style="color:#737373;font-size:12.5px;padding:6px 0">${label}</td><td style="text-align:right;font-weight:600;font-size:12.5px;padding:6px 0" class="${cls}">${val}</td></tr>`
+  document.getElementById('shopeeDetailBody').innerHTML = `
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr><th colspan="2" style="text-align:left;font-size:11px;color:#a0a0a0;padding:0 0 8px;text-transform:uppercase">Cấu trúc giá</th></tr></thead>
+      <tbody>
+        ${row('Giá nhập 1 BÊN', fmtP(p.gia_nhap_1_ben))}
+        ${row('Giá nhập 1 CẶP', fmtP(c.cap))}
+        ${row('Lãi ròng/SP', fmtP(Math.round(c.laiRong)))}
+        ${row('Giá niêm yết cửa hàng', fmtP(Math.round(c.niemYet)))}
+        ${row('Giá bán SHOPEE', fmtP(Math.round(c.shopee)), 'sp-ln-pos')}
+      </tbody>
+      <thead><tr><th colspan="2" style="text-align:left;font-size:11px;color:#a0a0a0;padding:14px 0 8px;text-transform:uppercase">Phí sàn Shopee</th></tr></thead>
+      <tbody>
+        ${row('Phí cố định (16%)', fmtP(Math.round(c.phiCD)))}
+        ${row('Phí hạ tầng', fmtP(c.phiHT))}
+        ${row('Phí thanh toán (4.9%)', fmtP(Math.round(c.phiTT)))}
+        ${row('PiShip', fmtP(c.piship))}
+        ${row('Phí Freeship Xtra & Voucher', fmtP(Math.round(c.freeship)))}
+        ${row('Tổng phí sàn', fmtP(Math.round(c.tongPhi)), 'sp-ln-neg')}
+      </tbody>
+      <thead><tr><th colspan="2" style="text-align:left;font-size:11px;color:#a0a0a0;padding:14px 0 8px;text-transform:uppercase">Kết quả</th></tr></thead>
+      <tbody>
+        ${row('Sau khi trừ phí sàn', fmtP(Math.round(c.sauPhi)))}
+        ${row('Lợi nhuận thực nhận', fmtP(Math.round(c.loiNhuan)), c.loiNhuan >= 0 ? 'sp-ln-pos' : 'sp-ln-neg')}
+        ${row('% Lợi nhuận / Shopee', (c.pctLN * 100).toFixed(2) + '%', c.loiNhuan >= 0 ? 'sp-ln-pos' : 'sp-ln-neg')}
+      </tbody>
+    </table>`
+  document.getElementById('shopeeDetailOverlay').style.display = 'flex'
+}
+
+function closeShopeeDetail() {
+  document.getElementById('shopeeDetailOverlay').style.display = 'none'
+}
 </script>
 
 <!--  Right Drawer  -->
