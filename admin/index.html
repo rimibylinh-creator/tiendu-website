@@ -751,6 +751,9 @@ tr.p-selected td{background:#fffbea}
           <div class="sp-rate-item"><label>PiShip (₫ cố định)</label><input type="number" id="sr_piShip" value="1620" step="10" onchange="renderShopee(allShopee)"></div>
           <div class="sp-rate-item"><label>Freeship Xtra (%)</label><input type="number" id="sr_freeship" value="4" step="0.1" onchange="renderShopee(allShopee)"></div>
           <div class="sp-rate-item"><label>Freeship tối đa (₫)</label><input type="number" id="sr_freeshCap" value="50000" step="1000" onchange="renderShopee(allShopee)"></div>
+          <div class="sp-rate-item"><label>Phí vận hành (%)</label><input type="number" id="sr_vanHanh" value="5" step="0.1" onchange="renderShopee(allShopee)"></div>
+          <div class="sp-rate-item"><label>Phí duy trì Shop (%)</label><input type="number" id="sr_duyTri" value="10" step="0.1" onchange="renderShopee(allShopee)"></div>
+          <div class="sp-rate-item"><label>Duy trì tối đa (₫)</label><input type="number" id="sr_duyTriCap" value="50000" step="1000" onchange="renderShopee(allShopee)"></div>
         </div>
       </details>
 
@@ -3638,6 +3641,9 @@ function getSRates() {
     piShip:    n('sr_piShip'),
     freeship:  n('sr_freeship') / 100,
     freeshCap: n('sr_freeshCap'),
+    vanHanh:   n('sr_vanHanh')  / 100,
+    duyTri:    n('sr_duyTri')   / 100,
+    duyTriCap: n('sr_duyTriCap'),
   }
 }
 
@@ -3651,11 +3657,13 @@ function calcSP(gia1Ben, isPair = false) {
   const phiHT    = r.phiHaTang
   const phiTT    = shopee * r.phiThanhToan
   const piship   = r.piShip
-  const freeship = Math.min(shopee * r.freeship, r.freeshCap)
-  const tongPhi  = phiCD + phiHT + phiTT + piship + freeship
+  const freeship    = Math.min(shopee * r.freeship, r.freeshCap)
+  const phiVanHanh  = shopee * r.vanHanh
+  const phiDuyTri   = Math.min(shopee * r.duyTri, r.duyTriCap)
+  const tongPhi  = phiCD + phiHT + phiTT + piship + freeship + phiVanHanh + phiDuyTri
   const sauPhi   = shopee - tongPhi
   const loiNhuan = sauPhi - cap
-  return { cap, laiRong, niemYet, shopee, phiCD, phiHT, phiTT, piship, freeship, tongPhi, sauPhi, loiNhuan,
+  return { cap, laiRong, niemYet, shopee, phiCD, phiHT, phiTT, piship, freeship, phiVanHanh, phiDuyTri, tongPhi, sauPhi, loiNhuan,
            pctLN: shopee > 0 ? loiNhuan / shopee : 0 }
 }
 
@@ -3820,6 +3828,8 @@ function showShopeeDetail(id) {
         ${row('Phí thanh toán (4.9%)', fmtP(Math.round(c.phiTT)))}
         ${row('PiShip', fmtP(c.piship))}
         ${row('Phí Freeship Xtra & Voucher', fmtP(Math.round(c.freeship)))}
+        ${row('Phí vận hành (5%)', fmtP(Math.round(c.phiVanHanh)))}
+        ${row('Phí duy trì Shop (tối đa 50k)', fmtP(Math.round(c.phiDuyTri)))}
         ${row('Tổng phí sàn', fmtP(Math.round(c.tongPhi)), 'sp-ln-neg')}
       </tbody>
       <thead><tr><th colspan="2" style="text-align:left;font-size:11px;color:#a0a0a0;padding:14px 0 8px;text-transform:uppercase">Kết quả</th></tr></thead>
