@@ -737,23 +737,35 @@ tr.p-selected td{background:#fffbea}
         </div>
       </div>
 
-      <!-- Rates settings -->
-      <details class="tcard" style="padding:16px;margin-bottom:14px" id="shopeeRatesCard">
-        <summary style="cursor:pointer;font-weight:600;font-size:13px;color:#252b42;user-select:none">
-          ⚙️ Tỷ lệ tính giá &amp; phí sàn Shopee
+      <!-- Category tabs (đầu tiên) -->
+      <div class="cat-tab-bar" id="shopeeTabBar" style="margin-bottom:14px">
+        <button class="cat-tab active" data-cat="" onclick="setShopeeTab('')">Tất cả</button>
+        <button class="cat-tab" data-cat="phuoc-giam-xoc" onclick="setShopeeTab('phuoc-giam-xoc')">Phuộc / Giảm xóc</button>
+        <button class="cat-tab" data-cat="dia-phanh" onclick="setShopeeTab('dia-phanh')">Đĩa phanh</button>
+        <button class="cat-tab" data-cat="he-thong-treo" onclick="setShopeeTab('he-thong-treo')">Hệ thống treo</button>
+        <button class="cat-tab" data-cat="day-chang" onclick="setShopeeTab('day-chang')">Dây chằng</button>
+        <button class="cat-tab" data-cat="loc-gio" onclick="setShopeeTab('loc-gio')">Lọc gió</button>
+        <button class="cat-tab" data-cat="nhien-lieu" onclick="setShopeeTab('nhien-lieu')">Nhiên liệu</button>
+        <button class="cat-tab" data-cat="khac" onclick="setShopeeTab('khac')">Khác</button>
+      </div>
+
+      <!-- Rates settings (per-category, ẩn khi tab Tất cả) -->
+      <details class="tcard" style="padding:16px;margin-bottom:14px;display:none" id="shopeeRatesCard">
+        <summary id="shopeeRatesLabel" style="cursor:pointer;font-weight:600;font-size:13px;color:#252b42;user-select:none">
+          ⚙️ Tỷ lệ tính giá — Phuộc / Giảm xóc
         </summary>
         <div class="sp-rates">
-          <div class="sp-rate-item"><label>Lãi ròng/SP (%)</label><input type="number" id="sr_laiRong" value="80" step="0.1" onchange="renderShopee(allShopee)"></div>
-          <div class="sp-rate-item"><label>Markup Shopee (%)</label><input type="number" id="sr_markup" value="55" step="0.1" onchange="renderShopee(allShopee)"></div>
-          <div class="sp-rate-item"><label>Phí cố định (%)</label><input type="number" id="sr_phiCD" value="16" step="0.1" onchange="renderShopee(allShopee)"></div>
-          <div class="sp-rate-item"><label>Phí hạ tầng (₫ cố định)</label><input type="number" id="sr_phiHT" value="3000" step="100" onchange="renderShopee(allShopee)"></div>
-          <div class="sp-rate-item"><label>Phí thanh toán (%)</label><input type="number" id="sr_phiTT" value="4.9" step="0.1" onchange="renderShopee(allShopee)"></div>
-          <div class="sp-rate-item"><label>PiShip (₫ cố định)</label><input type="number" id="sr_piShip" value="1620" step="10" onchange="renderShopee(allShopee)"></div>
-          <div class="sp-rate-item"><label>Freeship Xtra (%)</label><input type="number" id="sr_freeship" value="4" step="0.1" onchange="renderShopee(allShopee)"></div>
-          <div class="sp-rate-item"><label>Freeship tối đa (₫)</label><input type="number" id="sr_freeshCap" value="50000" step="1000" onchange="renderShopee(allShopee)"></div>
-          <div class="sp-rate-item"><label>Phí vận hành (%)</label><input type="number" id="sr_vanHanh" value="5" step="0.1" onchange="renderShopee(allShopee)"></div>
-          <div class="sp-rate-item"><label>Phí duy trì Shop (%)</label><input type="number" id="sr_duyTri" value="10" step="0.1" onchange="renderShopee(allShopee)"></div>
-          <div class="sp-rate-item"><label>Duy trì tối đa (₫)</label><input type="number" id="sr_duyTriCap" value="50000" step="1000" onchange="renderShopee(allShopee)"></div>
+          <div class="sp-rate-item"><label>Lãi ròng/SP (%)</label><input type="number" id="sr_laiRong" value="80" step="0.1" onchange="onRateChange()"></div>
+          <div class="sp-rate-item"><label>Markup Shopee (%)</label><input type="number" id="sr_markup" value="55" step="0.1" onchange="onRateChange()"></div>
+          <div class="sp-rate-item"><label>Phí cố định (%)</label><input type="number" id="sr_phiCD" value="16" step="0.1" onchange="onRateChange()"></div>
+          <div class="sp-rate-item"><label>Phí hạ tầng (₫ cố định)</label><input type="number" id="sr_phiHT" value="3000" step="100" onchange="onRateChange()"></div>
+          <div class="sp-rate-item"><label>Phí thanh toán (%)</label><input type="number" id="sr_phiTT" value="4.9" step="0.1" onchange="onRateChange()"></div>
+          <div class="sp-rate-item"><label>PiShip (₫ cố định)</label><input type="number" id="sr_piShip" value="1620" step="10" onchange="onRateChange()"></div>
+          <div class="sp-rate-item"><label>Freeship Xtra (%)</label><input type="number" id="sr_freeship" value="4" step="0.1" onchange="onRateChange()"></div>
+          <div class="sp-rate-item"><label>Freeship tối đa (₫)</label><input type="number" id="sr_freeshCap" value="50000" step="1000" onchange="onRateChange()"></div>
+          <div class="sp-rate-item"><label>Phí vận hành (%)</label><input type="number" id="sr_vanHanh" value="5" step="0.1" onchange="onRateChange()"></div>
+          <div class="sp-rate-item"><label>Phí duy trì Shop (%)</label><input type="number" id="sr_duyTri" value="10" step="0.1" onchange="onRateChange()"></div>
+          <div class="sp-rate-item"><label>Duy trì tối đa (₫)</label><input type="number" id="sr_duyTriCap" value="50000" step="1000" onchange="onRateChange()"></div>
         </div>
       </details>
 
@@ -763,18 +775,6 @@ tr.p-selected td{background:#fffbea}
         <div class="sp-sum-item"><span class="sp-sum-label">TB Giá Shopee</span><span class="sp-sum-val" id="ss-avgShopee">—</span></div>
         <div class="sp-sum-item"><span class="sp-sum-label">TB Lợi nhuận</span><span class="sp-sum-val" id="ss-avgLN">—</span></div>
         <div class="sp-sum-item"><span class="sp-sum-label">TB % LN</span><span class="sp-sum-val" id="ss-avgPct">—</span></div>
-      </div>
-
-      <!-- Category tabs -->
-      <div class="cat-tab-bar" id="shopeeTabBar">
-        <button class="cat-tab active" data-cat="" onclick="setShopeeTab('')">Tất cả</button>
-        <button class="cat-tab" data-cat="phuoc-giam-xoc" onclick="setShopeeTab('phuoc-giam-xoc')">Phuộc / Giảm xóc</button>
-        <button class="cat-tab" data-cat="dia-phanh" onclick="setShopeeTab('dia-phanh')">Đĩa phanh</button>
-        <button class="cat-tab" data-cat="he-thong-treo" onclick="setShopeeTab('he-thong-treo')">Hệ thống treo</button>
-        <button class="cat-tab" data-cat="day-chang" onclick="setShopeeTab('day-chang')">Dây chằng</button>
-        <button class="cat-tab" data-cat="loc-gio" onclick="setShopeeTab('loc-gio')">Lọc gió</button>
-        <button class="cat-tab" data-cat="nhien-lieu" onclick="setShopeeTab('nhien-lieu')">Nhiên liệu</button>
-        <button class="cat-tab" data-cat="khac" onclick="setShopeeTab('khac')">Khác</button>
       </div>
 
       <!-- Toolbar -->
@@ -3630,25 +3630,79 @@ const SHOPEE_CAT_LABELS = {
   'khac':           'Khác',
 }
 
-function getSRates() {
-  const n = id => parseFloat(document.getElementById(id)?.value) || 0
+// [id, defaultValue] cho mỗi input tỷ lệ
+const SHOPEE_RATE_FIELDS = [
+  ['sr_laiRong',   80   ],
+  ['sr_markup',    55   ],
+  ['sr_phiCD',     16   ],
+  ['sr_phiHT',     3000 ],
+  ['sr_phiTT',     4.9  ],
+  ['sr_piShip',    1620 ],
+  ['sr_freeship',  4    ],
+  ['sr_freeshCap', 50000],
+  ['sr_vanHanh',   5    ],
+  ['sr_duyTri',    10   ],
+  ['sr_duyTriCap', 50000],
+]
+
+function defaultRates() {
+  const r = {}
+  SHOPEE_RATE_FIELDS.forEach(([id, def]) => { r[id] = def })
+  return r
+}
+
+// Rates riêng từng category, persist qua localStorage
+let shopeeRatesPerCat = {}
+Object.keys(SHOPEE_CAT_LABELS).forEach(cat => {
+  try {
+    const s = localStorage.getItem('shopee_rates_' + cat)
+    shopeeRatesPerCat[cat] = s ? JSON.parse(s) : defaultRates()
+  } catch { shopeeRatesPerCat[cat] = defaultRates() }
+})
+
+function saveCurrentRates() {
+  if (!shopeeCurCat) return
+  const raw = {}
+  SHOPEE_RATE_FIELDS.forEach(([id]) => { raw[id] = parseFloat(document.getElementById(id)?.value) || 0 })
+  shopeeRatesPerCat[shopeeCurCat] = raw
+  try { localStorage.setItem('shopee_rates_' + shopeeCurCat, JSON.stringify(raw)) } catch {}
+}
+
+function loadRatesIntoInputs(cat) {
+  const raw = shopeeRatesPerCat[cat] || defaultRates()
+  SHOPEE_RATE_FIELDS.forEach(([id, def]) => {
+    const el = document.getElementById(id)
+    if (el) el.value = raw[id] ?? def
+  })
+}
+
+function ratesFromRaw(raw) {
+  const n = id => raw ? (parseFloat(raw[id]) || 0) : (parseFloat(document.getElementById(id)?.value) || 0)
   return {
-    laiRong:   n('sr_laiRong')   / 100,
-    markup:    n('sr_markup')    / 100,
-    phiCoDinh: n('sr_phiCD')    / 100,
-    phiHaTang: n('sr_phiHT'),
-    phiThanhToan: n('sr_phiTT') / 100,
-    piShip:    n('sr_piShip'),
-    freeship:  n('sr_freeship') / 100,
-    freeshCap: n('sr_freeshCap'),
-    vanHanh:   n('sr_vanHanh')  / 100,
-    duyTri:    n('sr_duyTri')   / 100,
-    duyTriCap: n('sr_duyTriCap'),
+    laiRong:      n('sr_laiRong')   / 100,
+    markup:       n('sr_markup')    / 100,
+    phiCoDinh:    n('sr_phiCD')     / 100,
+    phiHaTang:    n('sr_phiHT'),
+    phiThanhToan: n('sr_phiTT')     / 100,
+    piShip:       n('sr_piShip'),
+    freeship:     n('sr_freeship')  / 100,
+    freeshCap:    n('sr_freeshCap'),
+    vanHanh:      n('sr_vanHanh')   / 100,
+    duyTri:       n('sr_duyTri')    / 100,
+    duyTriCap:    n('sr_duyTriCap'),
   }
 }
 
-function calcSP(gia1Ben, isPair = false) {
-  const r = getSRates()
+function getSRates()         { return ratesFromRaw(null) }
+function getRatesForCat(cat) { return ratesFromRaw(shopeeRatesPerCat[cat]) }
+
+function onRateChange() {
+  saveCurrentRates()
+  renderShopee(filteredShopee())
+}
+
+function calcSP(gia1Ben, isPair = false, rates = null) {
+  const r = rates || getSRates()
   const cap      = isPair ? gia1Ben * 2 : gia1Ben
   const laiRong  = cap * r.laiRong
   const niemYet  = cap + laiRong
@@ -3694,7 +3748,7 @@ function renderShopee(list) {
   }
 
   // Summary bar
-  const calcs = list.map(p => calcSP(p.gia_nhap_1_ben, p.category === 'phuoc-giam-xoc'))
+  const calcs = list.map(p => calcSP(p.gia_nhap_1_ben, p.category === 'phuoc-giam-xoc', getRatesForCat(p.category)))
   const avgShopee = calcs.reduce((s, c) => s + c.shopee, 0) / calcs.length
   const avgLN     = calcs.reduce((s, c) => s + c.loiNhuan, 0) / calcs.length
   const avgPct    = calcs.reduce((s, c) => s + c.pctLN, 0) / calcs.length
@@ -3732,8 +3786,17 @@ function renderShopee(list) {
 }
 
 function setShopeeTab(cat) {
+  saveCurrentRates()
   shopeeCurCat = cat
   document.querySelectorAll('#shopeeTabBar .cat-tab').forEach(el => el.classList.toggle('active', el.dataset.cat === cat))
+  const card = document.getElementById('shopeeRatesCard')
+  if (cat) {
+    loadRatesIntoInputs(cat)
+    document.getElementById('shopeeRatesLabel').textContent = '⚙️ Tỷ lệ tính giá — ' + (SHOPEE_CAT_LABELS[cat] || cat)
+    card.style.display = ''
+  } else {
+    card.style.display = 'none'
+  }
   renderShopee(filteredShopee())
 }
 
@@ -3759,8 +3822,9 @@ function updateShopeePreview() {
   const gia = parseFloat(document.getElementById('sm_giaNhap').value)
   const prev = document.getElementById('shopeePreview')
   if (!gia || gia <= 0) { prev.style.display = 'none'; return }
-  const isPair = document.getElementById('sm_cat').value === 'phuoc-giam-xoc'
-  const c = calcSP(gia, isPair)
+  const modalCat = document.getElementById('sm_cat').value
+  const isPair = modalCat === 'phuoc-giam-xoc'
+  const c = calcSP(gia, isPair, modalCat === shopeeCurCat ? getSRates() : getRatesForCat(modalCat))
   prev.style.display = ''
   document.getElementById('pv_cap').textContent    = fmtP(c.cap)
   document.getElementById('pv_niemYet').textContent = fmtP(Math.round(c.niemYet))
@@ -3808,7 +3872,7 @@ function showShopeeDetail(id) {
   const p = allShopee.find(x => x.id === id)
   if (!p) return
   const isPair = p.category === 'phuoc-giam-xoc'
-  const c = calcSP(p.gia_nhap_1_ben, isPair)
+  const c = calcSP(p.gia_nhap_1_ben, isPair, getRatesForCat(p.category))
   document.getElementById('shopeeDetailTitle').textContent = p.ten_san_pham
   const row = (label, val, cls='') => `<tr><td style="color:#737373;font-size:12.5px;padding:6px 0">${label}</td><td style="text-align:right;font-weight:600;font-size:12.5px;padding:6px 0" class="${cls}">${val}</td></tr>`
   document.getElementById('shopeeDetailBody').innerHTML = `
