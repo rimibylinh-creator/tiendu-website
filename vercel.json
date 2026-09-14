@@ -1,4 +1,7 @@
 {
+  "errorCodes": {
+    "503": "/503.html"
+  },
   "redirects": [
     { "source": "/about-us", "destination": "/gioi-thieu.html", "permanent": true },
     { "source": "/about-us/", "destination": "/gioi-thieu.html", "permanent": true },
