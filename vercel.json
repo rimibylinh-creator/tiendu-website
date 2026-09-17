@@ -1,7 +1,4 @@
 {
-  "errorCodes": {
-    "503": "/503.html"
-  },
   "redirects": [
     { "source": "/tra-cuu.html", "destination": "/san-pham.html", "permanent": true },
     { "source": "/about-us", "destination": "/gioi-thieu.html", "permanent": true },
