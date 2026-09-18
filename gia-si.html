@@ -150,70 +150,20 @@
   </div>
 </section>
 
-<!-- ============ PARTNER REGISTRATION FORM ============ -->
+<!-- ============ PARTNER REGISTRATION CTA ============ -->
 <section class="section" style="background:var(--color-white)">
   <div class="section-inner">
     <h2 class="section-title">Đăng ký trở thành đối tác</h2>
-    <div class="partner-form">
-      <h3 class="partner-form-title">Điền thông tin đăng ký</h3>
-      <p class="partner-form-sub">Tiên Du sẽ liên hệ lại trong vòng 24 giờ để xác nhận và tư vấn gói đối tác phù hợp.</p>
-
-      <form id="partnerForm" novalidate>
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label" for="pName">Họ và tên *</label>
-            <input class="form-input" type="text" id="pName" placeholder="Nguyễn Văn A" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="pPhone">Số điện thoại / Zalo *</label>
-            <input class="form-input" type="tel" id="pPhone" placeholder="0946 xxx xxx" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="pEmail">Email</label>
-            <input class="form-input" type="email" id="pEmail" placeholder="email@example.com">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="pBusiness">Tên cơ sở / Garage</label>
-            <input class="form-input" type="text" id="pBusiness" placeholder="Garage Minh Phát">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="pLocation">Tỉnh / Thành phố *</label>
-            <select class="form-input form-select-input" id="pLocation" required>
-              <option value="">Chọn tỉnh thành...</option>
-              <option>Khánh Hòa (Nha Trang)</option>
-              <option>Đà Nẵng</option>
-              <option>TP. Hồ Chí Minh</option>
-              <option>Hà Nội</option>
-              <option>Bình Dương</option>
-              <option>Đồng Nai</option>
-              <option>Cần Thơ</option>
-              <option>Khác</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="pType">Loại hình kinh doanh</label>
-            <select class="form-input form-select-input" id="pType">
-              <option value="">Chọn loại hình...</option>
-              <option>Garage / Gara tư nhân</option>
-              <option>Đại lý phân phối phụ tùng</option>
-              <option>Chuỗi dịch vụ ô tô</option>
-              <option>Xưởng sửa chữa xe tải</option>
-              <option>Khác</option>
-            </select>
-          </div>
-          <div class="form-group full">
-            <label class="form-label" for="pNeed">Nhu cầu & ghi chú</label>
-            <textarea class="form-textarea" id="pNeed" placeholder="Mô tả nhu cầu đặt hàng, loại phụ tùng thường dùng, doanh số dự kiến..."></textarea>
-          </div>
-        </div>
-        <button type="submit" class="btn btn-yellow form-submit">
-          Gửi đăng ký đối tác →
-        </button>
-      </form>
-      <div id="formSuccess" style="display:none; text-align:center; padding:32px">
-        <span style="font-size:48px">✅</span>
-        <h3 style="margin:16px 0 8px; color:var(--color-near-black)">Đã nhận thông tin!</h3>
-        <p style="color:var(--color-text-muted)">Tiên Du sẽ liên hệ lại với bạn trong vòng 24 giờ.</p>
+    <div class="partner-form" style="text-align:center">
+      <h3 class="partner-form-title">Nhắn Zalo hoặc gọi điện để đăng ký</h3>
+      <p class="partner-form-sub">Cho Tiên Du biết tên garage/cơ sở, khu vực và nhu cầu đặt hàng — đội ngũ sẽ tư vấn gói đối tác phù hợp trong vòng 24 giờ.</p>
+      <div style="display:flex;flex-direction:column;gap:12px;max-width:320px;margin:0 auto">
+        <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-yellow" style="justify-content:center">
+          <img src="assets/icon-zalo.png" style="width:20px;height:20px" alt=""> Zalo đăng ký đối tác
+        </a>
+        <a href="tel:0946915111" class="btn btn-black" style="justify-content:center">
+          <img src="assets/icon-phone.svg" class="btn-icon" alt="" style="width:18px;height:18px"> Gọi 0946.915.111
+        </a>
       </div>
     </div>
   </div>
@@ -292,12 +242,5 @@
 
 <script src="js/main.js"></script>
 <script src="js/cms-loader.js"></script>
-<script>
-document.getElementById('partnerForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  this.style.display = 'none';
-  document.getElementById('formSuccess').style.display = 'block';
-});
-</script>
 </body>
 </html>

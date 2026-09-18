@@ -111,45 +111,19 @@
   <div class="section-inner">
     <div class="contact-layout">
 
-      <!-- Form -->
+      <!-- Direct contact CTA -->
       <div>
-        <div class="partner-form" style="box-shadow:0 4px 24px rgba(0,0,0,0.08)">
+        <div class="partner-form" style="box-shadow:0 4px 24px rgba(0,0,0,0.08);text-align:center">
           <h3 class="partner-form-title">Gửi yêu cầu tư vấn</h3>
-          <p class="partner-form-sub">Điền thông tin và Tiên Du sẽ liên hệ lại sớm nhất — thường trong vòng 15 phút giờ làm việc.</p>
-          <form id="contactForm" novalidate>
-            <div class="form-grid">
-              <div class="form-group">
-                <label class="form-label" for="cName">Họ và tên *</label>
-                <input class="form-input" type="text" id="cName" placeholder="Nguyễn Văn A" required>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="cPhone">Số điện thoại / Zalo *</label>
-                <input class="form-input" type="tel" id="cPhone" placeholder="0946 xxx xxx" required>
-              </div>
-              <div class="form-group full">
-                <label class="form-label" for="cTopic">Chủ đề</label>
-                <select class="form-input form-select-input" id="cTopic">
-                  <option value="">Chọn chủ đề...</option>
-                  <option>Hỏi giá sản phẩm</option>
-                  <option>Tra cứu phụ tùng theo xe</option>
-                  <option>Đăng ký mua sỉ / đối tác</option>
-                  <option>Khiếu nại / đổi trả hàng</option>
-                  <option>Hợp tác kinh doanh</option>
-                  <option>Khác</option>
-                </select>
-              </div>
-              <div class="form-group full">
-                <label class="form-label" for="cMsg">Nội dung *</label>
-                <textarea class="form-textarea" id="cMsg" placeholder="Mô tả yêu cầu của bạn — loại xe, năm sản xuất, phụ tùng cần tìm..." required></textarea>
-              </div>
-            </div>
-            <button type="submit" class="btn btn-yellow form-submit">Gửi yêu cầu →</button>
-          </form>
-          <div id="contactSuccess" style="display:none;text-align:center;padding:32px">
-            <span style="font-size:48px">✅</span>
-            <h3 style="margin:16px 0 8px;color:var(--color-near-black)">Đã nhận yêu cầu!</h3>
-            <p style="color:var(--color-text-muted)">Tiên Du sẽ liên hệ lại với bạn qua điện thoại hoặc Zalo trong thời gian sớm nhất.</p>
-            <a href="san-pham.html" class="btn btn-yellow" style="margin-top:20px">Xem sản phẩm trong lúc chờ →</a>
+          <p class="partner-form-sub">Nhắn Zalo hoặc gọi điện trực tiếp — Tiên Du phản hồi nhanh nhất trong giờ làm việc, không cần điền form.</p>
+          <div style="display:flex;flex-direction:column;gap:12px;max-width:320px;margin:0 auto">
+            <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-yellow" style="justify-content:center">
+              <img src="assets/icon-zalo.png" style="width:20px;height:20px" alt=""> Zalo tư vấn ngay
+            </a>
+            <a href="tel:0946915111" class="btn btn-black" style="justify-content:center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.1 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.46-.46a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+              Gọi 0946.915.111
+            </a>
           </div>
         </div>
       </div>
@@ -233,7 +207,7 @@
           Tiên Du có bán hàng online không, hay phải đến cửa hàng?
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </summary>
-        <p style="margin:12px 0 0;font-size:14px;color:var(--color-text-muted);line-height:1.7">Tiên Du nhận đặt hàng qua Zalo, điện thoại và form trên website. Sau khi xác nhận thông tin và thanh toán, chúng tôi giao hàng tận nơi toàn quốc. Không cần đến trực tiếp cửa hàng.</p>
+        <p style="margin:12px 0 0;font-size:14px;color:var(--color-text-muted);line-height:1.7">Tiên Du nhận đặt hàng qua Zalo và điện thoại. Sau khi xác nhận thông tin và thanh toán, chúng tôi giao hàng tận nơi toàn quốc. Không cần đến trực tiếp cửa hàng.</p>
       </details>
 
       <details class="faq-item" style="border-bottom:1px solid var(--color-border);padding:20px 0">
@@ -352,12 +326,6 @@
 <script src="js/main.js"></script>
 <script src="js/cms-loader.js"></script>
 <script>
-document.getElementById('contactForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  this.style.display = 'none';
-  document.getElementById('contactSuccess').style.display = 'block';
-});
-
 if (location.hash) {
   const target = document.querySelector(location.hash);
   if (target && target.tagName === 'DETAILS') {

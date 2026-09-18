@@ -104,14 +104,10 @@
 <section class="section" style="background:var(--color-bg-soft)">
   <div class="section-inner" style="max-width:640px; text-align:center">
     <h2 class="section-title">Nhận mẹo xe hàng tuần</h2>
-    <p style="color:var(--color-text-muted); font-size:15px; margin-bottom:32px">Đăng ký để nhận bản tin kiến thức bảo dưỡng xe, khuyến mãi phụ tùng mỗi tuần từ Tiên Du.</p>
-    <form id="newsletterForm" style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center" novalidate>
-      <input type="tel" id="nlPhone" placeholder="Số điện thoại / Zalo của bạn" required
-        style="flex:1; min-width:220px; border:1px solid var(--color-border); border-radius:var(--radius-pill); padding:14px 20px; font-family:var(--font-body); font-size:14px; outline:none">
-      <button type="submit" class="btn btn-yellow" style="padding:14px 28px">Đăng ký ngay</button>
-    </form>
-    <p id="nlSuccess" style="display:none; color:var(--color-stock-green); font-weight:600; margin-top:16px">✅ Đăng ký thành công! Tiên Du sẽ liên hệ Zalo sớm nhất.</p>
-    <p style="font-size:12px; color:var(--color-text-muted); margin-top:16px">Không spam. Hủy đăng ký bất kỳ lúc nào.</p>
+    <p style="color:var(--color-text-muted); font-size:15px; margin-bottom:32px">Theo dõi Zalo OA của Tiên Du để nhận kiến thức bảo dưỡng xe và khuyến mãi phụ tùng mỗi tuần.</p>
+    <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-yellow" style="padding:14px 28px">
+      <img src="assets/icon-zalo.png" style="width:20px;height:20px" alt=""> Theo dõi Zalo OA
+    </a>
   </div>
 </section>
 
@@ -201,12 +197,6 @@ document.querySelectorAll('[data-blog-filter]').forEach(btn => {
   });
 });
 
-/* Newsletter */
-document.getElementById('newsletterForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  this.style.display = 'none';
-  document.getElementById('nlSuccess').style.display = 'block';
-});
 </script>
 <script src="js/supabase-client.js"></script>
 <script>
