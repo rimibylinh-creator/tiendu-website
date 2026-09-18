@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="pageTitle">Sản Phẩm — Tiên Du Phụ Tùng Ô Tô Nha Trang</title>
-<meta id="metaDesc" name="description" content="Phụ tùng ô tô chính hãng tại Tiên Du Nha Trang. Giao hàng toàn quốc.">
+<meta id="metaDesc" name="description" content="Phụ tùng ô tô đa dạng tại Tiên Du Nha Trang. Giao hàng toàn quốc.">
 <meta property="og:type" content="website">
 <meta id="ogUrl" property="og:url" content="https://ototiendu.com/san-pham-chi-tiet.html">
 <meta id="ogTitle" property="og:title" content="Sản Phẩm — Tiên Du Phụ Tùng Ô Tô Nha Trang">
-<meta id="ogDesc" property="og:description" content="Phụ tùng ô tô chính hãng tại Tiên Du Nha Trang.">
+<meta id="ogDesc" property="og:description" content="Phụ tùng ô tô đa dạng tại Tiên Du Nha Trang.">
 <meta id="ogImage" property="og:image" content="https://ototiendu.com/assets/hero-bg.jpg">
 <meta property="og:locale" content="vi_VN">
 <meta property="og:site_name" content="Tiên Du Phụ Tùng Ô Tô">
 <meta name="twitter:card" content="summary_large_image">
 <meta id="twTitle" name="twitter:title" content="Sản Phẩm — Tiên Du Phụ Tùng Ô Tô Nha Trang">
-<meta id="twDesc" name="twitter:description" content="Phụ tùng ô tô chính hãng tại Tiên Du Nha Trang.">
+<meta id="twDesc" name="twitter:description" content="Phụ tùng ô tô đa dạng tại Tiên Du Nha Trang.">
 <meta id="twImage" name="twitter:image" content="https://ototiendu.com/assets/hero-bg.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -211,7 +211,7 @@
 
   // ── Meta ──────────────────────────────────────────────────
   const title = product.name + ' — Tiên Du Phụ Tùng Ô Tô Nha Trang'
-  const desc  = 'Mua ' + product.name + ' chính hãng tại Tiên Du Nha Trang. Giá ' + formatPrice(product.price) + '. Giao toàn quốc.'
+  const desc  = 'Mua ' + product.name + ' tại Tiên Du Nha Trang. Giá ' + formatPrice(product.price) + '. Giao toàn quốc.'
   const img   = product.thumbnail_url || 'https://ototiendu.com/assets/hero-bg.jpg'
   const url   = 'https://ototiendu.com/san-pham-chi-tiet.html?slug=' + slug
 
@@ -454,7 +454,7 @@
       image: product.thumbnail_url,
       description: product.description
         ? product.description.replace(/<[^>]+>/g, ' ').trim()
-        : ('Mua ' + product.name + ' chính hãng tại Tiên Du Nha Trang.'),
+        : ('Mua ' + product.name + ' tại Tiên Du Nha Trang.'),
       offers: {
         '@type': 'Offer',
         priceCurrency: 'VND',
