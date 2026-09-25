@@ -3684,6 +3684,17 @@ p { margin: 0; }
 .policy-body ul { list-style: disc; }
 .policy-body ol { list-style: decimal; }
 .policy-body a { color: var(--color-near-black); text-decoration: underline; text-decoration-color: var(--color-primary); text-underline-offset: 3px; }
+.policy-info {
+  background: var(--color-bg-soft);
+  border-left: 4px solid var(--color-primary);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 16px 20px;
+  margin: 0 0 24px;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.policy-info p { margin: 0; }
+.policy-info-name { font-weight: 700; color: var(--color-near-black); }
 .policy-table {
   width: 100%;
   border-collapse: collapse;
