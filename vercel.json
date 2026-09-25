@@ -1,5 +1,7 @@
 {
   "redirects": [
+    { "source": "/chinh-sach-gia-niem-yet.html", "destination": "/chinh-sach-gia.html", "permanent": true },
+    { "source": "/pham-vi-cung-cap.html", "destination": "/dieu-kien-cung-cap.html", "permanent": true },
     { "source": "/tra-cuu.html", "destination": "/san-pham.html", "permanent": true },
     { "source": "/about-us", "destination": "/gioi-thieu.html", "permanent": true },
     { "source": "/about-us/", "destination": "/gioi-thieu.html", "permanent": true },
