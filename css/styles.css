@@ -1722,7 +1722,7 @@ p { margin: 0; }
 
 /* Responsive */
 @media (max-width: 960px) {
-  .article-layout { grid-template-columns: 1fr; }
+  .article-layout { grid-template-columns: minmax(0, 1fr); }
   .article-sidebar { position: static; }
   .article-title { font-size: 26px; }
 }
@@ -3608,4 +3608,33 @@ p { margin: 0; }
   .brand-pick-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
   .brand-pick-btn { padding: 14px 8px; font-size: 13px; }
   .part-item-header { flex-direction: column; gap: 6px; }
+}
+
+/* ===========================================================
+   Responsive layout helpers (thay cho grid inline trên từng trang)
+   =========================================================== */
+.card-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.split-grid-media {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  height: 460px;
+}
+
+@media (max-width: 860px) {
+  .card-grid-3 { grid-template-columns: 1fr; }
+  .split-grid { grid-template-columns: 1fr; gap: 32px; }
+  .split-grid-media { height: 260px; }
+  /* Bảng rộng: cuộn ngang trong khung thay vì làm tràn cả trang */
+  .article-body table { display: block; overflow-x: auto; }
+  #default-tier-table, #cms-tier-table { overflow-x: auto; }
 }
