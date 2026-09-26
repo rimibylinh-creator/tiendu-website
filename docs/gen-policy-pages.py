@@ -14,6 +14,12 @@ FILL = {
     'ton_kho': None,         # 'mỗi ngày làm việc'
     'bh_ngay': None,         # thời hạn xử lý bảo hành (số ngày làm việc)
     'hieu_luc': None,        # ngày hiệu lực, ví dụ '01/10/2026'
+    # --- Chính sách bảo mật ---
+    'dpo': None,             # bộ phận/người phụ trách bảo vệ DLCN: 'họ tên, chức danh'
+    'log_ttl': None,         # thời hạn lưu nhật ký truy cập, ví dụ '12 tháng'
+    'hosting': None,         # tên nhà cung cấp lưu trữ website, ví dụ 'Vercel Inc.'
+    'server_country': None,  # quốc gia đặt máy chủ
+    'dia_phuong_an': None,   # 'A' (doanh nghiệp nhỏ, miễn lập hồ sơ ĐGTĐ) hoặc 'B' (đã lập và gửi hồ sơ)
 }
 UPDATED = '25/09/2026'
 
@@ -448,89 +454,128 @@ body=f'''
 # ---------------------------------------------------------------- Bảo vệ dữ liệu cá nhân
 PAGES['chinh-sach-bao-mat.html'] = dict(
 title='Chính Sách Bảo Mật',
-desc='Chính sách bảo mật của Công ty TNHH Đầu tư Tiên Du: dữ liệu thu thập, mục đích xử lý, chia sẻ, lưu trữ và quyền của khách hàng theo Luật Bảo vệ dữ liệu cá nhân.',
-sub='Cách Tiên Du thu thập, sử dụng và bảo vệ dữ liệu cá nhân của khách hàng',
+desc='Chính sách bảo mật của Công ty TNHH Đầu tư Tiên Du: dữ liệu cá nhân được thu thập, mục đích xử lý, chia sẻ, chuyển ra nước ngoài, lưu trữ và quyền của Quý khách theo Luật Bảo vệ dữ liệu cá nhân.',
+sub='Cách Tiên Du thu thập, sử dụng và bảo vệ dữ liệu cá nhân của Quý khách',
+updated='26/09/2026',
 body=f'''
-{INFO}
+{INFO.replace('</div>', opt('dpo', '  <p>Bộ phận phụ trách bảo vệ dữ liệu cá nhân: {v} — <a href="tel:0946915111">0946.915.111</a></p>' + chr(10)) + '</div>')}
 
-<p>Chính sách này mô tả cách Tiên Du thu thập, sử dụng, chia sẻ, lưu trữ và bảo vệ dữ liệu cá nhân của khách hàng, theo Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15.</p>
+<p>Website thương mại điện tử ototiendu.com do Công ty TNHH Đầu tư Tiên Du (sau đây gọi là “Tiên Du” hoặc “chúng tôi”) thiết lập, vận hành để trực tiếp bán phụ tùng, linh kiện và vật tư bảo dưỡng ô tô. Đối tượng phục vụ là chủ xe, garage và đại lý trên toàn quốc có nhu cầu tra cứu, đặt mua phụ tùng mà không có điều kiện đến trực tiếp cửa hàng.</p>
+<p>Chính sách này giải thích cách chúng tôi tiếp nhận, sử dụng, chia sẻ, lưu trữ và bảo vệ dữ liệu cá nhân của Quý khách, theo Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15 và các văn bản hướng dẫn thi hành.</p>
+<p>Bảo vệ dữ liệu cá nhân và gây dựng niềm tin nơi Quý khách là vấn đề rất quan trọng với chúng tôi. Vì vậy, chúng tôi chỉ thu thập những thông tin thực sự cần thiết cho việc tư vấn, bán hàng và chăm sóc sau bán hàng, và sử dụng các thông tin đó đúng theo nội dung Chính sách này.</p>
+<p>Quý khách có thể truy cập website, xem sản phẩm và tham khảo giá mà không cần cung cấp bất kỳ thông tin cá nhân nào. Chúng tôi chỉ bắt đầu thu thập dữ liệu khi Quý khách chủ động liên hệ, gửi yêu cầu tư vấn hoặc đặt hàng.</p>
 
-<h2>1. Dữ liệu cá nhân được thu thập</h2>
+<h2 id="thu-thap">1. Dữ liệu cá nhân được thu thập</h2>
+<p>Tùy vào cách Quý khách làm việc với Tiên Du, chúng tôi thu thập, lưu trữ và xử lý những nhóm thông tin sau:</p>
 <ul>
-  <li><strong>Thông tin liên hệ và giao hàng:</strong> họ tên, số điện thoại, địa chỉ nhận hàng, email (nếu có)</li>
-  <li><strong>Thông tin xe:</strong> hãng, dòng, năm sản xuất, số VIN, ảnh giấy đăng ký xe do khách gửi để tra cứu mã phụ tùng</li>
-  <li><strong>Thông tin giao dịch:</strong> đơn hàng, hóa đơn, lịch sử mua hàng, lịch sử nhận hàng</li>
-  <li><strong>Thông tin xuất hóa đơn doanh nghiệp:</strong> tên đơn vị, mã số thuế, địa chỉ</li>
-  <li><strong>Thông tin hoàn tiền:</strong> số tài khoản ngân hàng khách cung cấp khi cần hoàn tiền</li>
-  <li><strong>Nội dung phản ánh, khiếu nại:</strong> tin nhắn, ảnh, video khách gửi</li>
+  <li><strong>Thông tin liên hệ và giao hàng:</strong> họ tên, số điện thoại, địa chỉ nhận hàng, địa chỉ email nếu Quý khách cung cấp.</li>
+  <li><strong>Thông tin về xe:</strong> hãng xe, dòng xe, năm sản xuất, số VIN, và ảnh chụp giấy đăng ký xe trong trường hợp Quý khách gửi để chúng tôi tra cứu đúng mã phụ tùng.</li>
+  <li><strong>Thông tin giao dịch:</strong> nội dung đơn hàng, hóa đơn, lịch sử mua hàng và lịch sử nhận hàng.</li>
+  <li><strong>Thông tin xuất hóa đơn cho doanh nghiệp:</strong> tên đơn vị, mã số thuế và địa chỉ, trong trường hợp Quý khách cần hóa đơn ghi tên công ty.</li>
+  <li><strong>Thông tin hoàn tiền:</strong> số tài khoản ngân hàng do Quý khách cung cấp khi phát sinh việc hoàn tiền.</li>
+  <li><strong>Nội dung phản ánh, khiếu nại:</strong> tin nhắn, hình ảnh, video Quý khách gửi cho chúng tôi để mô tả sự việc.</li>
 </ul>
-<p>Tiên Du <strong>không thu thập dữ liệu cá nhân nhạy cảm</strong>. Website ototiendu.com không thu thập và không lưu trữ thông tin thẻ ngân hàng, tài khoản ngân hàng hay ví điện tử khi thanh toán.</p>
+<p>Tiên Du không chủ động thu thập dữ liệu cá nhân nhạy cảm. Khi gửi ảnh giấy tờ để tra cứu phụ tùng, chúng tôi khuyến nghị Quý khách che những thông tin không cần thiết cho việc tra cứu. Nếu Quý khách gửi nhầm giấy tờ hoặc thông tin ngoài phạm vi nêu trên, chúng tôi sẽ xóa ngay sau khi phát hiện và thông báo lại để Quý khách biết.</p>
+<p>Website ototiendu.com không tích hợp cổng thanh toán trực tuyến. Chúng tôi không thu thập và không lưu trữ thông tin thẻ ngân hàng, thông tin đăng nhập tài khoản ngân hàng hay ví điện tử của Quý khách trong bất kỳ trường hợp nào.</p>
 
-<h2>2. Cách thức thu thập</h2>
+<h2 id="cach-thu-thap">2. Cách thức thu thập</h2>
 <ul>
-  <li>Khách hàng tự cung cấp khi đặt hàng, tư vấn, khiếu nại qua điện thoại, Zalo, email, tại cửa hàng hoặc qua biểu mẫu trên website</li>
-  <li>Phát sinh trong quá trình giao dịch: đơn hàng, hóa đơn, mã vận đơn</li>
+  <li>Chúng tôi tiếp nhận thông tin do chính Quý khách cung cấp khi đặt hàng, yêu cầu tư vấn hoặc gửi phản ánh, thông qua điện thoại, Zalo, email, biểu mẫu trên website hoặc khi đến trực tiếp cửa hàng.</li>
+  <li>Một phần thông tin phát sinh trong quá trình giao dịch, bao gồm nội dung đơn hàng, hóa đơn và mã vận đơn do đơn vị vận chuyển cấp.</li>
+  <li>Máy chủ lưu trữ website ghi nhận nhật ký truy cập kỹ thuật, gồm địa chỉ IP, loại trình duyệt và thời điểm truy cập, nhằm phục vụ vận hành và bảo đảm an toàn hệ thống.{opt('log_ttl', ' Nhật ký này được lưu trong {v}, sau đó tự động xóa.')}</li>
+  <li>Website ototiendu.com không sử dụng cookie quảng cáo và không cài đặt công cụ theo dõi hành vi người dùng cho mục đích tiếp thị.</li>
 </ul>
-<p><strong>Trên website:</strong> ototiendu.com không sử dụng cookie quảng cáo hoặc công cụ theo dõi hành vi người dùng. Máy chủ lưu trữ website ghi nhận nhật ký truy cập kỹ thuật (địa chỉ IP, loại trình duyệt, thời điểm truy cập) phục vụ vận hành và bảo mật. Trang Liên hệ có nhúng bản đồ Google Maps; việc hiển thị bản đồ tuân theo chính sách quyền riêng tư của Google.</p>
+<p>Tiên Du không mua, không thu thập dữ liệu cá nhân của Quý khách từ bất kỳ nguồn nào khác ngoài các cách thức nêu trên.</p>
 
-<h2>3. Mục đích xử lý</h2>
+<h2 id="muc-dich">3. Mục đích xử lý</h2>
+<p>Chúng tôi phân biệt rõ hai nhóm mục đích, tương ứng với hai cơ sở pháp lý khác nhau, để Quý khách nắm được quyền của mình trong từng trường hợp.</p>
+<h3>3.1. Xử lý nhằm thực hiện hợp đồng và nghĩa vụ luật định</h3>
+<p>Những hoạt động sau đây cần thiết để chúng tôi bán hàng cho Quý khách và tuân thủ quy định pháp luật, nên được thực hiện mà không cần sự đồng ý riêng, và Quý khách không thể yêu cầu ngừng xử lý nếu vẫn đang trong quá trình giao dịch hoặc trong thời hạn lưu trữ bắt buộc:</p>
 <ul>
-  <li>Tiếp nhận, xác nhận và thực hiện đơn hàng; giao hàng</li>
-  <li>Tra cứu, tư vấn đúng mã phụ tùng cho xe của khách</li>
-  <li>Lập hóa đơn, thực hiện nghĩa vụ kế toán, thuế</li>
-  <li>Thực hiện bảo hành, đổi trả, hoàn tiền, giải quyết khiếu nại</li>
-  <li>Quản lý rủi ro đơn hàng theo <a href="dieu-kien-cung-cap.html#tu-choi">Điều kiện cung cấp hàng hóa, mục 7</a></li>
-  <li>Lưu trữ dữ liệu giao dịch theo quy định pháp luật</li>
+  <li>Tiếp nhận, xác nhận và thực hiện đơn hàng; tổ chức giao hàng đến địa chỉ Quý khách cung cấp.</li>
+  <li>Tra cứu và tư vấn đúng mã phụ tùng phù hợp với xe của Quý khách.</li>
+  <li>Lập hóa đơn và thực hiện nghĩa vụ kế toán, thuế theo quy định.</li>
+  <li>Thực hiện bảo hành, đổi trả, hoàn tiền và giải quyết phản ánh, khiếu nại.</li>
+  <li>Quản lý rủi ro đơn hàng theo <a href="dieu-kien-cung-cap.html#tu-choi">Điều kiện cung cấp hàng hóa, mục 7</a>, bao gồm việc ghi nhận các trường hợp từ chối nhận hàng không có lý do chính đáng.</li>
+  <li>Lưu trữ dữ liệu giao dịch theo thời hạn pháp luật quy định.</li>
 </ul>
-<p>Tiên Du chỉ gửi thông tin khuyến mãi khi khách hàng đồng ý, và khách có thể từ chối nhận bất cứ lúc nào.</p>
-
-<h2>4. Chia sẻ dữ liệu</h2>
-<p>Tiên Du <strong>không bán, không cho thuê</strong> dữ liệu cá nhân của khách hàng. Dữ liệu chỉ được chia sẻ ở mức cần thiết cho:</p>
+<h3>3.2. Xử lý trên cơ sở sự đồng ý của Quý khách</h3>
 <ul>
-  <li><strong>Đơn vị vận chuyển:</strong> họ tên, số điện thoại, địa chỉ nhận hàng, số tiền thu hộ (với đơn COD)</li>
-  <li><strong>Ngân hàng:</strong> thông tin cần thiết để thực hiện hoàn tiền</li>
-  <li><strong>Nhà sản xuất, nhà phân phối:</strong> thông tin sản phẩm và giao dịch cần thiết để xử lý bảo hành</li>
-  <li><strong>Cơ quan nhà nước có thẩm quyền:</strong> khi có yêu cầu theo quy định pháp luật</li>
+  <li>Gửi thông tin về sản phẩm mới, chương trình khuyến mãi và bảng giá sỉ. Chúng tôi chỉ gửi khi Quý khách đã đồng ý, và Quý khách có thể từ chối nhận bất cứ lúc nào mà không ảnh hưởng đến việc mua hàng.</li>
+  <li>Sử dụng công cụ <a href="tim-vin.html">Tìm số VIN</a> trên website, có liên quan đến việc chuyển dữ liệu xuyên biên giới nêu tại <a href="#nuoc-ngoai">mục 5</a>.</li>
 </ul>
+<p>Sự im lặng hoặc việc không phản hồi của Quý khách không được chúng tôi xem là sự đồng ý.</p>
 
-<h2>5. Thời gian lưu trữ</h2>
+<h2 id="chia-se">4. Chia sẻ dữ liệu</h2>
+<p>Tiên Du không bán, không cho thuê và không trao đổi dữ liệu cá nhân của Quý khách với bất kỳ bên nào vì mục đích thương mại. Dữ liệu chỉ được chia sẻ ở mức tối thiểu cần thiết, cho những bên sau:</p>
 <ul>
-  <li>Dữ liệu liên quan đến hợp đồng, phản ánh, khiếu nại: <strong>tối thiểu 03 năm</strong> kể từ thời điểm giao kết hợp đồng</li>
-  <li>Hóa đơn, chứng từ kế toán: theo thời hạn của pháp luật kế toán</li>
+  <li><strong>Đơn vị vận chuyển</strong>{opt('don_vi_vc', ' ({v})')}: họ tên, số điện thoại, địa chỉ nhận hàng, và số tiền thu hộ đối với đơn thanh toán khi nhận hàng. Các đơn vị này chỉ được sử dụng thông tin cho việc giao nhận hàng hóa.</li>
+  <li><strong>Nhà cung cấp dịch vụ lưu trữ website</strong>{opt('hosting', ' ({v})')}: tiếp cận dữ liệu ở mức kỹ thuật trong quá trình vận hành hệ thống.</li>
+  <li><strong>Ngân hàng:</strong> thông tin cần thiết để thực hiện việc hoàn tiền theo yêu cầu của Quý khách.</li>
+  <li><strong>Nhà sản xuất hoặc nhà phân phối:</strong> thông tin về sản phẩm và giao dịch cần thiết để xử lý yêu cầu bảo hành.</li>
+  <li><strong>Cơ quan nhà nước có thẩm quyền:</strong> khi có yêu cầu hợp pháp theo quy định của pháp luật.</li>
+</ul>
+<p>Trong mọi trường hợp, chúng tôi yêu cầu các bên nêu trên áp dụng biện pháp bảo vệ dữ liệu tương ứng và chỉ sử dụng thông tin đúng phạm vi đã thỏa thuận.</p>
+
+<h2 id="nuoc-ngoai">5. Chuyển dữ liệu ra nước ngoài</h2>
+<p>Chúng tôi công khai minh bạch những trường hợp dữ liệu có thể được chuyển ra khỏi lãnh thổ Việt Nam:</p>
+<ul>
+  <li><strong>Công cụ Tìm số VIN.</strong> Khi Quý khách sử dụng công cụ này, website gửi số VIN Quý khách nhập tới dịch vụ giải mã VIN của Cơ quan Quản lý An toàn Giao thông Đường cao tốc Hoa Kỳ (NHTSA) để nhận về thông tin kỹ thuật của xe. Công cụ chỉ gửi số VIN, không gửi kèm họ tên, số điện thoại hay bất kỳ thông tin cá nhân nào khác của Quý khách.</li>
+  <li><strong>Hạ tầng lưu trữ website.</strong> {('Website ototiendu.com được lưu trữ trên hạ tầng của ' + FILL['hosting'] + ', với máy chủ đặt tại ' + FILL['server_country'] + '.') if FILL['hosting'] and FILL['server_country'] else 'Website ototiendu.com được lưu trữ trên hạ tầng của nhà cung cấp dịch vụ đám mây có máy chủ đặt ở nước ngoài.'}</li>
+  <li><strong>Bản đồ nhúng.</strong> Trang Liên hệ có nhúng bản đồ Google Maps. Khi bản đồ hiển thị, trình duyệt của Quý khách kết nối tới máy chủ của Google và có thể gửi địa chỉ IP tới bên cung cấp dịch vụ này. Việc xử lý dữ liệu tại Google tuân theo chính sách quyền riêng tư của Google.</li>
+</ul>
+{dict(A='<p>Tiên Du là doanh nghiệp nhỏ theo quy định pháp luật và áp dụng quyền lựa chọn không thực hiện việc lập hồ sơ đánh giá tác động xử lý dữ liệu cá nhân và hồ sơ đánh giá tác động chuyển dữ liệu cá nhân xuyên biên giới, theo Điều 38 Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15 và Điều 41 Nghị định 356/2025/NĐ-CP. Việc áp dụng quyền này không làm thay đổi các cam kết bảo vệ dữ liệu nêu trong Chính sách này.</p>', B='<p>Tiên Du đã lập và gửi hồ sơ đánh giá tác động xử lý dữ liệu cá nhân và hồ sơ đánh giá tác động chuyển dữ liệu cá nhân xuyên biên giới tới cơ quan chuyên trách bảo vệ dữ liệu cá nhân theo quy định pháp luật.</p>').get(FILL['dia_phuong_an'] or '', '')}
+
+<h2 id="luu-tru">6. Thời gian lưu trữ</h2>
+<p>Chúng tôi giữ thông tin của Quý khách trong thời hạn cần thiết cho mục đích đã nêu, hoặc trong thời hạn pháp luật quy định, tùy theo thời hạn nào dài hơn:</p>
+<ul>
+  <li>Dữ liệu liên quan đến hợp đồng, phản ánh và khiếu nại: tối thiểu 03 năm kể từ thời điểm giao kết hợp đồng.</li>
+  <li>Dữ liệu về hàng hóa: tối thiểu 01 năm.</li>
+  <li>Hóa đơn và chứng từ kế toán: theo thời hạn của pháp luật kế toán.</li>
+  {opt('log_ttl', '<li>Nhật ký truy cập kỹ thuật: {v}.</li>')}
+  <li>Thông tin phục vụ mục đích gửi khuyến mãi: cho đến khi Quý khách rút lại sự đồng ý.</li>
 </ul>
 <p>Hết thời hạn lưu trữ, dữ liệu được xóa hoặc hủy, trừ trường hợp pháp luật có quy định khác.</p>
 
-<h2>6. Quyền của khách hàng</h2>
-<p>Khách hàng có quyền:</p>
+<h2 id="quyen">7. Quyền của khách hàng</h2>
+<p>Theo quy định pháp luật về bảo vệ dữ liệu cá nhân, Quý khách có các quyền sau đây và chúng tôi không thu bất kỳ khoản phí nào khi Quý khách thực hiện các quyền này:</p>
 <ul>
-  <li>Được biết về việc xử lý dữ liệu cá nhân của mình</li>
-  <li>Đồng ý hoặc không đồng ý, rút lại sự đồng ý cho việc xử lý dữ liệu</li>
-  <li>Xem, chỉnh sửa hoặc yêu cầu chỉnh sửa dữ liệu</li>
-  <li>Yêu cầu xóa dữ liệu, hạn chế xử lý dữ liệu, phản đối xử lý dữ liệu</li>
-  <li>Khiếu nại, tố cáo, khởi kiện và yêu cầu bồi thường thiệt hại theo quy định pháp luật</li>
+  <li>Được biết về việc xử lý dữ liệu cá nhân của mình.</li>
+  <li>Đồng ý hoặc không đồng ý cho việc xử lý dữ liệu, và rút lại sự đồng ý đã cho bất cứ lúc nào.</li>
+  <li>Truy cập, xem và yêu cầu chỉnh sửa dữ liệu cá nhân của mình.</li>
+  <li>Yêu cầu xóa dữ liệu, hạn chế xử lý dữ liệu hoặc phản đối việc xử lý dữ liệu.</li>
+  <li>Yêu cầu cung cấp dữ liệu cá nhân của mình.</li>
+  <li>Khiếu nại, tố cáo, khởi kiện và yêu cầu bồi thường thiệt hại theo quy định pháp luật.</li>
 </ul>
-<p>Việc rút lại sự đồng ý hoặc yêu cầu xóa dữ liệu không ảnh hưởng đến việc xử lý đã thực hiện trước đó, và không áp dụng với dữ liệu Tiên Du phải lưu trữ theo quy định pháp luật (hóa đơn, chứng từ, dữ liệu hợp đồng).</p>
+<p>Việc rút lại sự đồng ý hoặc yêu cầu xóa dữ liệu không làm ảnh hưởng đến tính hợp pháp của việc xử lý đã thực hiện trước đó. Quyền này cũng không áp dụng đối với dữ liệu mà Tiên Du có nghĩa vụ lưu trữ theo quy định pháp luật, bao gồm hóa đơn, chứng từ kế toán và dữ liệu liên quan đến hợp đồng đã giao kết.</p>
 
-<h2>7. Cách thực hiện quyền</h2>
-<p>Khách gửi yêu cầu qua các kênh tại <a href="chinh-sach-khieu-nai.html">Phương thức tiếp nhận khiếu nại</a>: hotline <a href="tel:0946915111">0946.915.111</a>, Zalo tiendu.nhatrang hoặc email <a href="mailto:tienduoto@gmail.com">tienduoto@gmail.com</a>.</p>
-<p>Tiên Du phản hồi ban đầu trong <strong>01 ngày làm việc</strong> và giải quyết trong <strong>72 giờ</strong>. Tiên Du có thể đề nghị khách xác minh danh tính (ví dụ: gọi từ số điện thoại đã đặt hàng) trước khi cung cấp hoặc chỉnh sửa dữ liệu.</p>
+<h2 id="thuc-hien-quyen">8. Cách thực hiện quyền</h2>
+<p>Quý khách gửi yêu cầu qua các kênh nêu tại <a href="chinh-sach-khieu-nai.html">Phương thức tiếp nhận và giải quyết khiếu nại</a>: hotline <a href="tel:0946915111">0946.915.111</a>, Zalo tiendu.nhatrang, email <a href="mailto:tienduoto@gmail.com">tienduoto@gmail.com</a>, hoặc trực tiếp tại cửa hàng.</p>
+<p>Chúng tôi thực hiện yêu cầu của Quý khách trong thời hạn 72 giờ kể từ khi nhận được yêu cầu. Trường hợp yêu cầu phức tạp hoặc cần xác minh thêm, chúng tôi sẽ thông báo lý do và thời hạn dự kiến cho Quý khách trong 01 ngày làm việc.</p>
+<p>Nhằm bảo đảm dữ liệu không bị cung cấp hoặc chỉnh sửa bởi người khác, chúng tôi có thể đề nghị Quý khách xác minh danh tính trước khi thực hiện yêu cầu, chẳng hạn gọi từ số điện thoại đã dùng khi đặt hàng hoặc cung cấp mã đơn hàng.</p>
 
-<h2>8. Biện pháp bảo vệ dữ liệu</h2>
+<h2 id="bao-ve">9. Biện pháp bảo vệ dữ liệu</h2>
 <ul>
-  <li>Chỉ nhân viên có nhiệm vụ liên quan được truy cập dữ liệu khách hàng</li>
-  <li>Không công khai thông tin khách hàng trên website hoặc mạng xã hội khi chưa có sự đồng ý</li>
-  <li>Tiên Du <strong>không bao giờ yêu cầu</strong> khách cung cấp mật khẩu, mã OTP hay thông tin đăng nhập ngân hàng</li>
+  <li>Chúng tôi áp dụng các biện pháp kỹ thuật và quản lý phù hợp nhằm ngăn chặn việc truy cập trái phép, làm lộ, mất mát hoặc hủy hoại dữ liệu cá nhân của Quý khách.</li>
+  <li>Chỉ những nhân viên có nhiệm vụ liên quan mới được tiếp cận dữ liệu khách hàng, trong phạm vi công việc được giao.</li>
+  <li>Chúng tôi không công khai thông tin của Quý khách trên website hoặc mạng xã hội khi chưa có sự đồng ý. Các đánh giá, hình ảnh có liên quan đến khách hàng chỉ được đăng khi Quý khách cho phép.</li>
+  <li>Tiên Du không bao giờ yêu cầu Quý khách cung cấp mật khẩu, mã OTP hay thông tin đăng nhập ngân hàng. Chúng tôi cũng không yêu cầu chuyển khoản vào tài khoản cá nhân. Nếu nhận được đề nghị như vậy, Quý khách vui lòng gọi <a href="tel:0946915111">0946.915.111</a> để xác minh trước khi thực hiện.</li>
+  <li>Chúng tôi khuyến nghị Quý khách không gửi thông tin tài khoản ngân hàng, ảnh giấy tờ tùy thân qua các kênh không chính thức, và chỉ liên hệ với Tiên Du qua số điện thoại, Zalo và email công bố tại website này.</li>
 </ul>
-<p>Khi xảy ra sự cố lộ, mất dữ liệu cá nhân, Tiên Du thông báo cho cơ quan có thẩm quyền và khách hàng bị ảnh hưởng theo quy định pháp luật.</p>
+<p>Khi xảy ra sự cố làm lộ, mất dữ liệu cá nhân, chúng tôi thông báo cho cơ quan có thẩm quyền và cho Quý khách bị ảnh hưởng theo quy định pháp luật, đồng thời áp dụng ngay các biện pháp khắc phục.</p>
 
-<h2>9. Dữ liệu của người chưa thành niên</h2>
-<p>Tiên Du không chủ động thu thập dữ liệu cá nhân của người dưới 18 tuổi. Người từ đủ 15 đến dưới 18 tuổi chỉ đặt hàng khi có sự đồng ý của cha, mẹ hoặc người giám hộ, theo <a href="dieu-kien-cung-cap.html">Điều kiện cung cấp hàng hóa, mục 2</a>.</p>
+<h2 id="tre-em">10. Dữ liệu của người chưa thành niên</h2>
+<p>Nền tảng ototiendu.com phục vụ người từ đủ 18 tuổi trở lên. Chúng tôi không chủ động thu thập dữ liệu cá nhân của người dưới 18 tuổi và không thiết kế nội dung hướng tới nhóm đối tượng này, phù hợp với <a href="dieu-kien-cung-cap.html">Điều kiện cung cấp hàng hóa, mục 2</a>.</p>
+<p>Nếu phát hiện đã thu thập dữ liệu của người dưới 18 tuổi mà không có sự đồng ý hợp lệ của cha, mẹ hoặc người giám hộ, chúng tôi sẽ ngừng xử lý và xóa dữ liệu đó. Quý khách là cha, mẹ hoặc người giám hộ, nếu cho rằng con em mình đã cung cấp dữ liệu cho Tiên Du, vui lòng liên hệ theo <a href="#thuc-hien-quyen">mục 8</a> để chúng tôi xử lý.</p>
 
-<h2>10. Sửa đổi chính sách</h2>
-<p>Nội dung sửa đổi được đăng trên website kèm ngày hiệu lực, theo nguyên tắc tại <a href="quyen-va-nghia-vu.html">Quyền và nghĩa vụ của các bên, mục 5</a>.</p>
+<h2 id="sua-doi">11. Sửa đổi chính sách</h2>
+<p>Tiên Du có thể sửa đổi Chính sách này để phù hợp với thay đổi của pháp luật hoặc của hoạt động kinh doanh. Nội dung sửa đổi được đăng tại chính trang này kèm ngày hiệu lực, theo nguyên tắc nêu tại <a href="quyen-va-nghia-vu.html">Quyền và nghĩa vụ của các bên, mục 5</a>.</p>
+<p>Trường hợp sửa đổi làm thay đổi phạm vi hoặc mục đích xử lý dữ liệu theo hướng bất lợi cho Quý khách, chúng tôi sẽ thông báo và xin lại sự đồng ý trước khi áp dụng.</p>
+<p>Các điều kiện, điều khoản và nội dung của trang web này được điều chỉnh bởi pháp luật Việt Nam.</p>
 ''')
 
-dates = f'Cập nhật lần cuối: {UPDATED}' + (f' · Ngày hiệu lực: {FILL["hieu_luc"]}' if FILL['hieu_luc'] else '')
+def dates_for(p):
+    return (f'Ngày hiệu lực: {FILL["hieu_luc"]} · ' if FILL['hieu_luc'] else '') + f'Cập nhật lần cuối: {p.get("updated", UPDATED)}'
 
 for fname, label in POLICIES:
     p = PAGES[fname]
@@ -564,7 +609,7 @@ for fname, label in POLICIES:
     </aside>
     <article class="article-body policy-body">
 {body}
-      <p class="policy-updated">{dates}</p>
+      <p class="policy-updated">{dates_for(p)}</p>
     </article>
   </div>
 </section>
