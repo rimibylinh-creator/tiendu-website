@@ -16,7 +16,7 @@ FILL = {
     'hieu_luc': None,        # ngày hiệu lực, ví dụ '01/10/2026'
     # --- Chính sách bảo mật ---
     'dpo': None,             # bộ phận/người phụ trách bảo vệ DLCN: 'họ tên, chức danh'
-    'log_ttl': None,         # thời hạn lưu nhật ký truy cập, ví dụ '12 tháng'
+    'log_ttl': '01 giờ',        # thời hạn lưu nhật ký truy cập, ví dụ '12 tháng'
     'hosting': None,         # tên nhà cung cấp lưu trữ website, ví dụ 'Vercel Inc.'
     'server_country': None,  # quốc gia đặt máy chủ
     'dia_phuong_an': None,   # 'A' (doanh nghiệp nhỏ, miễn lập hồ sơ ĐGTĐ) hoặc 'B' (đã lập và gửi hồ sơ)
