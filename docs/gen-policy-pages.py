@@ -288,7 +288,7 @@ body=f'''
 <h2>5. Trách nhiệm chọn đúng phụ tùng</h2>
 <p>Một mã phụ tùng có thể phù hợp nhiều dòng xe, hoặc chỉ phù hợp một số đời xe trong cùng dòng.</p>
 <p>Khách hàng có trách nhiệm cung cấp đúng thông tin xe: hãng, dòng, năm sản xuất, và số VIN nếu có. Tiên Du hỗ trợ tra cứu miễn phí qua điện thoại hoặc Zalo trước khi khách đặt hàng.</p>
-<p>Nếu khách tự chọn mã hàng mà không sử dụng dịch vụ tra cứu của Tiên Du, và sản phẩm không tương thích với xe, khách được đổi trả theo chính sách thông thường với điều kiện sản phẩm chưa lắp đặt, còn nguyên tem và bao bì. Trong trường hợp này, sản phẩm đã lắp đặt không được đổi trả vì lý do không tương thích.</p>
+<p>Nếu khách tự chọn mã hàng mà không có sự tư vấn kỹ thuật của Tiên Du, và sản phẩm không tương thích với xe, khách được đổi trả theo chính sách thông thường với điều kiện sản phẩm chưa lắp đặt, còn nguyên tem và bao bì. Trong trường hợp này, sản phẩm đã lắp đặt không được đổi trả vì lý do không tương thích.</p>
 <p><strong>Quy định trên không áp dụng khi:</strong></p>
 <ul>
   <li>Sản phẩm có khuyết tật hoặc lỗi của nhà sản xuất</li>
@@ -403,7 +403,7 @@ body=f'''
 <p>Với sản phẩm có khuyết tật hoặc lỗi của nhà sản xuất phát hiện sau thời hạn này, Tiên Du tiếp nhận và xử lý theo chính sách bảo hành tại <a href="dieu-kien-cung-cap.html#bao-hanh">Điều kiện cung cấp hàng hóa, mục 8</a>.</p>
 
 <h2>2. Điều kiện đổi trả thông thường</h2>
-<p>Áp dụng khi khách thay đổi nhu cầu, hoặc khách tự chọn mã hàng mà không sử dụng dịch vụ tra cứu của Tiên Du và sản phẩm không tương thích với xe:</p>
+<p>Áp dụng khi khách thay đổi nhu cầu, hoặc khách tự chọn mã hàng mà không có sự tư vấn kỹ thuật của Tiên Du và sản phẩm không tương thích với xe:</p>
 <ul>
   <li>Sản phẩm <strong>chưa lắp đặt</strong>, còn nguyên tem và bao bì</li>
   <li>Có hóa đơn mua hàng, hoặc chứng minh được giao dịch bằng cách khác: tin nhắn Zalo, sao kê chuyển khoản, biên lai vận chuyển, hoặc dữ liệu đơn hàng Tiên Du đang lưu</li>
