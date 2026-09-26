@@ -29,7 +29,7 @@ POLICIES = [
     ('dieu-kien-cung-cap.html', 'Phạm vi cung cấp'),
     ('quyen-va-nghia-vu.html', 'Quyền và nghĩa vụ các bên'),
     ('chinh-sach-doi-tra.html', 'Chính sách đổi trả'),
-    ('chinh-sach-bao-ve-du-lieu-ca-nhan.html', 'Chính sách bảo vệ dữ liệu cá nhân'),
+    ('chinh-sach-bao-mat.html', 'Chính sách bảo mật'),
 ]
 
 STORE = '37 Nguyễn Văn Hưởng, KĐT VCN Phước Long, phường Nam Nha Trang'
@@ -109,7 +109,7 @@ body=f'''
 
 <h2>6. Lưu trữ</h2>
 <p>Hồ sơ phản ánh, khiếu nại và dữ liệu liên quan đến hợp đồng được lưu trữ <strong>tối thiểu 03 năm</strong> kể từ thời điểm giao kết hợp đồng. Dữ liệu về hàng hóa được lưu tối thiểu 01 năm.</p>
-<p>Hóa đơn và chứng từ kế toán lưu theo thời hạn của pháp luật kế toán. Việc xử lý dữ liệu cá nhân trong hồ sơ khiếu nại thực hiện theo Chính sách bảo vệ dữ liệu cá nhân.</p>
+<p>Hóa đơn và chứng từ kế toán lưu theo thời hạn của pháp luật kế toán. Việc xử lý dữ liệu cá nhân trong hồ sơ khiếu nại thực hiện theo Chính sách bảo mật.</p>
 ''')
 
 # ---------------------------------------------------------------- TL3
@@ -312,7 +312,7 @@ body=f'''
   <li>Sự kiện bất khả kháng: thiên tai, dịch bệnh, gián đoạn vận chuyển</li>
 </ul>
 <p>Tiên Du thông báo lý do từ chối hoặc hủy đơn cho khách qua điện thoại hoặc tin nhắn. Trường hợp khách đã thanh toán, Tiên Du hoàn tiền đầy đủ trong 07 ngày làm việc.</p>
-<p>Việc lưu lịch sử giao dịch phục vụ mục đích này được nêu tại Chính sách bảo vệ dữ liệu cá nhân.</p>
+<p>Việc lưu lịch sử giao dịch phục vụ mục đích này được nêu tại Chính sách bảo mật.</p>
 
 <h2 id="bao-hanh">8. Bảo hành</h2>
 <p>Thời hạn và điều kiện bảo hành theo nhà sản xuất được ghi trên trang sản phẩm, hóa đơn hoặc phiếu bảo hành.</p>
@@ -446,9 +446,9 @@ body=f'''
 ''')
 
 # ---------------------------------------------------------------- Bảo vệ dữ liệu cá nhân
-PAGES['chinh-sach-bao-ve-du-lieu-ca-nhan.html'] = dict(
-title='Chính Sách Bảo Vệ Dữ Liệu Cá Nhân',
-desc='Chính sách bảo vệ dữ liệu cá nhân của Công ty TNHH Đầu tư Tiên Du: dữ liệu thu thập, mục đích xử lý, chia sẻ, lưu trữ và quyền của khách hàng theo Luật Bảo vệ dữ liệu cá nhân.',
+PAGES['chinh-sach-bao-mat.html'] = dict(
+title='Chính Sách Bảo Mật',
+desc='Chính sách bảo mật của Công ty TNHH Đầu tư Tiên Du: dữ liệu thu thập, mục đích xử lý, chia sẻ, lưu trữ và quyền của khách hàng theo Luật Bảo vệ dữ liệu cá nhân.',
 sub='Cách Tiên Du thu thập, sử dụng và bảo vệ dữ liệu cá nhân của khách hàng',
 body=f'''
 {INFO}
@@ -493,18 +493,14 @@ body=f'''
   <li><strong>Cơ quan nhà nước có thẩm quyền:</strong> khi có yêu cầu theo quy định pháp luật</li>
 </ul>
 
-<h2>5. Chuyển dữ liệu ra nước ngoài</h2>
-<p>Công cụ <a href="tim-vin.html">Tìm số VIN</a> trên website gửi số VIN khách nhập tới dịch vụ giải mã VIN của Cơ quan Quản lý An toàn Giao thông Đường cao tốc Hoa Kỳ (NHTSA) để trả về thông tin xe. Công cụ chỉ gửi số VIN, không gửi kèm họ tên, số điện thoại hay thông tin cá nhân khác.</p>
-<p>Website được lưu trữ trên hạ tầng của nhà cung cấp dịch vụ đám mây có thể đặt máy chủ ở nước ngoài.</p>
-
-<h2>6. Thời gian lưu trữ</h2>
+<h2>5. Thời gian lưu trữ</h2>
 <ul>
   <li>Dữ liệu liên quan đến hợp đồng, phản ánh, khiếu nại: <strong>tối thiểu 03 năm</strong> kể từ thời điểm giao kết hợp đồng</li>
   <li>Hóa đơn, chứng từ kế toán: theo thời hạn của pháp luật kế toán</li>
 </ul>
 <p>Hết thời hạn lưu trữ, dữ liệu được xóa hoặc hủy, trừ trường hợp pháp luật có quy định khác.</p>
 
-<h2>7. Quyền của khách hàng</h2>
+<h2>6. Quyền của khách hàng</h2>
 <p>Khách hàng có quyền:</p>
 <ul>
   <li>Được biết về việc xử lý dữ liệu cá nhân của mình</li>
@@ -515,11 +511,11 @@ body=f'''
 </ul>
 <p>Việc rút lại sự đồng ý hoặc yêu cầu xóa dữ liệu không ảnh hưởng đến việc xử lý đã thực hiện trước đó, và không áp dụng với dữ liệu Tiên Du phải lưu trữ theo quy định pháp luật (hóa đơn, chứng từ, dữ liệu hợp đồng).</p>
 
-<h2>8. Cách thực hiện quyền</h2>
+<h2>7. Cách thực hiện quyền</h2>
 <p>Khách gửi yêu cầu qua các kênh tại <a href="chinh-sach-khieu-nai.html">Phương thức tiếp nhận khiếu nại</a>: hotline <a href="tel:0946915111">0946.915.111</a>, Zalo tiendu.nhatrang hoặc email <a href="mailto:tienduoto@gmail.com">tienduoto@gmail.com</a>.</p>
 <p>Tiên Du phản hồi ban đầu trong <strong>01 ngày làm việc</strong> và giải quyết trong <strong>72 giờ</strong>. Tiên Du có thể đề nghị khách xác minh danh tính (ví dụ: gọi từ số điện thoại đã đặt hàng) trước khi cung cấp hoặc chỉnh sửa dữ liệu.</p>
 
-<h2>9. Biện pháp bảo vệ dữ liệu</h2>
+<h2>8. Biện pháp bảo vệ dữ liệu</h2>
 <ul>
   <li>Chỉ nhân viên có nhiệm vụ liên quan được truy cập dữ liệu khách hàng</li>
   <li>Không công khai thông tin khách hàng trên website hoặc mạng xã hội khi chưa có sự đồng ý</li>
@@ -527,10 +523,10 @@ body=f'''
 </ul>
 <p>Khi xảy ra sự cố lộ, mất dữ liệu cá nhân, Tiên Du thông báo cho cơ quan có thẩm quyền và khách hàng bị ảnh hưởng theo quy định pháp luật.</p>
 
-<h2>10. Dữ liệu của người chưa thành niên</h2>
+<h2>9. Dữ liệu của người chưa thành niên</h2>
 <p>Tiên Du không chủ động thu thập dữ liệu cá nhân của người dưới 18 tuổi. Người từ đủ 15 đến dưới 18 tuổi chỉ đặt hàng khi có sự đồng ý của cha, mẹ hoặc người giám hộ, theo <a href="dieu-kien-cung-cap.html">Điều kiện cung cấp hàng hóa, mục 2</a>.</p>
 
-<h2>11. Sửa đổi chính sách</h2>
+<h2>10. Sửa đổi chính sách</h2>
 <p>Nội dung sửa đổi được đăng trên website kèm ngày hiệu lực, theo nguyên tắc tại <a href="quyen-va-nghia-vu.html">Quyền và nghĩa vụ của các bên, mục 5</a>.</p>
 ''')
 
@@ -556,7 +552,7 @@ for fname, label in POLICIES:
     nav = '\n'.join(f'      <a href="{f}" class="policy-nav-link{" active" if f == fname else ""}">{l}</a>' for f, l in POLICIES)
     body = re.sub(r'\n{3,}', '\n\n', p['body'].strip())
     body = re.sub(r'^\s*\n', '', body, flags=re.M)  # bỏ dòng trống do opt() rỗng
-    for phrase, target in [('Chính sách đổi trả', 'chinh-sach-doi-tra.html'), ('Chính sách bảo vệ dữ liệu cá nhân', 'chinh-sach-bao-ve-du-lieu-ca-nhan.html')]:
+    for phrase, target in [('Chính sách đổi trả', 'chinh-sach-doi-tra.html'), ('Chính sách bảo mật', 'chinh-sach-bao-mat.html')]:
         if fname != target:
             body = re.sub(r'(?<![>\w])' + phrase + r'(?![^<]*</a>)', f'<a href="{target}">{phrase}</a>', body)
     page = f'''<!-- ============ POLICY CONTENT ============ -->
