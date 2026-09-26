@@ -44,9 +44,6 @@ INFO = f'''<div class="policy-info">
   <p class="policy-info-name">CÔNG TY TNHH ĐẦU TƯ TIÊN DU</p>
   <p>Mã số thuế: 4200889908</p>
   {opt('gcn_dkdn', '<p>Giấy chứng nhận ĐKDN: {v}</p>')}
-  <p>Trụ sở: {HQ}</p>
-  <p>Cửa hàng: {STORE}, tỉnh Khánh Hòa</p>
-  <p>Người đại diện theo pháp luật: Phan Khắc Chiến</p>
   <p>Website: ototiendu.com · Điện thoại: <a href="tel:0946915111">0946.915.111</a> · Email: <a href="mailto:tienduoto@gmail.com">tienduoto@gmail.com</a></p>
 </div>'''
 
