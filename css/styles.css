@@ -1020,6 +1020,8 @@ p { margin: 0; }
   transition: color 0.15s ease;
 }
 .footer-social a:hover { color: var(--color-primary); }
+.footer-brand .footer-social { margin: 4px 0 0 -8px; }
+.footer-brand .footer-social a { font-size: 13px; }
 
 /* ===========================================================
    PAGE HEADER — Inner pages (thay thế .hero của homepage)
