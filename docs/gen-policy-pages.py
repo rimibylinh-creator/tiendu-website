@@ -28,6 +28,8 @@ POLICIES = [
     ('chinh-sach-thanh-toan.html', 'Chính sách thanh toán'),
     ('dieu-kien-cung-cap.html', 'Phạm vi cung cấp'),
     ('quyen-va-nghia-vu.html', 'Quyền và nghĩa vụ các bên'),
+    ('chinh-sach-doi-tra.html', 'Chính sách đổi trả'),
+    ('chinh-sach-bao-ve-du-lieu-ca-nhan.html', 'Chính sách bảo vệ dữ liệu cá nhân'),
 ]
 
 STORE = '37 Nguyễn Văn Hưởng, KĐT VCN Phước Long, phường Nam Nha Trang'
@@ -312,7 +314,7 @@ body=f'''
 <p>Tiên Du thông báo lý do từ chối hoặc hủy đơn cho khách qua điện thoại hoặc tin nhắn. Trường hợp khách đã thanh toán, Tiên Du hoàn tiền đầy đủ trong 07 ngày làm việc.</p>
 <p>Việc lưu lịch sử giao dịch phục vụ mục đích này được nêu tại Chính sách bảo vệ dữ liệu cá nhân.</p>
 
-<h2>8. Bảo hành</h2>
+<h2 id="bao-hanh">8. Bảo hành</h2>
 <p>Thời hạn và điều kiện bảo hành theo nhà sản xuất được ghi trên trang sản phẩm, hóa đơn hoặc phiếu bảo hành.</p>
 <p><strong>Tiên Du là đầu mối tiếp nhận yêu cầu bảo hành</strong> tại cửa hàng và qua các kênh nêu tại {TL2}, đồng thời chịu trách nhiệm liên hệ nhà sản xuất hoặc nhà phân phối.</p>
 {opt('bh_ngay', '<p>Thời hạn xử lý dự kiến: {v} ngày làm việc.</p>')}
@@ -387,6 +389,151 @@ body=f'''
 <p><strong>Chính sách áp dụng cho một đơn hàng là chính sách đang có hiệu lực tại thời điểm Tiên Du xác nhận đơn hàng đó.</strong> Việc sửa đổi không làm ảnh hưởng đến quyền lợi của các đơn hàng đã xác nhận trước đó.</p>
 ''')
 
+
+# ---------------------------------------------------------------- Đổi trả
+PAGES['chinh-sach-doi-tra.html'] = dict(
+title='Chính Sách Đổi Trả',
+desc='Chính sách đổi trả và hoàn tiền của Công ty TNHH Đầu tư Tiên Du: thời hạn 5 ngày, điều kiện đổi trả, các trường hợp được đổi trả kể cả đã lắp đặt, chi phí và quy trình.',
+sub='Điều kiện, thời hạn và quy trình đổi trả, hoàn tiền phụ tùng',
+body=f'''
+{INFO}
+
+<h2>1. Thời hạn đổi trả</h2>
+<p>Khách hàng được đổi trả sản phẩm <strong>trong vòng 05 ngày</strong> kể từ ngày nhận hàng.</p>
+<p>Với sản phẩm có khuyết tật hoặc lỗi của nhà sản xuất phát hiện sau thời hạn này, Tiên Du tiếp nhận và xử lý theo chính sách bảo hành tại <a href="dieu-kien-cung-cap.html#bao-hanh">Điều kiện cung cấp hàng hóa, mục 8</a>.</p>
+
+<h2>2. Điều kiện đổi trả thông thường</h2>
+<p>Áp dụng khi khách thay đổi nhu cầu, hoặc khách tự chọn mã hàng mà không sử dụng dịch vụ tra cứu của Tiên Du và sản phẩm không tương thích với xe:</p>
+<ul>
+  <li>Sản phẩm <strong>chưa lắp đặt</strong>, còn nguyên tem và bao bì</li>
+  <li>Có hóa đơn mua hàng, hoặc chứng minh được giao dịch bằng cách khác: tin nhắn Zalo, sao kê chuyển khoản, biên lai vận chuyển, hoặc dữ liệu đơn hàng Tiên Du đang lưu</li>
+</ul>
+
+<h2>3. Trường hợp được đổi trả hoặc hoàn tiền kể cả khi đã lắp đặt</h2>
+<ul>
+  <li>Sản phẩm có khuyết tật hoặc lỗi của nhà sản xuất</li>
+  <li>Thông tin tương thích công bố trên website sai</li>
+  <li>Tiên Du đã tư vấn mã hàng dựa trên thông tin xe do khách cung cấp đúng</li>
+  <li>Hàng giao không đúng mã đã xác nhận</li>
+</ul>
+<p>Hàng giao thiếu, hư hỏng do vận chuyển hoặc không đúng mô tả, cam kết cũng được đổi trả hoặc hoàn tiền. Với kiện hàng bị móp, rách, ướt khi nhận, khách vui lòng chụp ảnh và báo Tiên Du trong 24 giờ.</p>
+<p>Việc khách đã kiểm tra hàng khi nhận <strong>không làm mất quyền</strong> được khiếu nại, đổi trả trong các trường hợp trên. Quay video khi mở kiện hàng là khuyến nghị để xử lý nhanh hơn, không phải điều kiện bắt buộc.</p>
+
+<h2>4. Trường hợp không áp dụng đổi trả</h2>
+<ul>
+  <li>Sản phẩm đã lắp đặt, khi lý do đổi trả là thay đổi nhu cầu hoặc khách tự chọn mã không tương thích (trừ các trường hợp tại mục 3)</li>
+  <li>Hàng đặt riêng theo yêu cầu, khi lý do đổi trả là thay đổi nhu cầu</li>
+  <li>Hư hỏng do lắp đặt sai kỹ thuật, tác động ngoại lực, tự ý can thiệp sửa chữa, hoặc hao mòn tự nhiên trong quá trình sử dụng</li>
+</ul>
+
+<h2>5. Chi phí đổi trả</h2>
+<table class="policy-table">
+  <thead><tr><th>Trường hợp</th><th>Phí vận chuyển đổi trả</th></tr></thead>
+  <tbody>
+    <tr><td>Lỗi thuộc về Tiên Du, nhà sản xuất hoặc đơn vị vận chuyển (mục 3)</td><td><strong>Tiên Du chịu toàn bộ</strong></td></tr>
+    <tr><td>Đổi trả vì lý do của khách (mục 2)</td><td>Khách chịu phí gửi trả hàng về Tiên Du</td></tr>
+  </tbody>
+</table>
+<p>Tiên Du chịu toàn bộ phí chuyển khoản hoàn tiền theo <a href="chinh-sach-thanh-toan.html#hoan-tien">Chính sách thanh toán, mục 4</a>.</p>
+
+<h2>6. Quy trình đổi trả</h2>
+<ol>
+  <li><strong>Liên hệ:</strong> báo yêu cầu đổi trả qua các kênh tại <a href="chinh-sach-khieu-nai.html">Phương thức tiếp nhận khiếu nại</a>, kèm mã đơn hàng hoặc hóa đơn và ảnh, video sản phẩm (nếu có).</li>
+  <li><strong>Xác nhận:</strong> Tiên Du kiểm tra điều kiện đổi trả và thông báo hướng xử lý theo thời hạn đã công bố.</li>
+  <li><strong>Gửi hàng:</strong> khách mang sản phẩm đến cửa hàng tại {STORE}, hoặc gửi qua đơn vị vận chuyển theo hướng dẫn.</li>
+  <li><strong>Hoàn tất:</strong> Tiên Du đổi sản phẩm tương đương, hoặc hoàn tiền trong <strong>07 ngày làm việc</strong> kể từ ngày hai bên thống nhất việc hoàn tiền.</li>
+</ol>
+''')
+
+# ---------------------------------------------------------------- Bảo vệ dữ liệu cá nhân
+PAGES['chinh-sach-bao-ve-du-lieu-ca-nhan.html'] = dict(
+title='Chính Sách Bảo Vệ Dữ Liệu Cá Nhân',
+desc='Chính sách bảo vệ dữ liệu cá nhân của Công ty TNHH Đầu tư Tiên Du: dữ liệu thu thập, mục đích xử lý, chia sẻ, lưu trữ và quyền của khách hàng theo Luật Bảo vệ dữ liệu cá nhân.',
+sub='Cách Tiên Du thu thập, sử dụng và bảo vệ dữ liệu cá nhân của khách hàng',
+body=f'''
+{INFO}
+
+<p>Chính sách này mô tả cách Tiên Du thu thập, sử dụng, chia sẻ, lưu trữ và bảo vệ dữ liệu cá nhân của khách hàng, theo Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15.</p>
+
+<h2>1. Dữ liệu cá nhân được thu thập</h2>
+<ul>
+  <li><strong>Thông tin liên hệ và giao hàng:</strong> họ tên, số điện thoại, địa chỉ nhận hàng, email (nếu có)</li>
+  <li><strong>Thông tin xe:</strong> hãng, dòng, năm sản xuất, số VIN, ảnh giấy đăng ký xe do khách gửi để tra cứu mã phụ tùng</li>
+  <li><strong>Thông tin giao dịch:</strong> đơn hàng, hóa đơn, lịch sử mua hàng, lịch sử nhận hàng</li>
+  <li><strong>Thông tin xuất hóa đơn doanh nghiệp:</strong> tên đơn vị, mã số thuế, địa chỉ</li>
+  <li><strong>Thông tin hoàn tiền:</strong> số tài khoản ngân hàng khách cung cấp khi cần hoàn tiền</li>
+  <li><strong>Nội dung phản ánh, khiếu nại:</strong> tin nhắn, ảnh, video khách gửi</li>
+</ul>
+<p>Tiên Du <strong>không thu thập dữ liệu cá nhân nhạy cảm</strong>. Website ototiendu.com không thu thập và không lưu trữ thông tin thẻ ngân hàng, tài khoản ngân hàng hay ví điện tử khi thanh toán.</p>
+
+<h2>2. Cách thức thu thập</h2>
+<ul>
+  <li>Khách hàng tự cung cấp khi đặt hàng, tư vấn, khiếu nại qua điện thoại, Zalo, email, tại cửa hàng hoặc qua biểu mẫu trên website</li>
+  <li>Phát sinh trong quá trình giao dịch: đơn hàng, hóa đơn, mã vận đơn</li>
+</ul>
+<p><strong>Trên website:</strong> ototiendu.com không sử dụng cookie quảng cáo hoặc công cụ theo dõi hành vi người dùng. Máy chủ lưu trữ website ghi nhận nhật ký truy cập kỹ thuật (địa chỉ IP, loại trình duyệt, thời điểm truy cập) phục vụ vận hành và bảo mật. Trang Liên hệ có nhúng bản đồ Google Maps; việc hiển thị bản đồ tuân theo chính sách quyền riêng tư của Google.</p>
+
+<h2>3. Mục đích xử lý</h2>
+<ul>
+  <li>Tiếp nhận, xác nhận và thực hiện đơn hàng; giao hàng</li>
+  <li>Tra cứu, tư vấn đúng mã phụ tùng cho xe của khách</li>
+  <li>Lập hóa đơn, thực hiện nghĩa vụ kế toán, thuế</li>
+  <li>Thực hiện bảo hành, đổi trả, hoàn tiền, giải quyết khiếu nại</li>
+  <li>Quản lý rủi ro đơn hàng theo <a href="dieu-kien-cung-cap.html#tu-choi">Điều kiện cung cấp hàng hóa, mục 7</a></li>
+  <li>Lưu trữ dữ liệu giao dịch theo quy định pháp luật</li>
+</ul>
+<p>Tiên Du chỉ gửi thông tin khuyến mãi khi khách hàng đồng ý, và khách có thể từ chối nhận bất cứ lúc nào.</p>
+
+<h2>4. Chia sẻ dữ liệu</h2>
+<p>Tiên Du <strong>không bán, không cho thuê</strong> dữ liệu cá nhân của khách hàng. Dữ liệu chỉ được chia sẻ ở mức cần thiết cho:</p>
+<ul>
+  <li><strong>Đơn vị vận chuyển:</strong> họ tên, số điện thoại, địa chỉ nhận hàng, số tiền thu hộ (với đơn COD)</li>
+  <li><strong>Ngân hàng:</strong> thông tin cần thiết để thực hiện hoàn tiền</li>
+  <li><strong>Nhà sản xuất, nhà phân phối:</strong> thông tin sản phẩm và giao dịch cần thiết để xử lý bảo hành</li>
+  <li><strong>Cơ quan nhà nước có thẩm quyền:</strong> khi có yêu cầu theo quy định pháp luật</li>
+</ul>
+
+<h2>5. Chuyển dữ liệu ra nước ngoài</h2>
+<p>Công cụ <a href="tim-vin.html">Tìm số VIN</a> trên website gửi số VIN khách nhập tới dịch vụ giải mã VIN của Cơ quan Quản lý An toàn Giao thông Đường cao tốc Hoa Kỳ (NHTSA) để trả về thông tin xe. Công cụ chỉ gửi số VIN, không gửi kèm họ tên, số điện thoại hay thông tin cá nhân khác.</p>
+<p>Website được lưu trữ trên hạ tầng của nhà cung cấp dịch vụ đám mây có thể đặt máy chủ ở nước ngoài.</p>
+
+<h2>6. Thời gian lưu trữ</h2>
+<ul>
+  <li>Dữ liệu liên quan đến hợp đồng, phản ánh, khiếu nại: <strong>tối thiểu 03 năm</strong> kể từ thời điểm giao kết hợp đồng</li>
+  <li>Hóa đơn, chứng từ kế toán: theo thời hạn của pháp luật kế toán</li>
+</ul>
+<p>Hết thời hạn lưu trữ, dữ liệu được xóa hoặc hủy, trừ trường hợp pháp luật có quy định khác.</p>
+
+<h2>7. Quyền của khách hàng</h2>
+<p>Khách hàng có quyền:</p>
+<ul>
+  <li>Được biết về việc xử lý dữ liệu cá nhân của mình</li>
+  <li>Đồng ý hoặc không đồng ý, rút lại sự đồng ý cho việc xử lý dữ liệu</li>
+  <li>Xem, chỉnh sửa hoặc yêu cầu chỉnh sửa dữ liệu</li>
+  <li>Yêu cầu xóa dữ liệu, hạn chế xử lý dữ liệu, phản đối xử lý dữ liệu</li>
+  <li>Khiếu nại, tố cáo, khởi kiện và yêu cầu bồi thường thiệt hại theo quy định pháp luật</li>
+</ul>
+<p>Việc rút lại sự đồng ý hoặc yêu cầu xóa dữ liệu không ảnh hưởng đến việc xử lý đã thực hiện trước đó, và không áp dụng với dữ liệu Tiên Du phải lưu trữ theo quy định pháp luật (hóa đơn, chứng từ, dữ liệu hợp đồng).</p>
+
+<h2>8. Cách thực hiện quyền</h2>
+<p>Khách gửi yêu cầu qua các kênh tại <a href="chinh-sach-khieu-nai.html">Phương thức tiếp nhận khiếu nại</a>: hotline <a href="tel:0946915111">0946.915.111</a>, Zalo tiendu.nhatrang hoặc email <a href="mailto:tienduoto@gmail.com">tienduoto@gmail.com</a>.</p>
+<p>Tiên Du phản hồi ban đầu trong <strong>01 ngày làm việc</strong> và giải quyết trong <strong>72 giờ</strong>. Tiên Du có thể đề nghị khách xác minh danh tính (ví dụ: gọi từ số điện thoại đã đặt hàng) trước khi cung cấp hoặc chỉnh sửa dữ liệu.</p>
+
+<h2>9. Biện pháp bảo vệ dữ liệu</h2>
+<ul>
+  <li>Chỉ nhân viên có nhiệm vụ liên quan được truy cập dữ liệu khách hàng</li>
+  <li>Không công khai thông tin khách hàng trên website hoặc mạng xã hội khi chưa có sự đồng ý</li>
+  <li>Tiên Du <strong>không bao giờ yêu cầu</strong> khách cung cấp mật khẩu, mã OTP hay thông tin đăng nhập ngân hàng</li>
+</ul>
+<p>Khi xảy ra sự cố lộ, mất dữ liệu cá nhân, Tiên Du thông báo cho cơ quan có thẩm quyền và khách hàng bị ảnh hưởng theo quy định pháp luật.</p>
+
+<h2>10. Dữ liệu của người chưa thành niên</h2>
+<p>Tiên Du không chủ động thu thập dữ liệu cá nhân của người dưới 18 tuổi. Người từ đủ 15 đến dưới 18 tuổi chỉ đặt hàng khi có sự đồng ý của cha, mẹ hoặc người giám hộ, theo <a href="dieu-kien-cung-cap.html">Điều kiện cung cấp hàng hóa, mục 2</a>.</p>
+
+<h2>11. Sửa đổi chính sách</h2>
+<p>Nội dung sửa đổi được đăng trên website kèm ngày hiệu lực, theo nguyên tắc tại <a href="quyen-va-nghia-vu.html">Quyền và nghĩa vụ của các bên, mục 5</a>.</p>
+''')
+
 dates = f'Cập nhật lần cuối: {UPDATED}' + (f' · Ngày hiệu lực: {FILL["hieu_luc"]}' if FILL['hieu_luc'] else '')
 
 for fname, label in POLICIES:
@@ -409,6 +556,9 @@ for fname, label in POLICIES:
     nav = '\n'.join(f'      <a href="{f}" class="policy-nav-link{" active" if f == fname else ""}">{l}</a>' for f, l in POLICIES)
     body = re.sub(r'\n{3,}', '\n\n', p['body'].strip())
     body = re.sub(r'^\s*\n', '', body, flags=re.M)  # bỏ dòng trống do opt() rỗng
+    for phrase, target in [('Chính sách đổi trả', 'chinh-sach-doi-tra.html'), ('Chính sách bảo vệ dữ liệu cá nhân', 'chinh-sach-bao-ve-du-lieu-ca-nhan.html')]:
+        if fname != target:
+            body = re.sub(r'(?<![>\w])' + phrase + r'(?![^<]*</a>)', f'<a href="{target}">{phrase}</a>', body)
     page = f'''<!-- ============ POLICY CONTENT ============ -->
 <section class="section" style="background:var(--color-white)">
   <div class="section-inner policy-layout">
