@@ -1006,6 +1006,7 @@ p { margin: 0; }
 .footer-copy {
   color: #606060;
   font-size: 10px;
+  line-height: 1.7;
 }
 .footer-social {
   display: flex;
