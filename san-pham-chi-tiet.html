@@ -204,6 +204,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
 <script src="js/main.js"></script>
+<script src="js/product-overview.js"></script>
 <script>
 (async function () {
   const slug = new URLSearchParams(location.search).get('slug')
@@ -298,9 +299,25 @@
        </div>`
     : '<p style="color:var(--color-text-muted);font-size:14px">Chưa có thông tin xe tương thích. Liên hệ Tiên Du để được tư vấn.</p>'
 
+  // ── Thông số chi tiết (detailed_specs: [{key, value}]) ────
+  const detailedSpecs = (Array.isArray(product.detailed_specs) ? product.detailed_specs : [])
+    .filter(s => s && typeof s === 'object' && s.key && s.value)
+  const overviewHTML = buildProductOverview({
+    name: product.name,
+    specs: detailedSpecs,
+    shortSpecs: product.short_specs || [],
+    vehicles,
+    sku: product.sku || '',
+    brand,
+  })
+
   // ── Specs table ────────────────────────────────────────────
   const allSpecs = product.short_specs || []
-  const specsTabHTML = allSpecs.length
+  const specsTabHTML = detailedSpecs.length
+    ? `<table class="pd-specs-table">
+         ${detailedSpecs.map(s => `<tr><td>${escHtml(s.key)}</td><td>${escHtml(s.value)}</td></tr>`).join('')}
+       </table>`
+    : allSpecs.length
     ? `<table class="pd-specs-table">
          ${allSpecs.map(s => {
            const parts = s.split(':')
@@ -313,8 +330,11 @@
 
   // ── Description ───────────────────────────────────────────
   const hasDesc = product.description && product.description.trim()
+  const hasOverview = product.overview && product.overview.trim()
   const descTabHTML = hasDesc
     ? `<div class="pd-description">${product.description}</div>`
+    : hasOverview
+    ? `<div class="pd-description"><p>${escHtml(product.overview)}</p></div>`
     : `<div class="pd-description"><p>Liên hệ Tiên Du qua số <strong>0946.915.111</strong> hoặc Zalo để được tư vấn chi tiết về sản phẩm này.</p></div>`
 
   // ── Render ────────────────────────────────────────────────
@@ -339,6 +359,8 @@
         </div>
 
         <h1 class="pd-info-title">${escHtml(product.name)}</h1>
+
+        ${overviewHTML}
 
         <div class="pd-price-block">
           <span class="pd-price-current">${formatPrice(product.price)}</span>
