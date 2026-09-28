@@ -227,4 +227,3 @@ Copy nguyên footer từ index.html. Cập nhật `href` trong `.footer-col` đ�
 | Điện - điện tử | `dien` | `/san-pham/dien` |
 | Bộ phận lọc | `loc` | `/san-pham/loc` |
 | Thân vỏ & nội thất | `noi-that` | `/san-pham/noi-that` |
-| Lốp & La-zăng | `lop` | `/san-pham/lop` |
