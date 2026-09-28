@@ -245,13 +245,14 @@ PAGES['dieu-kien-cung-cap.html'] = dict(
 title='Điều Kiện Và Hạn Chế Cung Cấp Hàng Hóa',
 desc='Điều kiện và hạn chế trong việc cung cấp hàng hóa của Công ty TNHH Đầu tư Tiên Du: phạm vi hàng hóa, giao hàng, kiểm hàng, tồn kho, quyền từ chối đơn và bảo hành.',
 sub='Điều kiện và hạn chế trong việc cung cấp hàng hóa',
+updated='28/09/2026',
 body=f'''
 {INFO}
 
 <h2>1. Phạm vi hàng hóa</h2>
-<p>Tiên Du kinh doanh phụ tùng, linh kiện và vật tư bảo dưỡng ô tô: hệ thống phanh, hệ thống treo và lái, phụ tùng động cơ, hệ thống điện và điện tử, bộ phận lọc, lốp và la-zăng, thân vỏ và nội thất.</p>
+<p>Tiên Du kinh doanh phụ tùng, linh kiện và vật tư bảo dưỡng ô tô: hệ thống phanh, hệ thống treo và lái, phụ tùng động cơ, hệ thống điện và điện tử, bộ phận lọc, thân vỏ và nội thất.</p>
 <p>Tiên Du không kinh doanh hàng hóa thuộc danh mục cấm kinh doanh và không kinh doanh ngành, nghề đầu tư kinh doanh có điều kiện.</p>
-<p>Hàng hóa thuộc diện phải chứng nhận, công bố hợp quy — như <strong>lốp hơi ô tô theo QCVN 34:2024/BGTVT</strong> — chỉ được bán khi có chứng nhận chất lượng hoặc tem, nhãn hợp quy hợp lệ. Thông tin chất lượng và nhãn hàng hóa được công khai trên từng trang sản phẩm.</p>
+<p>Hàng hóa thuộc diện phải chứng nhận, công bố hợp quy chỉ được bán khi có chứng nhận chất lượng hoặc tem, nhãn hợp quy hợp lệ. Thông tin chất lượng và nhãn hàng hóa được công khai trên từng trang sản phẩm.</p>
 
 <h2>2. Điều kiện với người đặt hàng</h2>
 <p>Người đặt hàng phải <strong>từ đủ 18 tuổi</strong> và có đầy đủ năng lực hành vi dân sự.</p>
@@ -286,7 +287,7 @@ body=f'''
 
 <h2>4. Hạn chế theo loại hàng</h2>
 <ul>
-  <li><strong>Hàng cồng kềnh</strong> (lốp, la-zăng, thân vỏ): phí vận chuyển tính theo kích thước thực tế, có thể không giao được tới một số khu vực.</li>
+  <li><strong>Hàng cồng kềnh</strong> (thân vỏ): phí vận chuyển tính theo kích thước thực tế, có thể không giao được tới một số khu vực.</li>
   <li><strong>Hàng dễ vỡ, dễ biến dạng</strong> (đèn, kính, chi tiết nhựa): Tiên Du khuyến nghị khách quay video khi mở kiện hàng. Đây là khuyến nghị nhằm xử lý nhanh hơn, <strong>không phải điều kiện bắt buộc</strong> để được khiếu nại.</li>
   <li><strong>Hàng đặt riêng theo yêu cầu</strong>, không có sẵn trong kho: yêu cầu đặt cọc, thời gian chờ 7–20 ngày tùy nguồn hàng. Hàng đặt riêng không áp dụng đổi trả vì lý do thay đổi nhu cầu. Vẫn được đổi trả trong các trường hợp: hàng có khuyết tật hoặc lỗi nhà sản xuất; giao sai mã; hàng không đúng mô tả hoặc cam kết; hư hỏng do vận chuyển.</li>
 </ul>
