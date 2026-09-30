@@ -547,6 +547,11 @@ tr.p-selected td{background:#fffbea}
           <option value="out_of_stock">Hết hàng</option>
           <option value="preorder">Đặt trước</option>
         </select>
+        <select class="fsel-sm" onchange="pFilter(this.value,'pub')" id="pubSel">
+          <option value="">Tất cả hiển thị</option>
+          <option value="true">✅ Đang hiển thị</option>
+          <option value="false">🔒 Đang ẩn</option>
+        </select>
         <input class="fsel-sm" type="number" min="0" placeholder="Giá từ ₫" style="width:110px" oninput="pFilter(this.value,'priceMin')" id="priceMinInp">
         <input class="fsel-sm" type="number" min="0" placeholder="Giá đến ₫" style="width:110px" oninput="pFilter(this.value,'priceMax')" id="priceMaxInp">
         <button class="btn-ghost" onclick="clearPFilters()" title="Xoá bộ lọc" style="white-space:nowrap;padding:4px 10px;font-size:12px">✕ Xoá lọc</button>
@@ -1316,7 +1321,7 @@ const db = createClient(SB_URL, SB_KEY)
 let brands = [], cats = [], postCats = []
 let allP = [], allPo = []
 const pStore = {}, poStore = {}
-const pF = { q: '', cat: '', stock: '', brand: '', priceMin: '', priceMax: '' }
+const pF = { q: '', cat: '', stock: '', brand: '', priceMin: '', priceMax: '', pub: '' }
 let editPId = null, editPoId = null, editTDId = null
 let allTD = []
 const tdStore = {}
@@ -1449,12 +1454,16 @@ async function loadProducts() {
 
 function renderP(list, total) {
   const t = total ?? list.length
-  document.getElementById('pCount').textContent = t > list.length
+  const hiddenCount = list.filter(p => !p.is_published).length
+  const hiddenBadge = hiddenCount
+    ? ` &nbsp;<span class="badge" style="background:#fff3cd;color:#856404;font-size:10px">${hiddenCount} đang ẩn</span>`
+    : ''
+  document.getElementById('pCount').innerHTML = (t > list.length
     ? `${list.length} / ${t} sản phẩm (dùng ô tìm kiếm để lọc thêm)`
-    : `${list.length} sản phẩm`
+    : `${list.length} sản phẩm`) + hiddenBadge
   const tbody = document.getElementById('pBody')
   if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="10"><div class="empty"><div class="empty-icon"><i data-lucide="package" style="width:32px;height:32px;stroke-width:1.5"></i></div><p>Không có sản phẩm</p></div></td></tr>'
+    tbody.innerHTML = '<tr><td colspan="11"><div class="empty"><div class="empty-icon"><i data-lucide="package" style="width:32px;height:32px;stroke-width:1.5"></i></div><p>Không có sản phẩm</p></div></td></tr>'
     bulkClearSelection()
     return
   }
@@ -1462,9 +1471,13 @@ function renderP(list, total) {
     const sb = p.stock_status === 'out_of_stock' ? '<span class="badge b-red">Hết hàng</span>'
              : p.stock_status === 'preorder'     ? '<span class="badge b-yellow">Đặt trước</span>'
              : '<span class="badge b-green">Còn hàng</span>'
-    const checked = selectedPIds.has(p.id) ? 'checked' : ''
-    const selCls  = selectedPIds.has(p.id) ? ' p-selected' : ''
-    return `<tr class="p-row${selCls}" data-id="${p.id}">
+    const checked  = selectedPIds.has(p.id) ? 'checked' : ''
+    const selCls   = selectedPIds.has(p.id) ? ' p-selected' : ''
+    const dimStyle = p.is_published ? '' : ' style="opacity:0.45"'
+    const webBtn   = p.is_published && p.slug
+      ? `<a class="btn-ghost" href="san-pham-chi-tiet.html?slug=${p.slug}" target="_blank" title="Xem trên website" style="display:inline-flex;align-items:center"><i data-lucide="external-link" style="width:14px;height:14px;stroke-width:2"></i></a>`
+      : `<span class="btn-ghost" style="display:inline-flex;align-items:center;opacity:0.25;cursor:default" title="Đang ẩn — không hiển thị trên website"><i data-lucide="eye-off" style="width:14px;height:14px;stroke-width:2"></i></span>`
+    return `<tr class="p-row${selCls}" data-id="${p.id}"${dimStyle}>
       <td class="p-cb-cell"><input type="checkbox" class="p-cb" ${checked} onchange="toggleSelectP('${p.id}',this.checked)"></td>
       <td style="width:54px"><img class="thumb" src="${p.thumbnail_url||''}" onerror="this.style.opacity=0" alt=""></td>
       <td><div class="rname">${p.name}</div>
@@ -1477,6 +1490,7 @@ function renderP(list, total) {
       <td><label class="toggle"><input type="checkbox" ${p.is_featured?'checked':''} onchange="qSet('products','is_featured',this.checked,'${p.id}')"><span class="slider"></span></label></td>
       <td><label class="toggle"><input type="checkbox" ${p.is_published?'checked':''} onchange="qSet('products','is_published',this.checked,'${p.id}')"><span class="slider"></span></label></td>
       <td style="text-align:right;white-space:nowrap">
+        ${webBtn}
         <button class="btn-ghost" onclick="loadProductToDrawer(pStore['${p.id}'])" title="Công cụ nhanh" style="display:inline-flex;align-items:center"><i data-lucide="sliders-horizontal" style="width:14px;height:14px;stroke-width:2"></i></button>
         <button class="btn-ghost" onclick="openProductModal(pStore['${p.id}'])" title="Sửa" style="display:inline-flex;align-items:center"><i data-lucide="pencil" style="width:14px;height:14px;stroke-width:2"></i></button>
         <button class="btn-del"   onclick="confirmDel('products','${p.id}','${esc(p.name)}')" title="Xoá" style="display:inline-flex;align-items:center"><i data-lucide="trash-2" style="width:14px;height:14px;stroke-width:2"></i></button>
@@ -1500,32 +1514,34 @@ function pFilter(val, key) {
   }
   clearTimeout(pFilterTimer)
   pFilterTimer = setTimeout(async () => {
-    const hasFilter = pF.q || pF.cat || pF.stock || pF.brand || pF.priceMin || pF.priceMax
+    const hasFilter = pF.q || pF.cat || pF.stock || pF.brand || pF.priceMin || pF.priceMax || pF.pub !== ''
     if (!hasFilter) { renderP(allP, null); return }
 
     let q = db.from('products')
       .select('*,brands(id,name),categories(id,name,slug)')
       .order('created_at', { ascending: false })
-    if (pF.q)        q = q.ilike('name', `%${pF.q}%`)
+    if (pF.q)          q = q.ilike('name', `%${pF.q}%`)
     if (pF.cat) {
       const catId = cats.find(c => c.slug === pF.cat)?.id
       if (catId) q = q.eq('category_id', catId)
     }
-    if (pF.brand)    q = q.eq('brand_id', pF.brand)
-    if (pF.stock)    q = q.eq('stock_status', pF.stock)
-    if (pF.priceMin) q = q.gte('price', Number(pF.priceMin))
-    if (pF.priceMax) q = q.lte('price', Number(pF.priceMax))
+    if (pF.brand)      q = q.eq('brand_id', pF.brand)
+    if (pF.stock)      q = q.eq('stock_status', pF.stock)
+    if (pF.priceMin)   q = q.gte('price', Number(pF.priceMin))
+    if (pF.priceMax)   q = q.lte('price', Number(pF.priceMax))
+    if (pF.pub !== '') q = q.eq('is_published', pF.pub === 'true')
     const { data } = await q.limit(200)
     if (data) data.forEach(p => { pStore[p.id] = p })
     renderP(data || [])
   }, 300)
 }
 function clearPFilters() {
-  pF.q = ''; pF.cat = ''; pF.stock = ''; pF.brand = ''; pF.priceMin = ''; pF.priceMax = ''
+  pF.q = ''; pF.cat = ''; pF.stock = ''; pF.brand = ''; pF.priceMin = ''; pF.priceMax = ''; pF.pub = ''
   document.querySelector('#tab-products .search-input').value = ''
   document.getElementById('catSel').value = ''
   document.getElementById('brandSel').value = ''
   document.getElementById('stockSel').value = ''
+  document.getElementById('pubSel').value = ''
   document.getElementById('priceMinInp').value = ''
   document.getElementById('priceMaxInp').value = ''
   document.querySelectorAll('.cat-tab').forEach(el => el.classList.toggle('active', el.dataset.slug === ''))
@@ -1538,7 +1554,28 @@ async function qSet(table, field, val, id) {
   toast('Đã lưu!')
   const arr = table === 'products' ? allP : allPo
   const row = arr.find(r => r.id === id)
-  if (row) { row[field] = val; if (table === 'products') pStore[id] = { ...pStore[id], [field]: val } }
+  if (row) {
+    row[field] = val
+    if (table === 'products') {
+      pStore[id] = { ...pStore[id], [field]: val }
+      if (field === 'is_published') {
+        const tr = document.querySelector(`tr[data-id="${id}"]`)
+        if (tr) {
+          tr.style.opacity = val ? '' : '0.45'
+          const webBtn = tr.querySelector('td:last-child a, td:last-child span.btn-ghost')
+          if (webBtn) {
+            const slug = pStore[id]?.slug
+            if (val && slug) {
+              webBtn.outerHTML = `<a class="btn-ghost" href="san-pham-chi-tiet.html?slug=${slug}" target="_blank" title="Xem trên website" style="display:inline-flex;align-items:center"><i data-lucide="external-link" style="width:14px;height:14px;stroke-width:2"></i></a>`
+            } else {
+              webBtn.outerHTML = `<span class="btn-ghost" style="display:inline-flex;align-items:center;opacity:0.25;cursor:default" title="Đang ẩn — không hiển thị trên website"><i data-lucide="eye-off" style="width:14px;height:14px;stroke-width:2"></i></span>`
+            }
+            if (window.lucide) lucide.createIcons()
+          }
+        }
+      }
+    }
+  }
 }
 
 function openProductModal(p = null) {
