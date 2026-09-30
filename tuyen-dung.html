@@ -87,33 +87,8 @@
   <div class="section-inner">
     <h2 class="section-title" style="text-align:left">Vị Trí Đang Tuyển</h2>
 
-    <div class="job-list">
-
-      <a href="tuyen-dung-chi-tiet.html" class="job-card">
-        <div class="job-card-left">
-          <span class="job-badge job-badge-open">Đang tuyển</span>
-          <h3 class="job-title">Nhân Viên Bán Hàng Phụ Tùng Ô Tô</h3>
-          <div class="job-meta-row">
-            <span class="job-meta-item">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              Nha Trang, Khánh Hoà
-            </span>
-            <span class="job-meta-item">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              7:30 – 17:30 (T2–T7)
-            </span>
-            <span class="job-meta-item">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-              Lương thỏa thuận
-            </span>
-          </div>
-          <p class="job-excerpt">Tìm người chịu khó, thật thà, có trách nhiệm. Ưu tiên có kinh nghiệm phụ tùng — chưa có cũng được đào tạo bài bản. Gắn bó lâu dài, có tương lai rõ ràng.</p>
-        </div>
-        <div class="job-card-right">
-          <span class="btn btn-yellow" style="font-size:14px">Xem chi tiết →</span>
-        </div>
-      </a>
-
+    <div class="job-list" id="jobList">
+      <div style="text-align:center; padding:40px; color:var(--color-text-muted)">Đang tải...</div>
     </div>
 
     <p style="margin-top:32px; font-size:14px; color:var(--color-text-muted); text-align:center">
@@ -206,6 +181,58 @@
   <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="msb-zalo"><img src="assets/icon-zalo.png" alt=""> Zalo</a>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function() {
+  const SB_URL = 'https://kdqjhlpvxrpijeoibgki.supabase.co'
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkcWpobHB2eHJwaWplb2liZ2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1Mjc0NDYsImV4cCI6MjA5ODEwMzQ0Nn0.cm4yaxaZZi6zIbEij8MEZqfHj_EbVhwlOK93szN-rMQ'
+  const { createClient } = supabase
+  const db = createClient(SB_URL, SB_KEY)
+
+  const SVG_LOCATION = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
+  const SVG_CLOCK    = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+  const SVG_MONEY    = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'
+
+  async function loadJobs() {
+    const container = document.getElementById('jobList')
+    const { data, error } = await db
+      .from('job_postings')
+      .select('id,title,location,salary_range,description,job_type,created_at')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+
+    if (error || !data || !data.length) {
+      container.innerHTML = '<p style="text-align:center;padding:32px;color:var(--color-text-muted)">Hiện chưa có vị trí nào đang tuyển. Vui lòng quay lại sau hoặc gửi CV chủ động.</p>'
+      return
+    }
+
+    container.innerHTML = data.map(j => {
+      const locShort = (j.location || 'Nha Trang').split(',')[0].trim()
+      const firstPara = (j.description || '').split('\n').find(l => l.trim() && !l.startsWith('•')) || ''
+      const excerpt   = firstPara.length > 150 ? firstPara.slice(0, 150) + '…' : firstPara
+      const salary    = j.salary_range ? `<span class="job-meta-item">${SVG_MONEY} ${j.salary_range}</span>` : ''
+      return `
+      <a href="tuyen-dung-chi-tiet.html?id=${j.id}" class="job-card">
+        <div class="job-card-left">
+          <span class="job-badge job-badge-open">Đang tuyển</span>
+          <h3 class="job-title">${j.title}</h3>
+          <div class="job-meta-row">
+            <span class="job-meta-item">${SVG_LOCATION} ${locShort}, Khánh Hoà</span>
+            <span class="job-meta-item">${SVG_CLOCK} 7:30 – 17:30 (T2–T7)</span>
+            ${salary}
+          </div>
+          ${excerpt ? `<p class="job-excerpt">${excerpt}</p>` : ''}
+        </div>
+        <div class="job-card-right">
+          <span class="btn btn-yellow" style="font-size:14px">Xem chi tiết →</span>
+        </div>
+      </a>`
+    }).join('')
+  }
+
+  loadJobs()
+})()
+</script>
 <script src="js/main.js"></script>
 </body>
 </html>
