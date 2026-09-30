@@ -1445,7 +1445,7 @@ async function loadProducts() {
     db.from('products')
       .select('*,brands(id,name),categories(id,name,slug)')
       .order('created_at', { ascending: false })
-      .limit(500)
+      .limit(1000)
   ])
   allP = data || []
   allP.forEach(p => pStore[p.id] = p)
