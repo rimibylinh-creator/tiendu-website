@@ -467,6 +467,9 @@ tr.p-selected td{background:#fffbea}
     <button class="nav-item" id="nav-posts" onclick="showTab('posts')">
       <span class="nav-icon"><i data-lucide="file-text" class="licon"></i></span> Bài viết
     </button>
+    <button class="nav-item" id="nav-tuyendung" onclick="showTab('tuyendung')">
+      <span class="nav-icon"><i data-lucide="users" class="licon"></i></span> Tuyển dụng
+    </button>
     <div class="nav-div"></div>
     <span class="nav-sec">Công cụ AI</span>
     <button class="nav-item" id="nav-agent" onclick="showTab('agent')">
@@ -595,6 +598,33 @@ tr.p-selected td{background:#fffbea}
             <th>Hiển thị</th><th style="text-align:right">Thao tác</th>
           </tr></thead>
           <tbody id="poBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TUYỂN DỤNG TAB -->
+    <div id="tab-tuyendung" style="display:none">
+      <div class="ph">
+        <div><div class="ph-title">Tuyển dụng</div><div class="ph-sub" id="tdCount">Đang tải...</div></div>
+        <div class="ph-actions">
+          <button class="btn-primary" onclick="openTDModal()">+ Thêm tin tuyển dụng</button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <input class="search-input" placeholder="Tìm vị trí tuyển dụng..." oninput="tdFilter(this.value)">
+        <select class="fsel" style="font-size:13px;padding:7px 10px;border-radius:8px;border:1.5px solid #d2d2d2" onchange="tdFilterStatus(this.value)">
+          <option value="">Tất cả trạng thái</option>
+          <option value="active">Đang tuyển</option>
+          <option value="closed">Đã đóng</option>
+        </select>
+      </div>
+      <div class="tcard">
+        <table>
+          <thead><tr>
+            <th>Vị trí</th><th>Bộ phận</th><th>Loại hình</th><th>Mức lương</th>
+            <th>Trạng thái</th><th>Ngày đăng</th><th style="text-align:right">Thao tác</th>
+          </tr></thead>
+          <tbody id="tdBody"></tbody>
         </table>
       </div>
     </div>
@@ -871,6 +901,82 @@ tr.p-selected td{background:#fffbea}
 
   </main>
 </div>
+</div>
+
+<!-- TUYỂN DỤNG MODAL -->
+<div class="modal-overlay" id="tdModal" style="display:none" onclick="bkClose(event,'tdModal')">
+  <div class="modal-box lg">
+    <div class="modal-head">
+      <span class="modal-title" id="tdModalTitle">Thêm tin tuyển dụng</span>
+      <button class="modal-close" onclick="closeModal('tdModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fgrid">
+        <div class="fg s2">
+          <label class="flabel">VỊ TRÍ TUYỂN DỤNG *</label>
+          <input class="finput" id="td_title" type="text" placeholder="VD: Nhân viên kinh doanh phụ tùng">
+        </div>
+        <div class="fg">
+          <label class="flabel">BỘ PHẬN</label>
+          <input class="finput" id="td_department" type="text" placeholder="VD: Kinh doanh, Kho, Kỹ thuật...">
+        </div>
+        <div class="fg">
+          <label class="flabel">ĐỊA ĐIỂM</label>
+          <input class="finput" id="td_location" type="text" placeholder="VD: Nha Trang">
+        </div>
+        <div class="fg">
+          <label class="flabel">LOẠI HÌNH</label>
+          <select class="fsel" id="td_job_type">
+            <option value="full-time">Toàn thời gian</option>
+            <option value="part-time">Bán thời gian</option>
+            <option value="contract">Hợp đồng</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="flabel">MỨC LƯƠNG</label>
+          <input class="finput" id="td_salary_range" type="text" placeholder="VD: 8–12 triệu, Thỏa thuận">
+        </div>
+        <div class="fg s2">
+          <label class="flabel">MÔ TẢ CÔNG VIỆC</label>
+          <textarea class="ftextarea" id="td_description" rows="4" placeholder="Mô tả chi tiết công việc, nhiệm vụ cần thực hiện..."></textarea>
+        </div>
+        <div class="fg s2">
+          <label class="flabel">YÊU CẦU</label>
+          <textarea class="ftextarea" id="td_requirements" rows="3" placeholder="Bằng cấp, kinh nghiệm, kỹ năng yêu cầu..."></textarea>
+        </div>
+        <div class="fg s2">
+          <label class="flabel">QUYỀN LỢI</label>
+          <textarea class="ftextarea" id="td_benefits" rows="3" placeholder="Lương thưởng, bảo hiểm, đào tạo..."></textarea>
+        </div>
+        <div class="fg">
+          <label class="flabel">TRẠNG THÁI</label>
+          <select class="fsel" id="td_status">
+            <option value="active">Đang tuyển</option>
+            <option value="closed">Đã đóng</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('tdModal')">Huỷ</button>
+      <button class="btn-primary" onclick="saveTD()">Lưu tin tuyển dụng</button>
+    </div>
+  </div>
+</div>
+
+<!-- TUYỂN DỤNG DETAIL MODAL -->
+<div class="modal-overlay" id="tdDetailModal" style="display:none" onclick="bkClose(event,'tdDetailModal')">
+  <div class="modal-box lg">
+    <div class="modal-head">
+      <span class="modal-title" id="tdDetailTitle">Chi tiết tuyển dụng</span>
+      <button class="modal-close" onclick="closeModal('tdDetailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="tdDetailBody"></div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('tdDetailModal')">Đóng</button>
+      <button class="btn-outline" id="tdDetailEditBtn" onclick="">Chỉnh sửa</button>
+    </div>
+  </div>
 </div>
 
 <!--  PRODUCT MODAL  -->
@@ -1211,7 +1317,10 @@ let brands = [], cats = [], postCats = []
 let allP = [], allPo = []
 const pStore = {}, poStore = {}
 const pF = { q: '', cat: '', stock: '', brand: '', priceMin: '', priceMax: '' }
-let editPId = null, editPoId = null
+let editPId = null, editPoId = null, editTDId = null
+let allTD = []
+const tdStore = {}
+const tdF = { q: '', status: '' }
 let delTarget = {}
 let importRows = []
 let quillEditor = null        // bài viết
@@ -1253,15 +1362,16 @@ async function startAdmin(user) {
 //  NAV 
 
 function showTab(name) {
-  ;['dashboard','products','posts','agent','shopee'].forEach(t => {
+  ;['dashboard','products','posts','tuyendung','agent','shopee'].forEach(t => {
     document.getElementById('tab-' + t).style.display = t === name ? '' : 'none'
     const nav = document.getElementById('nav-' + t)
     if (nav) nav.classList.toggle('active', t === name)
   })
-  if (name === 'products' && !allP.length)  loadProducts()
-  if (name === 'posts'    && !allPo.length) loadPosts()
-  if (name === 'agent')                      initAgentTab()
-  if (name === 'shopee'   && !allShopee.length) loadShopee()
+  if (name === 'products'  && !allP.length)  loadProducts()
+  if (name === 'posts'     && !allPo.length) loadPosts()
+  if (name === 'tuyendung' && !allTD.length) loadTD()
+  if (name === 'agent')                       initAgentTab()
+  if (name === 'shopee'    && !allShopee.length) loadShopee()
 }
 
 //  REFERENCE DATA 
@@ -3904,6 +4014,145 @@ function showShopeeDetail(id) {
       </tbody>
     </table>`
   document.getElementById('shopeeDetailOverlay').style.display = 'flex'
+}
+
+// ─── TUYỂN DỤNG ─────────────────────────────────────────────────────────────
+
+const JOB_TYPE_LABELS = { 'full-time': 'Toàn thời gian', 'part-time': 'Bán thời gian', 'contract': 'Hợp đồng' }
+
+async function loadTD() {
+  const { data, error } = await db.from('job_postings').select('*').order('created_at', { ascending: false })
+  if (error) { toast('Lỗi tải tuyển dụng: ' + error.message, 'err'); return }
+  allTD = data || []
+  allTD.forEach(j => tdStore[j.id] = j)
+  renderTD(filteredTD())
+}
+
+function filteredTD() {
+  return allTD.filter(j => {
+    const matchQ      = !tdF.q || j.title.toLowerCase().includes(tdF.q.toLowerCase()) || (j.department || '').toLowerCase().includes(tdF.q.toLowerCase())
+    const matchStatus = !tdF.status || j.status === tdF.status
+    return matchQ && matchStatus
+  })
+}
+
+function renderTD(list) {
+  const tbody = document.getElementById('tdBody')
+  document.getElementById('tdCount').textContent = `${list.length} / ${allTD.length} tin`
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:#a0a0a0">Không có tin tuyển dụng nào</td></tr>`
+    return
+  }
+  const statusBadge = s => s === 'active'
+    ? `<span class="badge green">Đang tuyển</span>`
+    : `<span class="badge" style="background:#f5f5f5;color:#737373">Đã đóng</span>`
+  tbody.innerHTML = list.map(j => `
+    <tr style="cursor:pointer" onclick="showTDDetail('${j.id}')">
+      <td style="font-weight:600">${j.title}</td>
+      <td>${j.department || '—'}</td>
+      <td>${JOB_TYPE_LABELS[j.job_type] || j.job_type}</td>
+      <td>${j.salary_range || '—'}</td>
+      <td>${statusBadge(j.status)}</td>
+      <td style="font-size:12px;color:#a0a0a0">${new Date(j.created_at).toLocaleDateString('vi-VN')}</td>
+      <td style="text-align:right;white-space:nowrap" onclick="event.stopPropagation()">
+        <button class="btn-ghost" style="padding:4px 10px;font-size:12px" onclick="openTDModal('${j.id}')">Sửa</button>
+        <button class="btn-danger" style="padding:4px 10px;font-size:12px;margin-left:4px" onclick="deleteTD('${j.id}','${j.title.replace(/'/g,'\\'')}')">Xoá</button>
+      </td>
+    </tr>`).join('')
+  lucide.createIcons()
+}
+
+function tdFilter(val) {
+  tdF.q = val
+  renderTD(filteredTD())
+}
+
+function tdFilterStatus(val) {
+  tdF.status = val
+  renderTD(filteredTD())
+}
+
+function openTDModal(id = null) {
+  const j = id ? tdStore[id] : null
+  editTDId = id || null
+  document.getElementById('tdModalTitle').textContent = j ? 'Sửa tin tuyển dụng' : 'Thêm tin tuyển dụng'
+  document.getElementById('td_title').value        = j?.title        || ''
+  document.getElementById('td_department').value   = j?.department   || ''
+  document.getElementById('td_location').value     = j?.location     || 'Nha Trang'
+  document.getElementById('td_job_type').value     = j?.job_type     || 'full-time'
+  document.getElementById('td_salary_range').value = j?.salary_range || ''
+  document.getElementById('td_description').value  = j?.description  || ''
+  document.getElementById('td_requirements').value = j?.requirements || ''
+  document.getElementById('td_benefits').value     = j?.benefits     || ''
+  document.getElementById('td_status').value       = j?.status       || 'active'
+  closeModal('tdDetailModal')
+  document.getElementById('tdModal').style.display = 'flex'
+}
+
+async function saveTD() {
+  const title = document.getElementById('td_title').value.trim()
+  if (!title) { toast('Vui lòng nhập vị trí tuyển dụng', 'err'); return }
+  const payload = {
+    title,
+    department:   document.getElementById('td_department').value.trim(),
+    location:     document.getElementById('td_location').value.trim() || 'Nha Trang',
+    job_type:     document.getElementById('td_job_type').value,
+    salary_range: document.getElementById('td_salary_range').value.trim(),
+    description:  document.getElementById('td_description').value.trim(),
+    requirements: document.getElementById('td_requirements').value.trim(),
+    benefits:     document.getElementById('td_benefits').value.trim(),
+    status:       document.getElementById('td_status').value,
+  }
+  let error
+  if (editTDId) {
+    ;({ error } = await db.from('job_postings').update(payload).eq('id', editTDId))
+  } else {
+    ;({ error } = await db.from('job_postings').insert(payload))
+  }
+  if (error) { toast('Lỗi lưu: ' + error.message, 'err'); return }
+  toast(editTDId ? 'Đã cập nhật tin tuyển dụng' : 'Đã thêm tin tuyển dụng mới', 'ok')
+  closeModal('tdModal')
+  allTD = []
+  await loadTD()
+}
+
+async function deleteTD(id, name) {
+  if (!confirm(`Xoá tin tuyển dụng "${name}"?`)) return
+  const { error } = await db.from('job_postings').delete().eq('id', id)
+  if (error) { toast('Lỗi xoá', 'err'); return }
+  toast('Đã xoá tin tuyển dụng', 'ok')
+  allTD = allTD.filter(j => j.id !== id)
+  delete tdStore[id]
+  renderTD(filteredTD())
+}
+
+function showTDDetail(id) {
+  const j = tdStore[id]
+  if (!j) return
+  const statusBadge = j.status === 'active'
+    ? `<span class="badge green">Đang tuyển</span>`
+    : `<span class="badge" style="background:#f5f5f5;color:#737373">Đã đóng</span>`
+  const section = (label, val) => val ? `
+    <div style="margin-bottom:16px">
+      <div style="font-size:11px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">${label}</div>
+      <div style="font-size:13.5px;color:#252b42;white-space:pre-wrap;line-height:1.6">${val}</div>
+    </div>` : ''
+  document.getElementById('tdDetailTitle').textContent = j.title
+  document.getElementById('tdDetailBody').innerHTML = `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      ${statusBadge}
+      <span class="chip">${JOB_TYPE_LABELS[j.job_type] || j.job_type}</span>
+      ${j.department ? `<span class="chip">${j.department}</span>` : ''}
+      ${j.location   ? `<span class="chip">📍 ${j.location}</span>` : ''}
+      ${j.salary_range ? `<span class="chip" style="background:#fff8e1;border-color:#fecd27">💰 ${j.salary_range}</span>` : ''}
+    </div>
+    ${section('Mô tả công việc', j.description)}
+    ${section('Yêu cầu', j.requirements)}
+    ${section('Quyền lợi', j.benefits)}
+    <div style="font-size:11px;color:#a0a0a0;margin-top:8px">Đăng ngày ${new Date(j.created_at).toLocaleDateString('vi-VN')}</div>
+  `
+  document.getElementById('tdDetailEditBtn').setAttribute('onclick', `closeModal('tdDetailModal');openTDModal('${id}')`)
+  document.getElementById('tdDetailModal').style.display = 'flex'
 }
 </script>
 
