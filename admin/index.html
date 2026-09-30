@@ -4056,7 +4056,7 @@ function renderTD(list) {
       <td style="font-size:12px;color:#a0a0a0">${new Date(j.created_at).toLocaleDateString('vi-VN')}</td>
       <td style="text-align:right;white-space:nowrap" onclick="event.stopPropagation()">
         <button class="btn-ghost" style="padding:4px 10px;font-size:12px" onclick="openTDModal('${j.id}')">Sửa</button>
-        <button class="btn-danger" style="padding:4px 10px;font-size:12px;margin-left:4px" onclick="deleteTD('${j.id}','${j.title.replace(/'/g,'\\'')}')">Xoá</button>
+        <button class="btn-danger" style="padding:4px 10px;font-size:12px;margin-left:4px" onclick="deleteTD('${j.id}')">Xoá</button>
       </td>
     </tr>`).join('')
   lucide.createIcons()
@@ -4116,7 +4116,8 @@ async function saveTD() {
   await loadTD()
 }
 
-async function deleteTD(id, name) {
+async function deleteTD(id) {
+  const name = tdStore[id]?.title || ''
   if (!confirm(`Xoá tin tuyển dụng "${name}"?`)) return
   const { error } = await db.from('job_postings').delete().eq('id', id)
   if (error) { toast('Lỗi xoá', 'err'); return }
