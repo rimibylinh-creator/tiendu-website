@@ -1,6 +1,5 @@
 // Khối "Tổng quan sản phẩm" (gạch đầu dòng) cho trang chi tiết sản phẩm.
-// - Trang động san-pham-chi-tiet.html: gọi buildProductOverview({...}) với dữ liệu Supabase.
-// - 12 trang tĩnh san-pham/*.html: tự đọc bảng thông số + xe tương thích trong DOM khi tải trang.
+// san-pham-chi-tiet.html gọi buildProductOverview({...}) với dữ liệu Supabase.
 
 ;(function () {
   const PENDING = 'Đang cập nhật'
@@ -70,19 +69,4 @@
   }
 
   window.buildProductOverview = buildProductOverview
-
-  // ── Trang tĩnh: đọc dữ liệu có sẵn trong HTML ──────────────
-  function initStatic() {
-    if (!document.body.dataset.productSlug) return
-    const title = document.querySelector('.pd-info-title')
-    if (!title || document.querySelector('.pd-overview')) return
-    const specs = [...document.querySelectorAll('.pd-specs-table tr')].map(tr => {
-      const td = tr.querySelectorAll('td')
-      return td.length >= 2 ? { key: td[0].textContent.trim(), value: td[1].textContent.trim() } : null
-    }).filter(Boolean)
-    const vehicles = [...document.querySelectorAll('.pd-vehicles-grid .chip')].map(c => c.textContent.trim())
-    title.insertAdjacentHTML('afterend', buildProductOverview({ name: title.textContent.trim(), specs, vehicles }))
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initStatic)
-  else initStatic()
 })()
