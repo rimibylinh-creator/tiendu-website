@@ -34,5 +34,8 @@
     { "source": "/san-pham/:slug([^.]+)", "destination": "/san-pham.html", "permanent": true },
     { "source": "/products:path(/.*)?", "destination": "/san-pham.html", "permanent": true },
     { "source": "/page:path(/.*)?", "destination": "/san-pham.html", "permanent": true }
+  ],
+  "rewrites": [
+    { "source": "/sitemap-products.xml", "destination": "/api/sitemap-products" }
   ]
 }

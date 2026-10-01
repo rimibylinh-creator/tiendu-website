@@ -7,7 +7,7 @@
     <lastmod>2026-06-29</lastmod>
   </sitemap>
 
-  <!-- 10.741 sản phẩm -->
+  <!-- Sản phẩm đang hiển thị (sinh động từ database qua api/sitemap-products.js) -->
   <sitemap>
     <loc>https://ototiendu.com/sitemap-products.xml</loc>
     <lastmod>2026-06-29</lastmod>
