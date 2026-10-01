@@ -243,7 +243,6 @@
   const catName = product.categories?.name || ''
   const specs   = (product.short_specs || []).slice(0, 5)
   const stock   = stockLabel(product.stock_status)
-  const stockOk = product.stock_status !== 'out_of_stock'
 
   // ── Gallery images ────────────────────────────────────────
   const allImages = []
@@ -275,9 +274,7 @@
   // ── Chips ─────────────────────────────────────────────────
   const brandChip = brand   ? `<span class="chip chip-brand">${escHtml(brand.toUpperCase())}</span>` : ''
   const catChip   = catName ? `<span class="chip chip-category">${escHtml(catName)}</span>` : ''
-  const stockChipHTML = stockOk
-    ? `<span class="stock-badge" style="font-size:12px">Còn hàng</span>`
-    : `<span class="stock-badge" style="font-size:12px;background:#fee2e2;color:#dc2626">Hết hàng</span>`
+  const stockChipHTML = `<span class="stock-badge${stockClass(product.stock_status)}" style="font-size:12px">${stock}</span>`
 
   // ── Xe tương thích ────────────────────────────────────────
   const vehicles = product.compatible_vehicles || []
@@ -481,6 +478,8 @@
         price: product.price,
         availability: product.stock_status === 'out_of_stock'
           ? 'https://schema.org/OutOfStock'
+          : product.stock_status === 'preorder'
+          ? 'https://schema.org/PreOrder'
           : 'https://schema.org/InStock',
         hasMerchantReturnPolicy: {
           '@type': 'MerchantReturnPolicy',

@@ -663,6 +663,8 @@ p { margin: 0; }
   font-weight: 500;
   white-space: nowrap;
 }
+.stock-badge.stock-out { background: #fee2e2; color: #dc2626; }
+.stock-badge.stock-preorder { background: #fef9c3; color: #a16207; }
 .product-card { cursor: pointer; }
 
 .product-cta {

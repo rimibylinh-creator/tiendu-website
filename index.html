@@ -398,10 +398,13 @@
 <script src="js/supabase-client.js"></script>
 <script>
 (async function () {
-  // 4 sản phẩm nổi bật
+  // Sản phẩm nổi bật: ưu tiên SP bật "Nổi bật" trong admin, bù bằng SP mới nhất cho đủ 8
   const featGrid = document.getElementById('featuredGrid')
   if (featGrid) {
-    const products = await getProducts({ limit: 8 })
+    const featured = await getFeaturedProducts()
+    const fill = featured.length < 8 ? await getProducts({ limit: 8 + featured.length }) : []
+    const seen = new Set(featured.map(p => p.id))
+    const products = featured.concat(fill.filter(p => !seen.has(p.id))).slice(0, 8)
     featGrid.innerHTML = products.length
       ? products.map(p => renderProductCard(p, 'san-pham/')).join('')
       : '<p style="color:var(--color-text-muted);padding:24px 0;grid-column:1/-1">Chưa có sản phẩm.</p>'

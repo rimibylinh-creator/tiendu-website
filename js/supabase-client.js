@@ -149,7 +149,7 @@ async function getFeaturedProducts() {
     .order('created_at', { ascending: false })
   if (error) console.error('getFeaturedProducts:', error)
   const result = data || []
-  TienduCache.set('featured', result, 300)   // lưu cache 5 phút
+  TienduCache.set('featured', result, 60)    // cache 60s — thay đổi 'Nổi bật' trong admin hiện nhanh
   return result
 }
 
@@ -187,6 +187,16 @@ function formatDate(iso) {
   return d.getDate() + ' tháng ' + (d.getMonth() + 1) + ', ' + d.getFullYear()
 }
 
+function stockClass(status) {
+  if (status === 'out_of_stock') return ' stock-out'
+  if (status === 'preorder')     return ' stock-preorder'
+  return ''
+}
+
+function escAttr(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+}
+
 function stockLabel(status) {
   if (status === 'out_of_stock') return 'Hết hàng'
   if (status === 'preorder')     return 'Đặt trước'
@@ -207,19 +217,19 @@ function renderProductCard(p, baseHref) {
   return `
 <article class="product-card" data-category="${catSlug}">
   <div class="product-card-image">
-    <img src="${p.thumbnail_url || 'assets/no-image.svg'}" alt="${p.name}" loading="lazy" onerror="this.src='assets/no-image.svg'">
+    <img src="${p.thumbnail_url || 'assets/no-image.svg'}" alt="${escAttr(p.name)}" loading="lazy" onerror="this.src='assets/no-image.svg'">
     <div class="product-tags">
       <div class="tag-group"><span class="chip chip-brand">${brand.toUpperCase()}</span></div>
       <span class="chip chip-category">${catName}</span>
     </div>
   </div>
   <div class="product-card-content">
-    <p class="product-name">${p.name}</p>
+    <p class="product-name">${escAttr(p.name)}</p>
     <div class="product-desc">${specHTML}</div>
     <div class="product-divider"></div>
     <div class="price-row">
       <span class="price">${formatPrice(p.price)}</span>
-      <span class="stock-badge">${stockLabel(p.stock_status)}</span>
+      <span class="stock-badge${stockClass(p.stock_status)}">${stockLabel(p.stock_status)}</span>
     </div>
     <a href="${href}" class="btn btn-yellow product-cta">Xem chi tiết →</a>
   </div>

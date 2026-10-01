@@ -567,6 +567,14 @@ tr.p-selected td{background:#fffbea}
           <tbody id="pBody"></tbody>
         </table>
         </div>
+        <!-- Phân trang (danh sách không lọc) -->
+        <div class="p-pager" id="pPager" style="display:none;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-top:1px solid #f0f0f0;font-size:12px;color:#737373">
+          <span id="pPagerInfo"></span>
+          <div style="display:flex;gap:6px">
+            <button class="btn-outline" id="pPrevBtn" style="padding:5px 12px;font-size:12px" onclick="gotoPPage(pPage - 1)">‹ Trước</button>
+            <button class="btn-outline" id="pNextBtn" style="padding:5px 12px;font-size:12px" onclick="gotoPPage(pPage + 1)">Sau ›</button>
+          </div>
+        </div>
         <!-- Bulk action bar -->
         <div class="bulk-bar" id="bulkBar" style="display:none">
           <span class="bulk-count" id="bulkCount">0 đã chọn</span>
@@ -1439,18 +1447,47 @@ async function loadDashboard() {
 
 //  PRODUCTS 
 
-async function loadProducts() {
+// Phân trang danh sách SP: API Supabase trả tối đa 1000 dòng/lần, nên trước đây admin
+// chỉ thấy 1000 SP mới nhất và "Chọn tất cả" chỉ áp dụng cho 1000 SP đó.
+const P_PAGE_SIZE = 500
+let pPage = 0
+let pTotal = 0
+
+async function loadProducts(page = pPage) {
   document.getElementById('pCount').textContent = 'Đang tải...'
-  const [{ count: total }, { data }] = await Promise.all([
-    db.from('products').select('id', { count: 'exact', head: true }),
-    db.from('products')
-      .select('*,brands(id,name),categories(id,name,slug)')
-      .order('created_at', { ascending: false })
-      .limit(1000)
-  ])
+  const { count: total } = await db.from('products').select('id', { count: 'exact', head: true })
+  pTotal = total ?? 0
+  const lastPage = Math.max(0, Math.ceil(pTotal / P_PAGE_SIZE) - 1)
+  pPage = Math.min(Math.max(0, page), lastPage)
+  const from = pPage * P_PAGE_SIZE
+  const { data } = await db.from('products')
+    .select('*,brands(id,name),categories(id,name,slug)')
+    .order('created_at', { ascending: false })
+    .order('id')
+    .range(from, from + P_PAGE_SIZE - 1)
   allP = data || []
   allP.forEach(p => pStore[p.id] = p)
-  renderP(allP, total ?? allP.length)
+  bulkClearSelection()
+  renderP(allP, pTotal)
+}
+
+function gotoPPage(page) {
+  loadProducts(page)
+  document.getElementById('tab-products')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function updatePPager(isPagedList) {
+  const pager = document.getElementById('pPager')
+  if (!pager) return
+  const pages = Math.max(1, Math.ceil(pTotal / P_PAGE_SIZE))
+  pager.style.display = isPagedList && pages > 1 ? 'flex' : 'none'
+  if (!isPagedList) return
+  const from = pPage * P_PAGE_SIZE + 1
+  const to   = Math.min(pTotal, (pPage + 1) * P_PAGE_SIZE)
+  document.getElementById('pPagerInfo').textContent =
+    `Trang ${pPage + 1} / ${pages} · SP ${from.toLocaleString('vi-VN')}–${to.toLocaleString('vi-VN')} / ${pTotal.toLocaleString('vi-VN')}`
+  document.getElementById('pPrevBtn').disabled = pPage <= 0
+  document.getElementById('pNextBtn').disabled = pPage >= pages - 1
 }
 
 function renderP(list, total) {
@@ -1459,8 +1496,12 @@ function renderP(list, total) {
   const hiddenBadge = hiddenCount
     ? ` &nbsp;<span class="badge" style="background:#fff3cd;color:#856404;font-size:10px">${hiddenCount} đang ẩn</span>`
     : ''
-  document.getElementById('pCount').innerHTML = (t > list.length
-    ? `${list.length} / ${t} sản phẩm (dùng ô tìm kiếm để lọc thêm)`
+  const isPagedList = list === allP
+  updatePPager(isPagedList)
+  document.getElementById('pCount').innerHTML = (isPagedList && t > list.length
+    ? `Tổng ${t.toLocaleString('vi-VN')} sản phẩm · đang xem trang ${pPage + 1} (${list.length} SP)`
+    : !isPagedList && list.length >= 200
+    ? `200 kết quả đầu tiên — thu hẹp bộ lọc để xem đủ`
     : `${list.length} sản phẩm`) + hiddenBadge
   const tbody = document.getElementById('pBody')
   if (!list.length) {
@@ -1516,7 +1557,7 @@ function pFilter(val, key) {
   clearTimeout(pFilterTimer)
   pFilterTimer = setTimeout(async () => {
     const hasFilter = pF.q || pF.cat || pF.stock || pF.brand || pF.priceMin || pF.priceMax || pF.pub !== ''
-    if (!hasFilter) { renderP(allP, null); return }
+    if (!hasFilter) { renderP(allP, pTotal); return }
 
     let q = db.from('products')
       .select('*,brands(id,name),categories(id,name,slug)')
@@ -1546,7 +1587,7 @@ function clearPFilters() {
   document.getElementById('priceMinInp').value = ''
   document.getElementById('priceMaxInp').value = ''
   document.querySelectorAll('.cat-tab').forEach(el => el.classList.toggle('active', el.dataset.slug === ''))
-  renderP(allP)
+  renderP(allP, pTotal)
 }
 
 async function qSet(table, field, val, id) {
@@ -3333,7 +3374,7 @@ async function confirmBulkApply() {
   document.getElementById('dcScanBtn').innerHTML = '<i data-lucide="scan-line" style="width:13px;height:13px;stroke-width:2"></i> Quét & xem danh sách bị ảnh hưởng'
   if (window.lucide) lucide.createIcons()
 
-  if (allP.length) renderP(allP, allP.length)
+  if (allP.length) renderP(allP, pTotal)
   if (qeProduct && pStore[qeProduct.id]) { qeProduct = pStore[qeProduct.id]; updateAdvLabels(qeProduct) }
 
   if (errors.length) toast(`Cập nhật ${done}/${done + errors.length} SP — ${errors.length} lỗi`, 'err')
@@ -3392,7 +3433,7 @@ function toggleSelectAll(checked) {
 function updateBulkBar() {
   const n = selectedPIds.size
   document.getElementById('bulkBar').style.display  = n ? '' : 'none'
-  document.getElementById('bulkCount').textContent  = `${n} sản phẩm đã chọn`
+  document.getElementById('bulkCount').textContent  = `${n} sản phẩm đã chọn (trong danh sách đang xem)`
   const allCb = document.getElementById('pSelectAll')
   const total = document.querySelectorAll('.p-cb').length
   if (allCb) allCb.checked = n > 0 && n === total
@@ -3418,7 +3459,7 @@ async function bulkSetPublished(v) {
   ids.forEach(id => { if (pStore[id]) pStore[id].is_published = v })
   const idx = allP.findIndex(p => ids.includes(p.id))
   allP.forEach(p => { if (ids.includes(p.id)) p.is_published = v })
-  renderP(allP)
+  renderP(allP, pTotal)
   bulkClearSelection()
   toast(errs ? `Lỗi ${errs}/${ids.length} SP` : `Đã ${label} ${ids.length} sản phẩm`, errs ? 'err' : 'ok')
 }
@@ -3431,7 +3472,7 @@ async function bulkSetFeatured(v) {
   const errs = results.filter(r => r.error).length
   allP.forEach(p => { if (ids.includes(p.id)) p.is_featured = v })
   ids.forEach(id => { if (pStore[id]) pStore[id].is_featured = v })
-  renderP(allP)
+  renderP(allP, pTotal)
   bulkClearSelection()
   toast(errs ? `Lỗi ${errs}/${ids.length} SP` : `Đã ${label} ${ids.length} sản phẩm`, errs ? 'err' : 'ok')
 }
@@ -3447,7 +3488,7 @@ async function bulkDelete() {
     const i = allP.findIndex(p => p.id === id)
     if (i >= 0) allP.splice(i, 1)
   })
-  renderP(allP)
+  renderP(allP, pTotal)
   bulkClearSelection()
   toast(errs ? `Lỗi ${errs}/${ids.length} SP` : `Đã xoá ${ids.length} sản phẩm`, errs ? 'err' : 'ok')
 }
