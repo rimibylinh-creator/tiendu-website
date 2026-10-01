@@ -523,7 +523,7 @@ tr.p-selected td{background:#fffbea}
               <i data-lucide="database" class="licon"></i> Kho giá nhập <i data-lucide="chevron-down" style="width:13px;height:13px;stroke-width:2.5"></i>
             </button>
             <div class="btn-drop-menu" id="khoDropMenu">
-              <button id="btnSyncSheet" class="btn-drop-item" onclick="closeDrop('khoDropWrap');syncFromSheet()"><i data-lucide="download" class="licon"></i> Lấy lại kho gốc</button>
+              <button id="btnSyncSheet" class="btn-drop-item" onclick="closeDrop('khoDropWrap');syncFromSheet()"><i data-lucide="refresh-cw" class="licon"></i> Đồng bộ File Kho</button>
               <a class="btn-drop-item" href="https://docs.google.com/spreadsheets/d/1cwEq5aNw4Q1IX_aFc5dq4qefrWzobjQWxRpOA9ubFug/edit" target="_blank" rel="noopener" onclick="closeDrop('khoDropWrap')"><i data-lucide="table-2" class="licon"></i> Mở Sheet</a>
             </div>
           </div>
@@ -1276,18 +1276,18 @@ tr.p-selected td{background:#fffbea}
 
 <!--  IMPORT PREVIEW MODAL  -->
 <div class="modal-overlay" id="importModal" style="display:none" onclick="bkClose(event,'importModal')">
-<div class="modal-box lg">
+<div class="modal-box xl">
   <div class="modal-head">
-    <span class="modal-title">Xem trước dữ liệu nhập</span>
-    <button class="modal-close" onclick="closeModal('importModal')"></button>
+    <span class="modal-title">Chọn sản phẩm để nhập</span>
+    <button class="modal-close" onclick="closeModal('importModal')">✕</button>
   </div>
   <div class="modal-body">
     <div id="importPreview"></div>
   </div>
   <div class="modal-foot">
-    <span style="color:#737373;font-size:12px" id="importErrNote"></span>
+    <span style="color:#ef4444;font-size:12px" id="importErrNote"></span>
     <button class="btn-outline" onclick="closeModal('importModal')">Hủy</button>
-    <button class="btn-primary" onclick="confirmImport()">Nhập <span id="importCount">0</span> sản phẩm vào kho</button>
+    <button class="btn-primary" onclick="confirmImport()">Nhập <span id="importCount">0</span> sản phẩm đã chọn</button>
   </div>
 </div>
 </div>
@@ -1328,6 +1328,7 @@ const tdStore = {}
 const tdF = { q: '', status: '' }
 let delTarget = {}
 let importRows = []
+let selectedImportIdx = new Set()
 let quillEditor = null        // bài viết
 let quillProductEditor = null // mô tả sản phẩm
 
@@ -1722,51 +1723,115 @@ async function handleImport(input) {
 
     if (!importRows.length) { toast('Không tìm thấy dữ liệu hợp lệ. Kiểm tra tên cột.', 'err'); return }
 
-    showImportPreview()
+    toast('Đang kiểm tra trùng lặp...')
+    const dupSet = await detectDuplicates(importRows)
+    showImportPreview({ duplicateSet: dupSet })
   } catch (e) {
     toast('Không đọc được file: ' + e.message, 'err')
   }
 }
 
+async function detectDuplicates(rows) {
+  const { data: existing } = await db.from('products').select('name, sku')
+  const existingNames = new Set((existing || []).map(p => p.name?.toLowerCase().trim()).filter(Boolean))
+  const existingSkus  = new Set((existing || []).filter(p => p.sku).map(p => p.sku.toLowerCase().trim()))
+  const dupSet = new Set()
+  rows.forEach((r, i) => {
+    const nameMatch = r.name && existingNames.has(r.name.toLowerCase().trim())
+    const skuMatch  = r.sku  && existingSkus.has(r.sku.toLowerCase().trim())
+    if (nameMatch || skuMatch) dupSet.add(i)
+  })
+  return dupSet
+}
+
 function showImportPreview(opts = {}) {
-  const preview5 = importRows.slice(0, 5)
-  const errRows  = importRows.filter(r => !r.name || !r.price)
-  const sourceLabel = opts.source === 'sheet' ? 'từ Google Sheet' : 'từ file'
+  const { skippedNote = '', duplicateSet = new Set() } = opts
+  const total    = importRows.length
+  const dupCount = duplicateSet.size
+
+  // Chọn sẵn tất cả row không bị trùng
+  selectedImportIdx = new Set(importRows.map((_, i) => i).filter(i => !duplicateSet.has(i)))
+
+  const rowsHTML = importRows.map((r, i) => {
+    const isDup = duplicateSet.has(i)
+    return `<tr style="${isDup ? 'opacity:0.4;background:#fafafa' : ''}">
+      <td style="text-align:center;padding:6px 10px;width:70px">
+        ${isDup
+          ? `<span style="font-size:10px;color:#ef4444;font-weight:700;white-space:nowrap">Đã tồn tại</span>`
+          : `<input type="checkbox" class="import-cb" data-idx="${i}" checked onchange="toggleImportRow(${i},this.checked)">`
+        }
+      </td>
+      <td style="padding:6px 10px">
+        <div style="font-weight:600;font-size:13px">${r.name}</div>
+        ${r.sku ? `<div style="font-size:11px;color:#737373">Mã: ${r.sku}</div>` : ''}
+      </td>
+      <td style="padding:6px 10px;white-space:nowrap;font-weight:600">${fmtP(r.price)}</td>
+      <td style="padding:6px 10px;font-size:12px;color:#737373">${r.brand_name||'—'}</td>
+      <td style="padding:6px 10px;font-size:12px;color:#737373">${r.category_name||'—'}</td>
+    </tr>`
+  }).join('')
+
   document.getElementById('importPreview').innerHTML = `
-    <div class="import-info">Tìm thấy <strong>${importRows.length}</strong> sản phẩm hợp lệ ${sourceLabel}. Xem trước 5 dòng đầu:</div>
-    ${opts.skippedNote ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#c2410c">${opts.skippedNote}</div>` : ''}
-    ${!opts.skippedNote && errRows.length ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#c2410c">Đã bỏ qua ${errRows.length} dòng thiếu tên hoặc giá</div>` : ''}
-    ${importRows.length > 2000 ? `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#1e40af">Số lượng lớn — quá trình nhập sẽ chạy theo từng lô, có thể mất vài phút. Đừng đóng trang trong khi đang nhập.</div>` : ''}
-    <div style="overflow-x:auto">
-      <table class="import-preview-table">
-        <thead><tr><th>Tên sản phẩm</th><th>Giá</th><th>Tồn kho</th><th>Thương hiệu</th><th>Danh mục</th><th>Thông số</th></tr></thead>
-        <tbody>
-          ${preview5.map(r => `<tr>
-            <td><strong>${r.name}</strong></td>
-            <td>${fmtP(r.price)}</td>
-            <td>${r.stock_quantity}</td>
-            <td>${r.brand_name||'—'}</td>
-            <td>${r.category_name||'—'}</td>
-            <td style="font-size:11px;color:#737373">${[r.spec1,r.spec2,r.spec3].filter(Boolean).join(' · ')||'—'}</td>
-          </tr>`).join('')}
-        </tbody>
+    ${skippedNote ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#c2410c">${skippedNote}</div>` : ''}
+    ${dupCount ? `<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#854d0e">⚠️ Phát hiện <strong>${dupCount}</strong> sản phẩm đã tồn tại (theo tên hoặc mã) — đã bỏ qua, không thể chọn.</div>` : ''}
+    ${total > 2000 ? `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#1e40af">Số lượng lớn — quá trình nhập sẽ chạy theo từng lô, có thể mất vài phút.</div>` : ''}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;font-weight:600;user-select:none">
+        <input type="checkbox" id="importSelectAll" ${selectedImportIdx.size > 0 ? 'checked' : ''} onchange="importToggleAll(this.checked)">
+        Chọn tất cả
+      </label>
+      <span id="importSelCount" style="font-size:12px;color:#737373">Đã chọn <strong>${selectedImportIdx.size}</strong> / ${total} sản phẩm</span>
+    </div>
+    <div style="max-height:420px;overflow-y:auto;border:1px solid #ebebeb;border-radius:8px">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr style="background:#f7f7f7">
+            <th style="padding:8px 10px;text-align:center;font-size:11px;font-weight:700;color:#737373;border-bottom:1px solid #ebebeb;position:sticky;top:0;background:#f7f7f7">CHỌN</th>
+            <th style="padding:8px 10px;text-align:left;font-size:11px;font-weight:700;color:#737373;border-bottom:1px solid #ebebeb;position:sticky;top:0;background:#f7f7f7">TÊN SẢN PHẨM</th>
+            <th style="padding:8px 10px;text-align:left;font-size:11px;font-weight:700;color:#737373;border-bottom:1px solid #ebebeb;position:sticky;top:0;background:#f7f7f7">GIÁ</th>
+            <th style="padding:8px 10px;text-align:left;font-size:11px;font-weight:700;color:#737373;border-bottom:1px solid #ebebeb;position:sticky;top:0;background:#f7f7f7">THƯƠNG HIỆU</th>
+            <th style="padding:8px 10px;text-align:left;font-size:11px;font-weight:700;color:#737373;border-bottom:1px solid #ebebeb;position:sticky;top:0;background:#f7f7f7">DANH MỤC</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHTML}</tbody>
       </table>
     </div>
-    ${importRows.length > 5 ? `<p style="color:#737373;margin-top:10px;font-size:12px">... và ${importRows.length-5} sản phẩm khác</p>` : ''}
   `
-  document.getElementById('importCount').textContent = importRows.length
+  document.getElementById('importCount').textContent = selectedImportIdx.size
   document.getElementById('importErrNote').textContent = ''
   document.getElementById('importModal').style.display = 'flex'
 }
 
+function toggleImportRow(idx, checked) {
+  if (checked) selectedImportIdx.add(idx); else selectedImportIdx.delete(idx)
+  document.getElementById('importCount').textContent = selectedImportIdx.size
+  const cbs = [...document.querySelectorAll('.import-cb')]
+  const sa  = document.getElementById('importSelectAll')
+  if (sa) { sa.checked = cbs.every(c => c.checked); sa.indeterminate = !sa.checked && cbs.some(c => c.checked) }
+  const sc = document.getElementById('importSelCount')
+  if (sc) sc.innerHTML = `Đã chọn <strong>${selectedImportIdx.size}</strong> / ${importRows.length} sản phẩm`
+}
+
+function importToggleAll(checked) {
+  document.querySelectorAll('.import-cb').forEach(cb => {
+    cb.checked = checked
+    const idx = parseInt(cb.dataset.idx)
+    if (checked) selectedImportIdx.add(idx); else selectedImportIdx.delete(idx)
+  })
+  document.getElementById('importCount').textContent = selectedImportIdx.size
+  const sc = document.getElementById('importSelCount')
+  if (sc) sc.innerHTML = `Đã chọn <strong>${selectedImportIdx.size}</strong> / ${importRows.length} sản phẩm`
+}
+
 async function confirmImport() {
-  if (!importRows.length) return
+  const rowsToImport = importRows.filter((_, i) => selectedImportIdx.has(i))
+  if (!rowsToImport.length) { toast('Chưa chọn sản phẩm nào để nhập', 'err'); return }
 
   const brandMap = {}; brands.forEach(b => brandMap[b.name.toLowerCase()] = b.id)
   const catMap   = {}; cats.forEach(c => { catMap[c.name.toLowerCase()] = c.id; catMap[c.slug] = c.id })
 
   const validStatuses = ['in_stock','out_of_stock','preorder']
-  const payload = importRows.map(r => ({
+  const payload = rowsToImport.map(r => ({
     name:          r.name,
     slug:          r.slug || toSlug(r.name),
     sku:           r.sku || null,
@@ -1987,7 +2052,9 @@ async function syncFromSheet() {
     const skippedMsg = (skipped.noName + skipped.noPrice) > 0
       ? `Bỏ qua ${skipped.noName} dòng thiếu tên, ${skipped.noPrice} dòng thiếu giá.`
       : ''
-    showImportPreview({ source: 'sheet', skippedNote: skippedMsg })
+    btn.textContent = 'Đang kiểm tra trùng lặp...'
+    const dupSet = await detectDuplicates(importRows)
+    showImportPreview({ source: 'sheet', skippedNote: skippedMsg, duplicateSet: dupSet })
   } catch (e) {
     toast('Đồng bộ thất bại: ' + e.message, 'err')
     console.error('[Sheet Sync] Lỗi:', e)
