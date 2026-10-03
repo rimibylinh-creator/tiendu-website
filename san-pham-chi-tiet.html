@@ -485,7 +485,8 @@
           '@type': 'MerchantReturnPolicy',
           applicableCountry: 'VN',
           returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-          merchantReturnDays: 5
+          merchantReturnDays: 5,
+          returnMethod: ['https://schema.org/ReturnInStore', 'https://schema.org/ReturnByMail']
         },
         seller: {
           '@type': 'LocalBusiness',
@@ -503,6 +504,9 @@
     if (brand) schema.brand = { '@type': 'Brand', name: brand }
     if (product.sku) schema.sku = product.sku
     document.getElementById('productSchema').textContent = JSON.stringify(schema)
+  } else {
+    // Không đủ điều kiện Product/Merchant listing → bỏ khối JSON-LD rỗng '{}'
+    document.getElementById('productSchema').remove()
   }
 
   // ── Related products ──────────────────────────────────────
