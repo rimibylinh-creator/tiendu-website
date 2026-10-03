@@ -486,7 +486,19 @@
           applicableCountry: 'VN',
           returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
           merchantReturnDays: 5,
-          returnMethod: ['https://schema.org/ReturnInStore', 'https://schema.org/ReturnByMail']
+          returnMethod: ['https://schema.org/ReturnInStore', 'https://schema.org/ReturnByMail'],
+          // Chính sách đổi trả mục 5: đổi trả do lý do của khách → khách chịu phí gửi trả
+          returnFees: 'https://schema.org/ReturnShippingFees'
+        },
+        // Chính sách giá mục 3.2: giao toàn quốc, 0–4 ngày làm việc kể từ khi xác nhận đơn
+        shippingDetails: {
+          '@type': 'OfferShippingDetails',
+          shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'VN' },
+          deliveryTime: {
+            '@type': 'ShippingDeliveryTime',
+            handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 0, unitCode: 'DAY' },
+            transitTime:  { '@type': 'QuantitativeValue', minValue: 0, maxValue: 4, unitCode: 'DAY' }
+          }
         },
         seller: {
           '@type': 'LocalBusiness',
@@ -502,7 +514,10 @@
       }
     }
     if (brand) schema.brand = { '@type': 'Brand', name: brand }
-    if (product.sku) schema.sku = product.sku
+    // SKU phải là 1 mã sạch: lấy mã đầu tiên (tách theo "/"), bỏ chữ có dấu/ghi chú ("XỊN", "MÂM"…)
+    const cleanSku = String(product.sku || '').split('/')[0]
+      .replace(/[^\x20-\x7E]\S*/g, ' ').trim().replace(/[\s-]+/g, '-').replace(/^-|-$/g, '')
+    if (cleanSku) schema.sku = cleanSku
     document.getElementById('productSchema').textContent = JSON.stringify(schema)
   } else {
     // Không đủ điều kiện Product/Merchant listing → bỏ khối JSON-LD rỗng '{}'
