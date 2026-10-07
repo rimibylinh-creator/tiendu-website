@@ -245,9 +245,7 @@
     const { data: j, error } = await db.from('job_postings').select('*').eq('id', id).single()
 
     if (error || !j) {
-      document.getElementById('jobDetailHeader').innerHTML = '<p style="padding:32px;color:var(--color-text-muted)">Không tìm thấy tin tuyển dụng này. <a href="tuyen-dung.html" style="color:var(--color-primary-dark);font-weight:600">Xem tất cả tin →</a></p>'
-      document.getElementById('jobStory').style.display = 'none'
-      document.getElementById('jobSections').style.display = 'none'
+      window.location.replace('/404')
       return
     }
 

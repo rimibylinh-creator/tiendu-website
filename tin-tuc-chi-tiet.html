@@ -296,8 +296,8 @@
   document.getElementById('postLoading').style.display = 'none'
 
   if (!post) {
-    document.getElementById('postNotFound').style.display = 'block'
-    document.title = 'Không tìm thấy — Tiên Du'
+    // Bài viết không tồn tại / chưa đăng → trang 404 (trả mã 404 thật)
+    window.location.replace('/404')
     return
   }
 

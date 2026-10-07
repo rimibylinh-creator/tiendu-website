@@ -215,8 +215,8 @@
   document.getElementById('pdLoading').style.display = 'none'
 
   if (!product) {
-    document.getElementById('pdNotFound').hidden = false
-    document.title = 'Không tìm thấy — Tiên Du'
+    // Sản phẩm không tồn tại / đã bị ẩn → trang 404 (trả mã 404 thật)
+    window.location.replace('/404')
     return
   }
 
