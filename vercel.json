@@ -36,6 +36,10 @@
     { "source": "/page:path(/.*)?", "destination": "/san-pham.html", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/sitemap-products.xml", "destination": "/api/sitemap-products" }
-  ]
+    { "source": "/sitemap-products.xml", "destination": "/api/sitemap-products" },
+    { "source": "/san-pham-chi-tiet.html", "destination": "/api/product" }
+  ],
+  "functions": {
+    "api/product.js": { "includeFiles": "api/_tpl/**" }
+  }
 }
