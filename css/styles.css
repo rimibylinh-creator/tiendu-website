@@ -973,7 +973,13 @@ p { margin: 0; }
   gap: 12px;
   margin-top: 4px;
 }
-.footer-gov a { flex-shrink: 0; display: inline-flex; }
+.footer-gov a {
+  flex-shrink: 0;
+  display: inline-flex;
+  background: var(--color-white);
+  padding: 6px;
+  border-radius: var(--radius-md);
+}
 .footer-gov img { height: 44px; width: auto; }
 .footer-gov span {
   color: #b8b8b8;
