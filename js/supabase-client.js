@@ -176,6 +176,17 @@ async function getPostBySlug(slug) {
   return data || null
 }
 
+async function getProductsBySlugs(slugs) {
+  if (!slugs || !slugs.length) return []
+  const { data, error } = await db
+    .from('products')
+    .select('name, slug, price, thumbnail_url, brands(name), categories(name), stock_status')
+    .in('slug', slugs)
+    .eq('is_published', true)
+  if (error) console.error('getProductsBySlugs:', error)
+  return data || []
+}
+
 // ── Helpers ────────────────────────────────────────────────────
 
 function formatPrice(price) {

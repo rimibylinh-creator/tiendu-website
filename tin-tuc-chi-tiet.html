@@ -139,6 +139,35 @@
   .post-title { font-size: 24px }
   .post-body-wrap { padding-left: 24px; padding-right: 24px; padding-top: 32px }
 }
+/* Related products section */
+.rel-products-section {
+  padding: 64px var(--container-pad);
+  background: #f5f5f5;
+}
+.rel-products-section .section-title {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.rel-products-section .section-sub {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 15px;
+  margin-bottom: 36px;
+}
+.rel-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+@media (max-width: 860px) {
+  .rel-products-section { padding: 48px var(--container-pad) }
+  .rel-products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px }
+}
+@media (max-width: 480px) {
+  .rel-products-grid { grid-template-columns: 1fr 1fr }
+}
 </style>
 </head>
 <body>
@@ -201,6 +230,12 @@
   </div>
 
 </article>
+
+<section id="relatedProducts" style="display:none" class="rel-products-section">
+  <h2 class="section-title">SẢN PHẨM PHÙ HỢP</h2>
+  <p class="section-sub">Phụ tùng liên quan đến bài viết này</p>
+  <div id="relatedProductsGrid" class="rel-products-grid"></div>
+</section>
 
 <section id="ctaBanner" class="cta-banner-wrap" style="display:none">
   <div class="cta-banner">
@@ -374,6 +409,38 @@
 
   document.getElementById('postWrap').style.display = 'block'
   document.getElementById('ctaBanner').style.display = 'block'
+
+  // Related products
+  if (post.related_product_slugs?.length) {
+    const relProducts = await getProductsBySlugs(post.related_product_slugs)
+    if (relProducts.length) {
+      const grid = document.getElementById('relatedProductsGrid')
+      grid.innerHTML = relProducts.map(p => {
+        const price = p.price ? new Intl.NumberFormat('vi-VN').format(p.price) + ' ₫' : ''
+        const brand = p.brands?.name ? `<span class="chip chip-brand">${p.brands.name}</span>` : ''
+        const cat   = p.categories?.name ? `<span class="chip">${p.categories.name}</span>` : ''
+        const stock = p.stock_status !== 'out_of_stock'
+          ? '<span class="stock-badge">Còn hàng</span>'
+          : '<span class="stock-badge" style="background:#fee2e2;color:#b91c1c">Hết hàng</span>'
+        return `<article class="product-card">
+          <a href="san-pham-chi-tiet.html?slug=${p.slug}" class="product-card-image" style="display:block;text-decoration:none">
+            <img src="${p.thumbnail_url || ''}" alt="${p.name}" onerror="this.src='assets/placeholder.png'">
+            <div class="product-tags"><div class="tag-group">${brand}</div>${cat}</div>
+          </a>
+          <div class="product-card-content">
+            <p class="product-name">${p.name}</p>
+            <div class="product-divider"></div>
+            <div class="price-row">
+              <span class="price">${price}</span>
+              ${stock}
+            </div>
+            <a href="san-pham-chi-tiet.html?slug=${p.slug}" class="btn btn-yellow product-cta" style="display:block;text-align:center;text-decoration:none">Xem chi tiết →</a>
+          </div>
+        </article>`
+      }).join('')
+      document.getElementById('relatedProducts').style.display = 'block'
+    }
+  }
 })()
 </script>
 <script src="js/cms-loader.js"></script>

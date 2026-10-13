@@ -244,6 +244,21 @@ tr.p-selected td{background:#fffbea}
 .dspec-row input:focus{border-color:#fecd27}
 .dspec-row input:first-child{flex:0.6;color:#737373}
 
+/*  Post – related product picker  */
+.po-product-picker{position:relative}
+.po-product-drop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid #ebebeb;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:400;overflow:hidden;max-height:240px;overflow-y:auto}
+.po-product-drop-item{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;transition:background .1s;font-size:13px}
+.po-product-drop-item:hover{background:#fffef2}
+.po-product-drop-item img{width:36px;height:36px;object-fit:contain;border-radius:5px;background:#f5f5f5;flex-shrink:0}
+.po-product-drop-item-info{flex:1;min-width:0}
+.po-product-drop-item-name{font-weight:600;color:#101010;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.po-product-drop-item-price{font-size:11px;color:#737373;margin-top:1px}
+.po-product-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;min-height:20px}
+.po-product-chip{display:flex;align-items:center;gap:6px;background:#fffbe6;border:1.5px solid #fecd27;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;color:#7a5c00}
+.po-product-chip img{width:28px;height:28px;object-fit:contain;border-radius:4px;background:#fff}
+.po-product-chip-rm{background:none;border:none;cursor:pointer;color:#b8860b;font-size:14px;line-height:1;padding:0 2px;font-family:inherit}
+.po-product-chip-rm:hover{color:#7a5c00}
+
 /*  Import preview  */
 .import-preview-table{width:100%;border-collapse:collapse;font-size:13px}
 .import-preview-table th{padding:8px 12px;background:#fafafa;border-bottom:1px solid #ebebeb;font-size:11px;color:#737373;text-transform:uppercase;letter-spacing:.4px;font-weight:700;text-align:left}
@@ -1192,6 +1207,15 @@ tr.p-selected td{background:#fffbea}
         </div>
         <span class="fnote" style="margin-top:4px">Click biểu tượng ảnh trong toolbar để chèn ảnh từ máy tính</span>
       </div>
+      <div class="fg s2">
+        <label class="flabel">Sản phẩm phù hợp <span style="font-weight:400;color:#b0b0b0">(hiển thị cuối bài — tối đa 6)</span></label>
+        <div class="po-product-picker">
+          <input class="finput" id="po_product_search" placeholder="Tìm tên sản phẩm để thêm..." autocomplete="off" oninput="poProductSearch(this.value)" onfocus="poProductSearch(this.value)">
+          <div id="po_product_drop" class="po-product-drop" style="display:none"></div>
+        </div>
+        <div id="po_product_chips" class="po-product-chips"></div>
+        <span class="fnote">Chọn sản phẩm liên quan — sẽ hiện dưới bài viết trên website với nút "Liên hệ báo giá"</span>
+      </div>
       <div class="fg">
         <label class="flabel">Hiển thị trên website</label>
         <label class="toggle" style="margin-top:6px"><input type="checkbox" id="po_pub" checked><span class="slider"></span></label>
@@ -2018,6 +2042,12 @@ function toggleDrop(wrapId) {
 }
 function closeDrop(wrapId) { document.getElementById(wrapId).querySelector('.btn-drop-menu').classList.remove('open') }
 
+document.addEventListener('click', e => {
+  const drop = document.getElementById('po_product_drop')
+  const inp  = document.getElementById('po_product_search')
+  if (drop && inp && !inp.contains(e.target) && !drop.contains(e.target)) drop.style.display = 'none'
+})
+
 async function syncFromSheet() {
   const btn = document.getElementById('btnSyncSheet')
   const oldLabel = btn.textContent
@@ -2231,6 +2261,63 @@ function poFilter(q) {
   renderPo(allPo.filter(p => p.title.toLowerCase().includes(lower)))
 }
 
+// ─── Related product picker ───────────────────────────────────
+let poRelProducts = []   // { id, name, slug, thumbnail_url, price }
+let poSearchTimer = null
+
+function poRenderChips() {
+  const wrap = document.getElementById('po_product_chips')
+  if (!wrap) return
+  wrap.innerHTML = poRelProducts.map(p => `
+    <div class="po-product-chip">
+      <img src="${p.thumbnail_url || ''}" onerror="this.style.display='none'" alt="">
+      <span>${p.name}</span>
+      <button class="po-product-chip-rm" onclick="poRemoveProduct('${p.slug}')" title="Xoá">✕</button>
+    </div>`).join('')
+}
+
+function poRemoveProduct(slug) {
+  poRelProducts = poRelProducts.filter(p => p.slug !== slug)
+  poRenderChips()
+}
+
+async function poProductSearch(q) {
+  clearTimeout(poSearchTimer)
+  const drop = document.getElementById('po_product_drop')
+  if (!drop) return
+  if (!q.trim()) { drop.style.display = 'none'; return }
+  poSearchTimer = setTimeout(async () => {
+    const { data } = await db.from('products')
+      .select('id, name, slug, thumbnail_url, price')
+      .ilike('name', `%${q.trim()}%`)
+      .eq('is_published', true)
+      .limit(6)
+    const items = (data || []).filter(p => !poRelProducts.find(r => r.slug === p.slug))
+    if (!items.length) { drop.style.display = 'none'; return }
+    drop.innerHTML = items.map(p => `
+      <div class="po-product-drop-item" onclick="poAddProduct(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+        <img src="${p.thumbnail_url || ''}" onerror="this.style.display='none'" alt="">
+        <div class="po-product-drop-item-info">
+          <div class="po-product-drop-item-name">${p.name}</div>
+          <div class="po-product-drop-item-price">${p.price ? p.price.toLocaleString('vi-VN') + ' ₫' : ''}</div>
+        </div>
+      </div>`).join('')
+    drop.style.display = 'block'
+  }, 250)
+}
+
+function poAddProduct(p) {
+  if (poRelProducts.length >= 6) { toast('Tối đa 6 sản phẩm', 'err'); return }
+  if (poRelProducts.find(r => r.slug === p.slug)) return
+  poRelProducts.push(p)
+  poRenderChips()
+  const inp = document.getElementById('po_product_search')
+  if (inp) inp.value = ''
+  document.getElementById('po_product_drop').style.display = 'none'
+}
+
+// ─────────────────────────────────────────────────────────────
+
 function openPostModal(p = null) {
   editPoId = p?.id || null
   document.getElementById('poMTitle').textContent = p ? 'Chỉnh sửa bài viết' : 'Thêm bài viết'
@@ -2254,6 +2341,24 @@ function openPostModal(p = null) {
     quillEditor.root.innerHTML = p?.content || ''
   }
 
+  // Related products
+  const inp = document.getElementById('po_product_search')
+  if (inp) inp.value = ''
+  if (p?.related_product_slugs?.length) {
+    db.from('products').select('id,name,slug,thumbnail_url,price')
+      .in('slug', p.related_product_slugs)
+      .then(({ data }) => {
+        // preserve order from saved slugs
+        poRelProducts = p.related_product_slugs
+          .map(s => (data || []).find(x => x.slug === s))
+          .filter(Boolean)
+        poRenderChips()
+      })
+  } else {
+    poRelProducts = []
+    poRenderChips()
+  }
+
   prevImg('po_cover', 'po_prev')
   document.getElementById('postModal').style.display = 'flex'
 
@@ -2270,11 +2375,12 @@ async function savePost() {
 
   const payload = {
     title, slug, content,
-    excerpt:          gv('po_excerpt').trim() || null,
-    cover_image_url:  gv('po_cover').trim()   || null,
-    post_category_id: document.getElementById('po_cat').value || null,
-    published_at:     new Date(document.getElementById('po_date').value).toISOString(),
-    is_published:     document.getElementById('po_pub').checked,
+    excerpt:                gv('po_excerpt').trim() || null,
+    cover_image_url:        gv('po_cover').trim()   || null,
+    post_category_id:       document.getElementById('po_cat').value || null,
+    published_at:           new Date(document.getElementById('po_date').value).toISOString(),
+    is_published:           document.getElementById('po_pub').checked,
+    related_product_slugs:  poRelProducts.map(p => p.slug),
   }
 
   const { error } = editPoId
