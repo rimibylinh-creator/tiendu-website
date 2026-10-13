@@ -967,6 +967,19 @@ p { margin: 0; }
   font-size: 14px;
   line-height: 1.6;
 }
+.footer-gov {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+.footer-gov a { flex-shrink: 0; display: inline-flex; }
+.footer-gov img { height: 44px; width: auto; }
+.footer-gov span {
+  color: #b8b8b8;
+  font-size: 13px;
+  line-height: 1.4;
+}
 .footer-cols {
   display: flex;
   gap: 56px;
