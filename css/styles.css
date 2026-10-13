@@ -977,7 +977,7 @@ p { margin: 0; }
   flex-shrink: 0;
   display: inline-flex;
   background: var(--color-white);
-  padding: 6px;
+  padding: 4px;
   border-radius: var(--radius-md);
 }
 .footer-gov img { height: 44px; width: auto; }
