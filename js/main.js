@@ -31,26 +31,36 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ---------- Language switcher (nav) ---------- */
+  // Ngôn ngữ hiện tại do js/i18n.js quyết định (localStorage 'tiendu-lang'); đổi ngôn ngữ = tải lại trang.
   const langSwitch = document.querySelector('.lang-switch');
   if (langSwitch) {
     const langBtn  = langSwitch.querySelector('.lang-btn');
     const langMenu = langSwitch.querySelector('.lang-menu');
+    const current  = (window.TienduI18n && window.TienduI18n.lang) || 'vi';
     const setLangOpen = (open) => {
       langMenu.hidden = !open;
       langBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
     };
+    const markCurrent = (lang) => {
+      const b = langMenu.querySelector('button[data-lang="' + lang + '"]');
+      if (!b) return;
+      langMenu.querySelectorAll('li').forEach((li) => li.setAttribute('aria-selected', li.contains(b) ? 'true' : 'false'));
+      langBtn.querySelector('.lang-label').textContent = lang.toUpperCase();
+      langBtn.querySelector('.lang-flag').replaceWith(b.querySelector('.lang-flag').cloneNode(true));
+    };
+    markCurrent(current);
     langBtn.addEventListener('click', (e) => { e.stopPropagation(); setLangOpen(langMenu.hidden); });
     document.addEventListener('click', (e) => { if (!langSwitch.contains(e.target)) setLangOpen(false); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !langMenu.hidden) { setLangOpen(false); langBtn.focus(); } });
-    langMenu.querySelectorAll('button[data-lang]:not(:disabled)').forEach((b) => {
+    langMenu.querySelectorAll('button[data-lang]').forEach((b) => {
       b.addEventListener('click', () => {
         const lang = b.dataset.lang;
-        try { localStorage.setItem('tiendu-lang', lang); } catch (err) {}
-        langMenu.querySelectorAll('li').forEach((li) => li.setAttribute('aria-selected', li.contains(b) ? 'true' : 'false'));
-        langBtn.querySelector('.lang-label').textContent = lang.toUpperCase();
-        langBtn.querySelector('.lang-flag').replaceWith(b.querySelector('.lang-flag').cloneNode(true));
         setLangOpen(false);
-        document.dispatchEvent(new CustomEvent('tiendu:languagechange', { detail: { lang } }));
+        if (lang === current) return;
+        try { localStorage.setItem('tiendu-lang', lang); } catch (err) {}
+        // ?lang=… trong URL sẽ ghi đè lựa chọn đã lưu, nên bỏ nó đi trước khi tải lại
+        const u = new URL(location.href); u.searchParams.delete('lang');
+        location.replace(u.toString());
       });
     });
   }
