@@ -180,7 +180,7 @@ async function getProductsBySlugs(slugs) {
   if (!slugs || !slugs.length) return []
   const { data, error } = await db
     .from('products')
-    .select('name, slug, price, thumbnail_url, brands(name), categories(name), stock_status')
+    .select('name, slug, price, thumbnail_url, short_specs, brands(name), categories(name), stock_status')
     .in('slug', slugs)
     .eq('is_published', true)
   if (error) console.error('getProductsBySlugs:', error)

@@ -233,7 +233,7 @@
 
 <section id="relatedProducts" style="display:none" class="rel-products-section">
   <h2 class="section-title">SẢN PHẨM PHÙ HỢP</h2>
-  <p class="section-sub">Phụ tùng liên quan đến bài viết này</p>
+  <p class="section-sub">Phụ tùng được nhắc đến trong bài viết này</p>
   <div id="relatedProductsGrid" class="rel-products-grid"></div>
 </section>
 
@@ -410,34 +410,30 @@
   document.getElementById('postWrap').style.display = 'block'
   document.getElementById('ctaBanner').style.display = 'block'
 
-  // Related products
-  if (post.related_product_slugs?.length) {
-    const relProducts = await getProductsBySlugs(post.related_product_slugs)
+  // Sản phẩm phù hợp: tự lấy từ các link sản phẩm gắn trong nội dung bài viết
+  // (san-pham-chi-tiet.html?slug=…), cộng thêm sản phẩm chọn tay trong admin (nếu có).
+  const slugs = []
+  const addSlug = s => { if (s && !slugs.includes(s)) slugs.push(s) }
+  const linkRe = /san-pham-chi-tiet(?:\.html)?\?(?:[^"'\s<>]*?&(?:amp;)?)?slug=([A-Za-z0-9_%.\-]+)/g
+  let m
+  while ((m = linkRe.exec(post.content || '')) !== null) {
+    try { addSlug(decodeURIComponent(m[1])) } catch (e) { addSlug(m[1]) }
+  }
+  ;(post.related_product_slugs || []).forEach(addSlug)
+
+  if (slugs.length) {
+    const found = await getProductsBySlugs(slugs)   // chỉ trả sản phẩm đang hiển thị
+    const relProducts = slugs.map(sl => found.find(p => p.slug === sl)).filter(Boolean)
     if (relProducts.length) {
       const grid = document.getElementById('relatedProductsGrid')
-      grid.innerHTML = relProducts.map(p => {
-        const price = p.price ? new Intl.NumberFormat('vi-VN').format(p.price) + ' ₫' : ''
-        const brand = p.brands?.name ? `<span class="chip chip-brand">${p.brands.name}</span>` : ''
-        const cat   = p.categories?.name ? `<span class="chip">${p.categories.name}</span>` : ''
-        const stock = p.stock_status !== 'out_of_stock'
-          ? '<span class="stock-badge">Còn hàng</span>'
-          : '<span class="stock-badge" style="background:#fee2e2;color:#b91c1c">Hết hàng</span>'
-        return `<article class="product-card">
-          <a href="san-pham-chi-tiet.html?slug=${p.slug}" class="product-card-image" style="display:block;text-decoration:none">
-            <img src="${p.thumbnail_url || ''}" alt="${p.name}" onerror="this.src='assets/placeholder.png'">
-            <div class="product-tags"><div class="tag-group">${brand}</div>${cat}</div>
-          </a>
-          <div class="product-card-content">
-            <p class="product-name">${p.name}</p>
-            <div class="product-divider"></div>
-            <div class="price-row">
-              <span class="price">${price}</span>
-              ${stock}
-            </div>
-            <a href="san-pham-chi-tiet.html?slug=${p.slug}" class="btn btn-yellow product-cta" style="display:block;text-align:center;text-decoration:none">Xem chi tiết →</a>
-          </div>
-        </article>`
-      }).join('')
+      grid.innerHTML = relProducts.map(p => renderProductCard(p)).join('')
+      // Bấm vào bất kỳ chỗ nào của card đều dẫn tới trang Sản phẩm chi tiết
+      grid.addEventListener('click', e => {
+        if (e.target.closest('a, button')) return
+        const card = e.target.closest('.product-card')
+        const link = card && card.querySelector('.product-cta')
+        if (link) window.location.href = link.href
+      })
       document.getElementById('relatedProducts').style.display = 'block'
     }
   }
