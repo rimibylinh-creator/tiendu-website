@@ -2419,6 +2419,7 @@ function initQuill() {
       placeholder: 'Bắt đầu viết nội dung bài viết... Nhấn biểu tượng ảnh trong toolbar để chèn hình.',
       modules: { toolbar: makeToolbar(quillImgHandler) }
     })
+    addQuillProductButton(quillEditor)
   }
 
   if (!quillProductEditor) {
@@ -2428,6 +2429,95 @@ function initQuill() {
       modules: { toolbar: makeToolbar(quillProductImgHandler) }
     })
   }
+}
+
+// ─── Chèn dãy sản phẩm vào bài viết ───────────────────────────
+// Thêm nút "Chèn sản phẩm" vào toolbar: chọn sản phẩm → chèn 1 đoạn chỉ gồm link sản phẩm.
+// Trên website, đoạn chỉ có link sản phẩm tự hiện thành dãy card nhỏ tại đúng vị trí đó.
+function addQuillProductButton(editor) {
+  const tb = editor.getModule('toolbar').container
+  const grp = document.createElement('span')
+  grp.className = 'ql-formats'
+  const btn = document.createElement('button')
+  btn.type = 'button'
+  btn.title = 'Chèn dãy sản phẩm'
+  btn.style.cssText = 'width:auto;padding:0 8px;font-size:12px;font-weight:600'
+  btn.textContent = '🛒 Chèn sản phẩm'
+  btn.addEventListener('click', () => openProductInsertModal(editor))
+  grp.appendChild(btn)
+  tb.appendChild(grp)
+}
+
+function openProductInsertModal(editor) {
+  const range = editor.getSelection(true)
+  const picked = []   // { name, slug }
+  const ov = document.createElement('div')
+  ov.className = 'modal-overlay'
+  ov.style.zIndex = 3000
+  ov.innerHTML = `
+    <div class="modal" style="max-width:520px;width:100%">
+      <div class="modal-head"><h3 style="margin:0;font-size:16px">Chèn dãy sản phẩm vào bài viết</h3></div>
+      <div style="padding:16px 24px;display:flex;flex-direction:column;gap:10px">
+        <input type="text" class="finput" id="pi_search" placeholder="Tìm tên sản phẩm (đang hiển thị trên website)..." autocomplete="off">
+        <div id="pi_results" style="max-height:200px;overflow:auto;border:1px solid #e5e5e5;border-radius:8px;display:none"></div>
+        <div style="font-size:12px;color:#737373">Đã chọn (xếp theo thứ tự hiển thị trên bài):</div>
+        <div id="pi_picked" style="display:flex;flex-direction:column;gap:6px;min-height:24px"></div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn-ghost" id="pi_cancel">Huỷ</button>
+        <button type="button" class="btn-primary" id="pi_insert">Chèn vào bài</button>
+      </div>
+    </div>`
+  document.body.appendChild(ov)
+  const $ = id => ov.querySelector('#' + id)
+  const esc2 = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]))
+  const renderPicked = () => {
+    $('pi_picked').innerHTML = picked.length
+      ? picked.map((p, i) => `<div style="display:flex;align-items:center;gap:8px;background:#fafafa;border-radius:6px;padding:6px 10px;font-size:13px"><span style="flex:1">${esc2(p.name)}</span><button type="button" data-rm="${i}" class="btn-rm">×</button></div>`).join('')
+      : '<span style="font-size:13px;color:#a0a0a0">Chưa chọn sản phẩm nào</span>'
+    $('pi_picked').querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { picked.splice(+b.dataset.rm, 1); renderPicked() })
+  }
+  renderPicked()
+  let timer
+  $('pi_search').addEventListener('input', e => {
+    clearTimeout(timer)
+    const q = e.target.value.trim()
+    const box = $('pi_results')
+    if (!q) { box.style.display = 'none'; return }
+    timer = setTimeout(async () => {
+      const { data } = await db.from('products').select('name, slug, price')
+        .ilike('name', `%${q}%`).eq('is_published', true).limit(8)
+      const items = (data || []).filter(p => !picked.find(x => x.slug === p.slug))
+      box.innerHTML = items.length
+        ? items.map(p => `<div data-slug="${esc2(p.slug)}" data-name="${esc2(p.name)}" style="padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid #f0f0f0">${esc2(p.name)}<span style="color:#737373;float:right">${p.price ? p.price.toLocaleString('vi-VN') + ' ₫' : ''}</span></div>`).join('')
+        : '<div style="padding:10px 12px;font-size:13px;color:#a0a0a0">Không tìm thấy sản phẩm đang hiển thị</div>'
+      box.style.display = 'block'
+      box.querySelectorAll('[data-slug]').forEach(row => row.onclick = () => {
+        if (picked.length >= 8) { toast('Tối đa 8 sản phẩm mỗi dãy', 'err'); return }
+        picked.push({ slug: row.dataset.slug, name: row.dataset.name })
+        renderPicked(); box.style.display = 'none'; $('pi_search').value = ''
+      })
+    }, 250)
+  })
+  const close = () => ov.remove()
+  $('pi_cancel').onclick = close
+  ov.addEventListener('click', e => { if (e.target === ov) close() })
+  $('pi_insert').onclick = () => {
+    if (!picked.length) { toast('Chọn ít nhất 1 sản phẩm', 'err'); return }
+    let pos = range ? range.index : editor.getLength() - 1
+    const [, offset] = editor.getLine(pos)
+    if (offset > 0) { editor.insertText(pos, '\n', 'user'); pos += 1 }
+    picked.forEach(p => {
+      const url = 'https://ototiendu.com/san-pham-chi-tiet.html?slug=' + encodeURIComponent(p.slug)
+      editor.insertText(pos, p.name, { link: url }, 'user'); pos += p.name.length
+      editor.insertText(pos, ' ', { link: false }, 'user'); pos += 1
+    })
+    editor.insertText(pos, '\n', { link: false }, 'user'); pos += 1
+    editor.setSelection(pos, 0)
+    close()
+    toast('Đã chèn ' + picked.length + ' sản phẩm. Trên website sẽ hiện thành dãy card.')
+  }
+  $('pi_search').focus()
 }
 
 async function quillImgHandler() {

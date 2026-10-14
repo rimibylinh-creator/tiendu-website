@@ -139,6 +139,65 @@
   .post-title { font-size: 24px }
   .post-body-wrap { padding-left: 24px; padding-right: 24px; padding-top: 32px }
 }
+/* Dãy sản phẩm chèn trong bài viết */
+.pm-row {
+  display: flex;
+  gap: 14px;
+  margin: 28px 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 6px;
+}
+.pm-card {
+  flex: 0 0 clamp(150px, 31%, 220px);
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-near-black);
+  text-decoration: none;
+  transition: box-shadow .15s ease, transform .15s ease;
+}
+.pm-card:hover { box-shadow: 0 6px 18px rgba(0,0,0,.1); transform: translateY(-2px); }
+.pm-img {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  background: var(--color-bg-soft);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.pm-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.pm-oos {
+  position: absolute; left: 6px; top: 6px;
+  background: #fee2e2; color: #b91c1c;
+  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-sm);
+}
+.pm-name {
+  font-size: 13px; font-weight: 600; line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  min-height: 2.7em;
+}
+.pm-price { font-size: 16px; font-weight: 700; }
+.pm-btn {
+  margin-top: auto;
+  text-align: center;
+  background: var(--color-primary);
+  color: #000;
+  font-family: var(--font-cta);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 9px 10px;
+  border-radius: var(--radius-pill);
+}
+.post-content a.pm-card,
+.post-content a.pm-card:hover { color: var(--color-near-black); text-decoration: none; }
+.post-content a.pm-card .pm-btn { color: #000; }
+.pm-card:hover .pm-btn { background: var(--color-primary-dark); }
 /* Related products section */
 .rel-products-section {
   padding: 64px var(--container-pad);
@@ -407,35 +466,81 @@
     contentEl.innerHTML = '<p style="color:#a0a0a0;text-align:center;padding:40px 0">Nội dung đang được cập nhật...</p>'
   }
 
+  // Đoạn văn chỉ gồm link sản phẩm → dãy card nhỏ ngay tại vị trí đó trong bài
+  const SLUG_RE = /san-pham-chi-tiet(?:\.html)?\?(?:[^"'\s<>]*?&(?:amp;)?)?slug=([A-Za-z0-9_%.\-]+)/g
+  const slugsOf = str => {
+    const out = []
+    for (const m of String(str || '').matchAll(SLUG_RE)) {
+      let sl = m[1]
+      try { sl = decodeURIComponent(sl) } catch (e) {}
+      sl = sl.replace(/\.+$/, '')
+      if (sl && !out.includes(sl)) out.push(sl)
+    }
+    return out
+  }
+  const inlineRows = []   // { el, slugs }
+  contentEl.querySelectorAll(':scope > p').forEach(para => {
+    const slugsInP = slugsOf(para.innerHTML)
+    if (!slugsInP.length) return
+    const clone = para.cloneNode(true)
+    clone.querySelectorAll('a').forEach(a => { if (slugsOf(a.getAttribute('href')).length) a.remove() })
+    const rest = clone.textContent
+      .replace(/https?:\/\/\S+|(?:ototiendu\.com\/)?san-pham-chi-tiet\S*/gi, '')
+      .replace(/[\s,;|•·–—-]+/g, '')
+    if (rest) return   // có chữ khác → giữ nguyên là đoạn văn thường
+    const row = document.createElement('div')
+    row.className = 'pm-row'
+    row.hidden = true
+    para.replaceWith(row)
+    inlineRows.push({ el: row, slugs: slugsInP })
+  })
+
   document.getElementById('postWrap').style.display = 'block'
   document.getElementById('ctaBanner').style.display = 'block'
 
-  // Sản phẩm phù hợp: tự lấy từ các link sản phẩm gắn trong nội dung bài viết
-  // (san-pham-chi-tiet.html?slug=…), cộng thêm sản phẩm chọn tay trong admin (nếu có).
-  const slugs = []
-  const addSlug = s => { if (s && !slugs.includes(s)) slugs.push(s) }
-  const linkRe = /san-pham-chi-tiet(?:\.html)?\?(?:[^"'\s<>]*?&(?:amp;)?)?slug=([A-Za-z0-9_%.\-]+)/g
-  let m
-  while ((m = linkRe.exec(post.content || '')) !== null) {
-    try { addSlug(decodeURIComponent(m[1])) } catch (e) { addSlug(m[1]) }
-  }
-  ;(post.related_product_slugs || []).forEach(addSlug)
+  // Tải sản phẩm cho cả các dãy trong bài lẫn khu "Sản phẩm phù hợp" ở cuối bài.
+  // Cuối bài: sản phẩm có link trong bài (không nằm trong dãy) + sản phẩm chọn tay trong admin.
+  const inlineSlugs = new Set(inlineRows.flatMap(r => r.slugs))
+  const bottomSlugs = []
+  slugsOf(post.content).forEach(sl => { if (!inlineSlugs.has(sl) && !bottomSlugs.includes(sl)) bottomSlugs.push(sl) })
+  ;(post.related_product_slugs || []).forEach(sl => { if (!inlineSlugs.has(sl) && !bottomSlugs.includes(sl)) bottomSlugs.push(sl) })
 
-  if (slugs.length) {
-    const found = await getProductsBySlugs(slugs)   // chỉ trả sản phẩm đang hiển thị
-    const relProducts = slugs.map(sl => found.find(p => p.slug === sl)).filter(Boolean)
-    if (relProducts.length) {
-      const grid = document.getElementById('relatedProductsGrid')
-      grid.innerHTML = relProducts.map(p => renderProductCard(p)).join('')
-      // Bấm vào bất kỳ chỗ nào của card đều dẫn tới trang Sản phẩm chi tiết
-      grid.addEventListener('click', e => {
-        if (e.target.closest('a, button')) return
-        const card = e.target.closest('.product-card')
-        const link = card && card.querySelector('.product-cta')
-        if (link) window.location.href = link.href
-      })
-      document.getElementById('relatedProducts').style.display = 'block'
-    }
+  const allSlugs = [...inlineSlugs, ...bottomSlugs]
+  if (!allSlugs.length) return
+  const found = await getProductsBySlugs(allSlugs)   // chỉ trả sản phẩm đang hiển thị
+  const bySlug = {}
+  found.forEach(p => { bySlug[p.slug] = p })
+
+  const miniCard = p => {
+    const href = 'san-pham-chi-tiet.html?slug=' + encodeURIComponent(p.slug)
+    const oos = p.stock_status === 'out_of_stock' ? '<span class="pm-oos">Hết hàng</span>' : ''
+    return `<a class="pm-card" href="${href}">
+      <span class="pm-img"><img src="${escAttr(p.thumbnail_url || 'assets/no-image.svg')}" alt="${escAttr(p.name)}" loading="lazy" onerror="this.src='assets/no-image.svg'">${oos}</span>
+      <span class="pm-name">${escAttr(p.name)}</span>
+      <span class="pm-price">${p.price ? formatPrice(p.price) : 'Liên hệ'}</span>
+      <span class="pm-btn">Xem chi tiết →</span>
+    </a>`
+  }
+
+  inlineRows.forEach(({ el, slugs }) => {
+    const items = slugs.map(sl => bySlug[sl]).filter(Boolean)
+    if (!items.length) { el.remove(); return }
+    el.innerHTML = items.map(miniCard).join('')
+    el.hidden = false
+  })
+
+  const bottom = bottomSlugs.map(sl => bySlug[sl]).filter(Boolean)
+  if (bottom.length) {
+    const grid = document.getElementById('relatedProductsGrid')
+    grid.innerHTML = bottom.map(p => renderProductCard(p)).join('')
+    // Bấm vào bất kỳ chỗ nào của card đều dẫn tới trang Sản phẩm chi tiết
+    grid.addEventListener('click', e => {
+      if (e.target.closest('a, button')) return
+      const card = e.target.closest('.product-card')
+      const link = card && card.querySelector('.product-cta')
+      if (link) window.location.href = link.href
+    })
+    document.getElementById('relatedProducts').style.display = 'block'
   }
 })()
 </script>
