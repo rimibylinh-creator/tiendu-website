@@ -1066,6 +1066,19 @@ p { margin: 0; }
 }
 .footer-col a:hover { color: var(--color-primary); }
 .footer-contact { max-width: 336px; }
+/* Nav hẹp (861–980px): ẩn nút Tuyển dụng và thu khoảng cách để không tràn ra ngoài */
+@media (min-width: 861px) and (max-width: 980px) {
+  .nav-hire-btn { display: none; }
+  .nav-links { gap: 16px; }
+}
+/* Từ 861px: các cột footer luôn nằm trên 1 hàng, thu hẹp khoảng cách thay vì xuống dòng */
+@media (min-width: 861px) {
+  .footer-top { flex-wrap: nowrap; gap: clamp(20px, 2.5vw, 40px); }
+  .footer-brand { flex: 0 1 280px; min-width: 0; }
+  .footer-cols { flex: 1 1 auto; flex-wrap: nowrap; justify-content: flex-end; gap: clamp(16px, 2.4vw, 56px); min-width: 0; }
+  .footer-col { min-width: 0; flex: 0 1 auto; }
+  .footer-contact { flex: 0 1 250px; }
+}
 .footer-divider {
   max-width: var(--container-max);
   margin: 24px auto;
