@@ -30,6 +30,31 @@ document.addEventListener('DOMContentLoaded', () => {
     autoplay();
   }
 
+  /* ---------- Language switcher (nav) ---------- */
+  const langSwitch = document.querySelector('.lang-switch');
+  if (langSwitch) {
+    const langBtn  = langSwitch.querySelector('.lang-btn');
+    const langMenu = langSwitch.querySelector('.lang-menu');
+    const setLangOpen = (open) => {
+      langMenu.hidden = !open;
+      langBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    langBtn.addEventListener('click', (e) => { e.stopPropagation(); setLangOpen(langMenu.hidden); });
+    document.addEventListener('click', (e) => { if (!langSwitch.contains(e.target)) setLangOpen(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !langMenu.hidden) { setLangOpen(false); langBtn.focus(); } });
+    langMenu.querySelectorAll('button[data-lang]:not(:disabled)').forEach((b) => {
+      b.addEventListener('click', () => {
+        const lang = b.dataset.lang;
+        try { localStorage.setItem('tiendu-lang', lang); } catch (err) {}
+        langMenu.querySelectorAll('li').forEach((li) => li.setAttribute('aria-selected', li.contains(b) ? 'true' : 'false'));
+        langBtn.querySelector('.lang-label').textContent = lang.toUpperCase();
+        langBtn.querySelector('.lang-flag').replaceWith(b.querySelector('.lang-flag').cloneNode(true));
+        setLangOpen(false);
+        document.dispatchEvent(new CustomEvent('tiendu:languagechange', { detail: { lang } }));
+      });
+    });
+  }
+
   /* ---------- Product category tabs ---------- */
   const tabs = document.querySelectorAll('.tab-btn');
   const cards = document.querySelectorAll('.product-card');
