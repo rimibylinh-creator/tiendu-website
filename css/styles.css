@@ -1066,6 +1066,10 @@ p { margin: 0; }
 }
 .footer-col a:hover { color: var(--color-primary); }
 .footer-contact { max-width: 336px; }
+/* Điện thoại rất nhỏ: nút Gọi đã có ở thanh dính phía dưới nên ẩn bớt ở nav để menu không tràn */
+@media (max-width: 340px) {
+  .nav-call-btn { display: none; }
+}
 /* Nav hẹp (861–980px): ẩn nút Tuyển dụng và thu khoảng cách để không tràn ra ngoài */
 @media (min-width: 861px) and (max-width: 980px) {
   .nav-hire-btn { display: none; }
@@ -3487,7 +3491,9 @@ p { margin: 0; }
   .hero-search-btn { width: 100%; border-radius: 16px; justify-content: center; font-size: 13px; }
   .btn.btn-black { justify-content: center; }
   /* Nav */
-  .nav-call-btn { font-size: 12px; padding: 8px 12px; }
+  .nav-call-btn { font-size: 12px; padding: 8px 10px; }
+  .site-nav .container { gap: 8px; }
+  .lang-btn { padding: 7px 8px; gap: 4px; }
   /* Features — stack to 1 col on very small */
   .feature-grid { flex-direction: column; }
   .feature-card { flex-basis: auto; max-width: none; flex-direction: row; padding: 16px 20px; }
