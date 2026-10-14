@@ -37,9 +37,12 @@
   ],
   "rewrites": [
     { "source": "/sitemap-products.xml", "destination": "/api/sitemap-products" },
-    { "source": "/san-pham-chi-tiet.html", "destination": "/api/product" }
+    { "source": "/san-pham-chi-tiet.html", "destination": "/api/product" },
+    { "source": "/tin-tuc-chi-tiet.html", "destination": "/api/post" },
+    { "source": "/sitemap-posts.xml", "destination": "/api/sitemap-posts" }
   ],
   "functions": {
-    "api/product.js": { "includeFiles": "api/_tpl/**" }
+    "api/product.js": { "includeFiles": "api/_tpl/**" },
+    "api/post.js": { "includeFiles": "api/_tpl/**" }
   }
 }

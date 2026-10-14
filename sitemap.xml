@@ -13,4 +13,9 @@
     <lastmod>2026-06-29</lastmod>
   </sitemap>
 
+  <!-- Bài viết đang đăng (sinh động từ database qua api/sitemap-posts.js) -->
+  <sitemap>
+    <loc>https://ototiendu.com/sitemap-posts.xml</loc>
+  </sitemap>
+
 </sitemapindex>
