@@ -1,36 +1,43 @@
-/* Đa ngôn ngữ (Việt / English) — tiendu
- * Từ điển: /i18n/en.json  →  { "câu tiếng Việt nguyên văn": "English" }
+/* Đa ngôn ngữ (tiếng Việt gốc + English, Русский…) — tiendu
+ * Từ điển mỗi ngôn ngữ nằm trong thư mục /i18n/<mã ngôn ngữ>/ gồm các file:
+ *   ui.json, policies.json, products.json, posts.json, jobs.json
+ * Mỗi file:  { "câu tiếng Việt nguyên văn": "bản dịch" }
  * Có thể chứa tham số {0} {1}…, ví dụ "Hiển thị {0} / {1} sản phẩm": "Showing {0} of {1} products".
- * Chữ nào không có trong từ điển sẽ giữ nguyên tiếng Việt (nội dung từ admin như tên sản phẩm, bài viết).
+ * Khoá đặc biệt (trong ui.json): "_months" (12 tên tháng) và "_date_format" (vd "{m} {d}, {y}").
+ * Chữ nào không có trong từ điển sẽ giữ nguyên tiếng Việt.
  * Thêm ?i18n-debug=1 vào URL, rồi gõ TienduI18n.missing() trong Console để xem các câu chưa dịch.
+ * Thêm ngôn ngữ mới: xem i18n/README.md.
  */
 (function () {
   var KEY = 'tiendu-lang';
+  var LANGS = ['en', 'ru'];                     // mã các ngôn ngữ đã có thư mục /i18n/<mã>/
+  var FILES = ['ui', 'policies', 'products', 'posts', 'jobs'];
   var lang = 'vi';
   try {
     var q = new URLSearchParams(location.search).get('lang');
-    if (q === 'en' || q === 'vi') localStorage.setItem(KEY, q);
+    if (q === 'vi' || LANGS.indexOf(q) >= 0) localStorage.setItem(KEY, q);
     lang = localStorage.getItem(KEY) || 'vi';
   } catch (e) {}
-  if (lang !== 'en') lang = 'vi';
+  if (LANGS.indexOf(lang) < 0) lang = 'vi';
 
   var api = window.TienduI18n = { lang: lang, missing: function () { return []; } };
-  if (lang !== 'en') return;
+  if (lang === 'vi') return;
 
   // Ẩn trang tới khi dịch xong lần đầu để không nháy tiếng Việt
   var hide = document.createElement('style');
   hide.textContent = 'html.i18n-pending body{visibility:hidden}';
   document.head.appendChild(hide);
   document.documentElement.classList.add('i18n-pending');
-  document.documentElement.lang = 'en';
+  document.documentElement.lang = lang;
   var reveal = function () { document.documentElement.classList.remove('i18n-pending'); };
   var failsafe = setTimeout(reveal, 2500);
 
   var SKIP = { SCRIPT: 1, STYLE: 1, NOSCRIPT: 1, CODE: 1, PRE: 1, TEXTAREA: 1 };
   var ATTRS = ['placeholder', 'alt', 'title', 'aria-label'];
   var META = { description: 1, 'og:title': 1, 'og:description': 1, 'twitter:title': 1, 'twitter:description': 1 };
-  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  var VI = /[À-ỹà-ỹ]/;
+  var MONTHS = null;
+  var DATE_FORMAT = '{m} {d}, {y}';
+  var VI = /[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i;   // chữ có dấu tiếng Việt (để báo câu chưa dịch)
   var exact = Object.create(null);
   var patterns = [];
   var missing = {};
@@ -53,7 +60,9 @@
     }
     if (out === undefined) {
       var d = /^(\d{1,2}) tháng (\d{1,2}), (\d{4})$/.exec(n);   // ngày dạng "1 tháng 10, 2026"
-      if (d && MONTHS[+d[2] - 1]) out = MONTHS[+d[2] - 1] + ' ' + d[1] + ', ' + d[3];
+      if (d && MONTHS && MONTHS[+d[2] - 1]) {
+        out = DATE_FORMAT.replace('{d}', d[1]).replace('{m}', MONTHS[+d[2] - 1]).replace('{y}', d[3]);
+      }
     }
     if (out === undefined) {
       if (debug && VI.test(n)) missing[n] = 1;
@@ -102,6 +111,8 @@
   }
 
   function start(dict) {
+    if (Array.isArray(dict._months) && dict._months.length === 12) MONTHS = dict._months;
+    if (typeof dict._date_format === 'string') DATE_FORMAT = dict._date_format;
     Object.keys(dict).forEach(function (k) {
       if (k.charAt(0) === '_' || typeof dict[k] !== 'string' || !dict[k]) return;   // bỏ khoá ghi chú / chưa dịch
       var nk = norm(k);
@@ -129,8 +140,13 @@
   }
 
   function boot() {
-    fetch('/i18n/en.json', { cache: 'no-cache' })
-      .then(function (r) { return r.json(); })
+    // Tải song song các file của ngôn ngữ; file nào lỗi/thiếu thì bỏ qua
+    Promise.all(FILES.map(function (f) {
+      return fetch('/i18n/' + lang + '/' + f + '.json', { cache: 'no-cache' })
+        .then(function (r) { return r.ok ? r.json() : {}; })
+        .catch(function () { return {}; });
+    }))
+      .then(function (list) { return Object.assign.apply(null, [{}].concat(list)); })
       .then(start)
       .catch(function () { clearTimeout(failsafe); reveal(); });
   }
