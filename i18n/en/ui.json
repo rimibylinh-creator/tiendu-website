@@ -601,5 +601,8 @@
   "Nov",
   "Dec"
  ],
- "_date_format": "{m} {d}, {y}"
+ "_date_format": "{m} {d}, {y}",
+ "Đang tìm…": "Searching…",
+ "\" →": "\" →",
+ "Hiển thị {0} / {1} sản phẩm — chưa có sản phẩm ghi đúng năm {2}, đang hiển thị theo dòng xe": "Showing {0} of {1} products — none list model year {2} exactly, so results are shown by model"
 }

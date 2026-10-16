@@ -297,7 +297,7 @@
   // ── Trạng thái hiện tại ──────────────────────────────────────
   let page     = 0
   let loading  = false
-  let filters  = { category: '', orKeywords: [], search: '' }
+  let filters  = { category: '', orKeywords: [], search: '', year: '' }
   let total    = 0
 
   const grid       = document.getElementById('productGrid')
@@ -321,11 +321,12 @@
       if (loadMoreWrap) loadMoreWrap.style.display = 'none'
     }
 
-    const { data, count } = await getProductsPaged({
+    const { data, count, relaxed } = await getProductsPaged({
       page,
       categorySlug: filters.category,
       orKeywords:   filters.orKeywords,
-      search:       filters.search
+      search:       filters.search,
+      year:         filters.year
     })
 
     if (reset) grid.innerHTML = ''
@@ -343,7 +344,10 @@
 
     // Cập nhật đếm số lượng
     const shown = Math.min(page * PAGE_SIZE, total)
-    if (countEl) countEl.textContent = `Hiển thị ${shown} / ${total} sản phẩm`
+    if (countEl) {
+      countEl.textContent = `Hiển thị ${shown} / ${total} sản phẩm` +
+        (relaxed ? ` — chưa có sản phẩm ghi đúng năm ${filters.year}, đang hiển thị theo dòng xe` : '')
+    }
 
     // Nút "Xem thêm": hiện nếu còn sản phẩm chưa load
     if (loadMoreWrap) loadMoreWrap.style.display = shown < total ? '' : 'none'
@@ -406,6 +410,7 @@
       filters.category   = tab.dataset.filter === 'all' ? '' : tab.dataset.filter
       filters.orKeywords = []
       filters.search      = ''
+      filters.year        = ''
       selBrand.value = ''; selModel.innerHTML = '<option value="">— Chọn hãng trước —</option>'; selModel.disabled = true
       fillYears(VEHICLE_YEARS_ALL)
       document.getElementById('filterSearch').value = ''
@@ -425,15 +430,16 @@
     if (model) {
       // Đã chọn dòng xe cụ thể → tìm theo tên dòng xe + năm (khớp chuỗi con trong tên sản phẩm)
       filters.orKeywords = []
-      filters.search = [typed, model, year].filter(Boolean).join(' ')
+      filters.search = [typed, model].filter(Boolean).join(' ')
     } else if (brand && VEHICLE_MODELS[brand]) {
-      // Chỉ chọn hãng xe → tìm theo TẤT CẢ dòng xe của hãng đó (OR), cộng thêm năm nếu có
-      filters.orKeywords = Object.keys(VEHICLE_MODELS[brand])
-      filters.search = [typed, year].filter(Boolean).join(' ')
+      // Chỉ chọn hãng xe → khớp tên hãng HOẶC bất kỳ dòng xe nào của hãng đó (OR)
+      filters.orKeywords = [brand, ...Object.keys(VEHICLE_MODELS[brand])]
+      filters.search = typed
     } else {
       filters.orKeywords = []
-      filters.search = [typed, year].filter(Boolean).join(' ')
+      filters.search = typed
     }
+    filters.year = year   // năm xe: thử khớp, nếu không có thì tự nới lỏng (xem getProductsPaged)
 
     // Bỏ active tab khi dùng dropdown
     document.querySelectorAll('.tab-btn[data-filter]').forEach(t => t.classList.remove('active'))
@@ -454,7 +460,9 @@
   })
 
   // ── Khởi động: đọc ?category= và ?q= (từ khoá tìm kiếm) từ URL nếu có ──
-  const urlQ = new URLSearchParams(location.search).get('q')
+  const urlParams = new URLSearchParams(location.search)
+  // ?q= là chuẩn; ?vehicle= (link cũ từ ô tìm kiếm trang chủ) được coi như từ khoá
+  const urlQ = urlParams.get('q') || urlParams.get('vehicle')
   if (urlQ) {
     filters.search = urlQ
     const box = document.getElementById('filterSearch')

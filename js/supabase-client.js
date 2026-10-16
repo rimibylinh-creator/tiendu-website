@@ -54,47 +54,55 @@ async function getCatsMap() {
 // ── Nguyên lý 2: Phân trang — chỉ load PAGE_SIZE sản phẩm mỗi lần ──
 const PAGE_SIZE = 24
 
-async function getProductsPaged({ page = 0, categorySlug = '', brandName = '', orKeywords = [], search = '' } = {}) {
+async function getProductsPaged({ page = 0, categorySlug = '', brandName = '', orKeywords = [], search = '', year = '' } = {}) {
   const from = page * PAGE_SIZE
   const to   = from + PAGE_SIZE - 1
 
-  let q = db
-    .from('products')
-    .select('id, slug, name, price, stock_status, short_specs, thumbnail_url, brands(name, slug), categories(name, slug)', { count: 'exact' })
-    .eq('is_published', true)
-    .order('created_at', { ascending: false })
-    .range(from, to)      // ← Phân trang: chỉ lấy dòng [from, to]
+  // Dựng truy vấn; withYear=false để thử lại khi không có kết quả đúng năm
+  async function run(withYear) {
+    let q = db
+      .from('products')
+      .select('id, slug, name, price, stock_status, short_specs, thumbnail_url, brands(name, slug), categories(name, slug)', { count: 'exact' })
+      .eq('is_published', true)
+      .order('created_at', { ascending: false })
+      .range(from, to)      // ← Phân trang: chỉ lấy dòng [from, to]
 
-  // Lọc danh mục (tra bảng categories lấy UUID, rồi filter theo category_id)
-  if (categorySlug && categorySlug !== 'all') {
-    const catMap = await getCatsMap()
-    const catId  = catMap[categorySlug]
-    if (catId) q = q.eq('category_id', catId)
+    // Lọc danh mục (tra bảng categories lấy UUID, rồi filter theo category_id)
+    if (categorySlug && categorySlug !== 'all') {
+      const catMap = await getCatsMap()
+      const catId  = catMap[categorySlug]
+      if (catId) q = q.eq('category_id', catId)
+    }
+
+    // Lọc theo danh sách dòng xe của 1 hãng (khớp tên bất kỳ dòng nào — vì
+    // brand_id chưa được gán cho phần lớn dữ liệu tồn kho thực tế)
+    if (orKeywords && orKeywords.length) {
+      const ors = orKeywords.map(k => `search_text.ilike.%${normalizeVietnamese(k)}%`).join(',')
+      q = q.or(ors)
+    } else if (brandName) {
+      const brandMap = await getBrandsMap()
+      const brandId  = brandMap[brandName]
+      if (brandId) q = q.eq('brand_id', brandId)
+    }
+
+    // Tìm kiếm không dấu trên cột search_text (tên + SKU/mã phụ tùng + xe tương thích + thông số) —
+    // mỗi từ khoá là 1 điều kiện ilike riêng (AND), khớp cả khi các từ không liền nhau
+    const words = (search || '').trim() ? normalizeVietnamese(search).split(/\s+/).filter(Boolean) : []
+    if (withYear && year) words.push(String(year))
+    words.forEach(token => { q = q.ilike('search_text', '%' + token + '%') })
+
+    return q
   }
 
-  // Lọc theo danh sách dòng xe của 1 hãng (khớp tên bất kỳ dòng nào — vì
-  // brand_id chưa được gán cho phần lớn dữ liệu tồn kho thực tế)
-  if (orKeywords && orKeywords.length) {
-    const ors = orKeywords.map(k => `name_normalized.ilike.%${normalizeVietnamese(k)}%`).join(',')
-    q = q.or(ors)
-  } else if (brandName) {
-    const brandMap = await getBrandsMap()
-    const brandId  = brandMap[brandName]
-    if (brandId) q = q.eq('brand_id', brandId)
+  let { data, error, count } = await run(true)
+  let relaxed = false
+  // Chọn năm xe mà không có kết quả → thử lại không kèm năm (tên sản phẩm thường ghi dạng "06-16", không phải "2016")
+  if (!error && year && (count || 0) === 0) {
+    const again = await run(false)
+    if (!again.error && (again.count || 0) > 0) { data = again.data; count = again.count; relaxed = true }
   }
-
-  // Nguyên lý 4: Tìm kiếm không dấu trên cột name_normalized —
-  // mỗi từ khoá là 1 điều kiện ilike riêng (AND), khớp cả khi các từ
-  // không liền nhau trong tên sản phẩm (vd: "ranger 2016")
-  if (search.trim()) {
-    normalizeVietnamese(search).split(/\s+/).filter(Boolean).forEach(token => {
-      q = q.ilike('name_normalized', '%' + token + '%')
-    })
-  }
-
-  const { data, error, count } = await q
-  if (error) { console.error('getProductsPaged:', error); return { data: [], count: 0 } }
-  return { data: data || [], count: count || 0 }
+  if (error) { console.error('getProductsPaged:', error); return { data: [], count: 0, relaxed: false } }
+  return { data: data || [], count: count || 0, relaxed }
 }
 
 // ── Fetch ──────────────────────────────────────────────────────
