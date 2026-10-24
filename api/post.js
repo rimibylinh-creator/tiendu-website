@@ -13,11 +13,19 @@ const TEMPLATE = fs.readFileSync(path.join(__dirname, '_tpl', 'post-detail.html'
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
 const jsonForScript = o => JSON.stringify(o).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026')
 const stripTags = s => String(s || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+// Rút gọn cho thẻ title/description (Google chỉ hiển thị ~60 / ~155 ký tự)
+const clip = (s, max) => {
+  s = String(s == null ? '' : s).replace(/\s+/g, ' ').trim()
+  if (s.length <= max) return s
+  const cut = s.slice(0, max)
+  const i = Math.max(cut.lastIndexOf(' '), cut.lastIndexOf('/'))
+  return (i > max * 0.6 ? cut.slice(0, i) : cut).replace(/[\s,;:\/\-–—(]+$/, '') + '…'
+}
 
 function render(p, slug) {
   const url = SITE + '/tin-tuc-chi-tiet.html?slug=' + encodeURIComponent(slug)
-  const title = p.title + ' — Tiên Du Phụ Tùng Ô Tô Nha Trang'
-  const desc = stripTags(p.excerpt) || p.title
+  const title = clip(p.title, 60) + ' — Tiên Du Nha Trang'
+  const desc = clip(stripTags(p.excerpt) || p.title, 155)
   const img = p.cover_image_url || SITE + '/assets/hero-bg.jpg'
 
   let html = TEMPLATE

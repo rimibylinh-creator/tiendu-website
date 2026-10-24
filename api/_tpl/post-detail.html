@@ -425,8 +425,16 @@
     return
   }
 
-  const pageTitle = post.title + ' — Tiên Du Phụ Tùng Ô Tô Nha Trang'
-  const pageDesc  = post.excerpt || post.title
+// Rút gọn cho thẻ title/description (Google chỉ hiển thị ~60 / ~155 ký tự)
+  const clip = (s, max) => {
+    s = String(s == null ? '' : s).replace(/\s+/g, ' ').trim()
+    if (s.length <= max) return s
+    const cut = s.slice(0, max)
+    const i = Math.max(cut.lastIndexOf(' '), cut.lastIndexOf('/'))
+    return (i > max * 0.6 ? cut.slice(0, i) : cut).replace(/[\s,;:\/\-–—(]+$/, '') + '…'
+  }
+  const pageTitle = clip(post.title, 60) + ' — Tiên Du Nha Trang'
+  const pageDesc  = clip(post.excerpt || post.title, 155)
   const pageUrl   = 'https://ototiendu.com/tin-tuc-chi-tiet.html?slug=' + slug
   const pageImg   = post.cover_image_url || 'https://ototiendu.com/assets/hero-bg.jpg'
 

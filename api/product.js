@@ -15,6 +15,14 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const jsonForScript = o => JSON.stringify(o).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026')
 const formatPrice = p => new Intl.NumberFormat('vi-VN').format(p) + ' ₫'
 const stripTags = s => String(s || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+// Rút gọn cho thẻ title/description (Google chỉ hiển thị ~60 / ~155 ký tự)
+const clip = (s, max) => {
+  s = String(s == null ? '' : s).replace(/\s+/g, ' ').trim()
+  if (s.length <= max) return s
+  const cut = s.slice(0, max)
+  const i = Math.max(cut.lastIndexOf(' '), cut.lastIndexOf('/'))
+  return (i > max * 0.6 ? cut.slice(0, i) : cut).replace(/[\s,;:\/\-–—(]+$/, '') + '…'
+}
 
 // SKU phải là 1 mã sạch: lấy mã đầu tiên (tách theo "/"), bỏ chữ có dấu/ghi chú
 const cleanSku = sku => String(sku || '').split('/')[0]
@@ -76,8 +84,8 @@ function buildSchema(p, url) {
 
 function render(p, slug) {
   const url = SITE + '/san-pham-chi-tiet.html?slug=' + encodeURIComponent(slug)
-  const title = p.name + ' — Tiên Du Phụ Tùng Ô Tô Nha Trang'
-  const desc = 'Mua ' + p.name + ' tại Tiên Du Nha Trang. Giá ' + formatPrice(p.price) + '. Giao toàn quốc.'
+  const title = clip(p.name, 58) + ' — Tiên Du Nha Trang'
+  const desc = 'Mua ' + clip(p.name, 70) + ' tại Tiên Du Nha Trang. Giá ' + formatPrice(p.price) + '. Giao toàn quốc.'
   const img = p.thumbnail_url || SITE + '/assets/hero-bg.jpg'
 
   let html = TEMPLATE

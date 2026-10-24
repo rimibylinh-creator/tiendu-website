@@ -251,8 +251,16 @@
   }
 
   // ── Meta ──────────────────────────────────────────────────
-  const title = product.name + ' — Tiên Du Phụ Tùng Ô Tô Nha Trang'
-  const desc  = 'Mua ' + product.name + ' tại Tiên Du Nha Trang. Giá ' + formatPrice(product.price) + '. Giao toàn quốc.'
+// Rút gọn cho thẻ title/description (Google chỉ hiển thị ~60 / ~155 ký tự)
+  const clip = (s, max) => {
+    s = String(s == null ? '' : s).replace(/\s+/g, ' ').trim()
+    if (s.length <= max) return s
+    const cut = s.slice(0, max)
+    const i = Math.max(cut.lastIndexOf(' '), cut.lastIndexOf('/'))
+    return (i > max * 0.6 ? cut.slice(0, i) : cut).replace(/[\s,;:\/\-–—(]+$/, '') + '…'
+  }
+  const title = clip(product.name, 58) + ' — Tiên Du Nha Trang'
+  const desc  = 'Mua ' + clip(product.name, 70) + ' tại Tiên Du Nha Trang. Giá ' + formatPrice(product.price) + '. Giao toàn quốc.'
   const img   = product.thumbnail_url || 'https://ototiendu.com/assets/hero-bg.jpg'
   const url   = 'https://ototiendu.com/san-pham-chi-tiet.html?slug=' + slug
 
