@@ -120,9 +120,30 @@
 }
 .post-content a { color: #b45309; text-decoration: underline }
 .post-content strong { color: #101010 }
-.post-content table { width: 100%; border-collapse: collapse; margin: 20px 0 }
-.post-content th, .post-content td { padding: 10px 14px; border: 1px solid #e0e0e0; text-align: left }
-.post-content th { background: #f5f5f5; font-weight: 700 }
+/* Bảng: dùng dòng dạng | cột 1 | cột 2 | trong editor, trang tự chuyển thành bảng */
+.post-content .tbl-wrap { overflow-x: auto; margin: 24px 0; border: 1px solid #e0e0e0; border-radius: 12px; background: #fff }
+.post-content table { width: 100%; min-width: 520px; border-collapse: collapse; margin: 0; font-size: 15px; line-height: 1.55 }
+.post-content th, .post-content td { padding: 12px 16px; border-bottom: 1px solid #ececec; text-align: left; vertical-align: top }
+.post-content tbody tr:last-child td { border-bottom: 0 }
+.post-content thead th { background: #101010; color: #fecd27; font-weight: 700; font-size: 14px; letter-spacing: .2px; white-space: nowrap }
+.post-content tbody tr:nth-child(even) td { background: #fafafa }
+.post-content tbody td:first-child { font-weight: 600; color: #101010 }
+/* Danh sách */
+.post-content ul, .post-content ol { padding-left: 24px }
+.post-content ul li::marker { color: #e1ae01 }
+.post-content ol li::marker { color: #b45309; font-weight: 700 }
+.post-content li > p { margin-bottom: 6px }
+/* FAQ: h2 "Câu hỏi thường gặp" + các h3 (câu hỏi) kèm đoạn trả lời */
+.post-faq { margin: 8px 0 32px }
+.post-faq .faq-item { border: 1px solid #e0e0e0; border-radius: 12px; background: #fff; margin-bottom: 10px; overflow: hidden }
+.post-faq .faq-item[open] { border-color: #fecd27; box-shadow: 0 4px 14px rgba(254,205,39,.18) }
+.post-faq summary { cursor: pointer; list-style: none; padding: 16px 52px 16px 18px; font-weight: 700; color: #101010; position: relative; line-height: 1.5 }
+.post-faq summary::-webkit-details-marker { display: none }
+.post-faq summary::after { content: "+"; position: absolute; right: 18px; top: 50%; transform: translateY(-50%); width: 26px; height: 26px; border-radius: 50%; background: #fecd27; color: #000; font-weight: 700; display: grid; place-items: center; line-height: 1 }
+.post-faq .faq-item[open] summary::after { content: "–" }
+.post-faq summary:focus-visible { outline: 2px solid #101010; outline-offset: -2px }
+.post-faq .faq-a { padding: 0 18px 8px; color: #252b42 }
+.post-faq .faq-a > *:last-child { margin-bottom: 10px }
 .post-loading {
   min-height: 60vh;
   display: flex;
@@ -499,6 +520,52 @@
   } else {
     contentEl.innerHTML = '<p style="color:#a0a0a0;text-align:center;padding:40px 0">Nội dung đang được cập nhật...</p>'
   }
+
+  // Bảng và FAQ viết bằng cú pháp đơn giản trong editor (Quill không có bảng):
+  //  • bảng: các dòng liên tiếp dạng  | Cột 1 | Cột 2 |  (dòng đầu là tiêu đề, dòng |---|---| được bỏ qua)
+  //  • FAQ: h2 "Câu hỏi thường gặp", mỗi câu hỏi là 1 h3, câu trả lời là các đoạn/danh sách ngay sau đó
+  ;(function enhanceArticle(root) {
+    const isRow = el => el.tagName === 'P' && /^\s*\|.*\|\s*$/.test(el.textContent)
+    const kids = Array.from(root.children)
+    for (let i = 0; i < kids.length; ) {
+      if (!isRow(kids[i])) { i++; continue }
+      let j = i
+      while (j < kids.length && isRow(kids[j])) j++
+      const rows = kids.slice(i, j).map(el =>
+        el.innerHTML.replace(/<br\s*\/?>/gi, ' ').trim().replace(/^\||\|$/g, '').split('|').map(c => c.trim()))
+      const body = rows.filter(r => !r.every(c => /^:?-{2,}:?$/.test(c)))
+      if (body.length >= 2) {
+        const cell = (tag, c) => '<' + tag + '>' + c + '</' + tag + '>'
+        const wrap = document.createElement('div')
+        wrap.className = 'tbl-wrap'
+        wrap.innerHTML = '<table><thead><tr>' + body[0].map(c => cell('th', c)).join('') + '</tr></thead><tbody>' +
+          body.slice(1).map(r => '<tr>' + r.map(c => cell('td', c)).join('') + '</tr>').join('') + '</tbody></table>'
+        kids[i].replaceWith(wrap)
+        kids.slice(i + 1, j).forEach(el => el.remove())
+      }
+      i = j
+    }
+
+    const faqH2 = Array.from(root.children).find(el => el.tagName === 'H2' && /c[âa]u h[ỏo]i th[ườu]+ng g[ặa]p|\bfaq\b/i.test(el.textContent))
+    if (faqH2) {
+      const nodes = []
+      for (let n = faqH2.nextElementSibling; n && n.tagName !== 'H2'; n = n.nextElementSibling) nodes.push(n)
+      if (nodes.some(n => n.tagName === 'H3')) {
+        const box = document.createElement('div')
+        box.className = 'post-faq'
+        let item = null, ans = null
+        nodes.forEach(n => {
+          if (n.tagName === 'H3') {
+            item = document.createElement('details'); item.className = 'faq-item'
+            const sum = document.createElement('summary'); sum.textContent = n.textContent.replace(/^\s*(?:\d+[.)]|[Qq]:?)\s*/, '')
+            ans = document.createElement('div'); ans.className = 'faq-a'
+            item.append(sum, ans); box.appendChild(item); n.remove()
+          } else if (ans) { ans.appendChild(n) } else { n.remove() }
+        })
+        faqH2.after(box)
+      }
+    }
+  })(contentEl)
 
   // Đoạn văn chỉ gồm link sản phẩm → dãy card nhỏ ngay tại vị trí đó trong bài
   const SLUG_RE = /san-pham-chi-tiet(?:\.html)?\?(?:[^"'\s<>]*?&(?:amp;)?)?slug=([A-Za-z0-9_%.\-]+)/g

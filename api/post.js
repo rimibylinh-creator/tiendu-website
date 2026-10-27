@@ -22,6 +22,26 @@ const clip = (s, max) => {
   return (i > max * 0.6 ? cut.slice(0, i) : cut).replace(/[\s,;:\/\-–—(]+$/, '') + '…'
 }
 
+// FAQ trong bài: h2 "Câu hỏi thường gặp" + các h3 (câu hỏi) kèm đoạn trả lời → FAQPage JSON-LD
+const decode = s => s.replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&')
+function faqSchema(content) {
+  const m = /<h2[^>]*>[^<]*(?:câu hỏi thường gặp|faq)[^<]*<\/h2>([\s\S]*?)(?=<h2[\s>]|$)/i.exec(content || '')
+  if (!m) return null
+  const items = m[1].split(/<h3[^>]*>/i).slice(1).map(seg => {
+    const [q, ...rest] = seg.split(/<\/h3>/i)
+    return {
+      q: decode(stripTags(q)).replace(/^\s*(?:\d+[.)]|Q:?)\s*/i, ''),
+      a: decode(stripTags(rest.join(' ')))
+    }
+  }).filter(x => x.q && x.a)
+  if (!items.length) return null
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map(x => ({ '@type': 'Question', name: x.q, acceptedAnswer: { '@type': 'Answer', text: x.a } }))
+  }
+}
+
 function render(p, slug) {
   const url = SITE + '/tin-tuc-chi-tiet.html?slug=' + encodeURIComponent(slug)
   const title = clip(p.title, 60) + ' — Tiên Du Nha Trang'
@@ -61,6 +81,8 @@ function render(p, slug) {
   }
   html = html.replace(/<script id="articleSchema" type="application\/ld\+json">\{\}<\/script>/, () =>
     '<script id="articleSchema" type="application/ld+json">' + jsonForScript(schema) + '</script>')
+  const faq = faqSchema(p.content)
+  if (faq) html = html.replace('</head>', () => '<script type="application/ld+json">' + jsonForScript(faq) + '</script>\n</head>')
 
   // Nội dung tối thiểu cho người/bot không chạy JS
   html = html.replace('<body>', () => '<body>\n<noscript><h1>' + esc(p.title) + '</h1><p>' + esc(desc) + '</p></noscript>')
