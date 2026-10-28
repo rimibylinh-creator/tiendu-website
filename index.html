@@ -455,11 +455,11 @@
 <script src="js/main.js"></script>
 <script src="js/cms-loader.js"></script>
 <script>
-// Banner hero: thêm assets/hero-banner.webp, .gif hoặc .png để hiện; chưa có file thì ẩn
+// Banner hero: thêm assets/hero-banner.gif, .webp hoặc .png để hiện; chưa có file thì ẩn
 (function () {
   var box = document.getElementById('heroBanner'); if (!box) return;
   var img = box.querySelector('img');
-  var list = ['assets/hero-banner.webp', 'assets/hero-banner.gif', 'assets/hero-banner.png'];
+  var list = ['assets/hero-banner.gif', 'assets/hero-banner.webp', 'assets/hero-banner.png'];
   (function next(i) {
     if (i >= list.length) return;
     var t = new Image();
