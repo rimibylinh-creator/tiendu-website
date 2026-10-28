@@ -119,7 +119,7 @@
 
   <div class="hero-content">
     <div class="hero-head">
-      <div class="hero-banner"></div>
+      <div class="hero-banner" id="heroBanner" hidden><img alt="" src=""></div>
       <h1 class="hero-title">PHỤ TÙNG Ô TÔ<br>PHÂN PHỐI TẠI KHÁNH HOÀ</h1>
     </div>
     <p class="hero-subtitle">Bán sỉ &amp; lẻ. Phân phối đa dạng từ các nhà sản xuất trong và quốc tế<br>Giao nhanh toàn tỉnh Khánh Hoà và cả nước</p>
@@ -454,5 +454,20 @@
 </script>
 <script src="js/main.js"></script>
 <script src="js/cms-loader.js"></script>
+<script>
+// Banner hero: thêm assets/hero-banner.png hoặc assets/hero-banner.gif để hiện; chưa có file thì ẩn
+(function () {
+  var box = document.getElementById('heroBanner'); if (!box) return;
+  var img = box.querySelector('img');
+  var list = ['assets/hero-banner.gif', 'assets/hero-banner.png'];
+  (function next(i) {
+    if (i >= list.length) return;
+    var t = new Image();
+    t.onload = function () { img.src = list[i]; box.hidden = false; };
+    t.onerror = function () { next(i + 1); };
+    t.src = list[i];
+  })(0);
+})();
+</script>
 </body>
 </html>
