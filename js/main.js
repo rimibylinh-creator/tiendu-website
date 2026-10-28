@@ -102,6 +102,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* ---------- Announcement bar — chạy chữ trên đầu header (mọi trang) ---------- */
+  const navEl = document.querySelector('.site-nav');
+  if (navEl && !navEl.querySelector('.announce-bar')) {
+    const msg = 'GIẢM GIÁ MÙA CUỐI NĂM 10% CHO ĐH TRÊN 500K';
+    const item = '<span class="announce-item">' + msg + '</span>';
+    const bar = document.createElement('div');
+    bar.className = 'announce-bar';
+    bar.setAttribute('role', 'region');
+    bar.setAttribute('aria-label', 'Thông báo khuyến mãi');
+    bar.innerHTML = '<div class="announce-track">' + item.repeat(8) + '</div>';
+    navEl.insertBefore(bar, navEl.firstChild);
+  }
+
   /* ---------- Fixed nav — shadow on scroll ---------- */
   const nav = document.querySelector('.site-nav');
   if (nav) {

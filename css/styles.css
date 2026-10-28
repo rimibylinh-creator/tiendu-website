@@ -141,6 +141,42 @@ p { margin: 0; }
   background: #000000;
   transition: box-shadow 0.3s ease;
 }
+/* Announcement bar (chèn bằng js/main.js vào đầu .site-nav) */
+.announce-bar {
+  height: 36px;
+  overflow: hidden;
+  background: var(--color-primary);
+  color: var(--color-near-black);
+  display: flex;
+  align-items: center;
+}
+.announce-track {
+  display: flex;
+  flex-shrink: 0;
+  white-space: nowrap;
+  animation: announce-scroll 30s linear infinite;
+}
+.announce-bar:hover .announce-track { animation-play-state: paused; }
+.announce-item {
+  font-family: var(--font-cta);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 0 40px;
+  position: relative;
+}
+.announce-item::after {
+  content: "\2022";
+  position: absolute;
+  right: -4px;
+}
+@keyframes announce-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-12.5%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .announce-track { animation: none; }
+}
 .site-nav.is-scrolled {
   box-shadow: 0 2px 24px rgba(0,0,0,0.5);
 }
