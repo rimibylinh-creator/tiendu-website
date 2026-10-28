@@ -296,6 +296,20 @@ p { margin: 0; }
   text-align: center;
   flex: 1;
 }
+.hero-head {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 48px;
+  width: fit-content;
+  max-width: 100%;
+}
+.hero-banner {
+  height: 64px;
+  width: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-sm);
+}
 .hero-title {
   color: var(--color-white);
   font-weight: 600;
