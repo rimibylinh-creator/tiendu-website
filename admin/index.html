@@ -244,6 +244,17 @@ tr.p-selected td{background:#fffbea}
 .dspec-row input:focus{border-color:#fecd27}
 .dspec-row input:first-child{flex:0.6;color:#737373}
 
+/*  Post – FAQ schema builder  */
+.po-faq-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start;padding:10px 12px;background:#fafafa;border:1.5px solid #ebebeb;border-radius:8px;position:relative}
+.po-faq-row textarea{border:1.5px solid #d2d2d2;border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;resize:vertical;min-height:62px;outline:none;transition:border-color .15s;background:#fff}
+.po-faq-row textarea:focus{border-color:#fecd27}
+.po-faq-row-rm{position:absolute;top:8px;right:8px;background:none;border:none;cursor:pointer;color:#b0b0b0;font-size:16px;line-height:1;padding:0 4px}
+.po-faq-row-rm:hover{color:#ef4444}
+.po-faq-list{display:flex;flex-direction:column;gap:8px}
+.po-faq-add{display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px dashed #d2d2d2;border-radius:8px;padding:7px 16px;font-size:13px;color:#737373;cursor:pointer;font-family:inherit;transition:all .15s;margin-top:4px}
+.po-faq-add:hover{border-color:#fecd27;color:#252b42;background:#fffbe6}
+.po-faq-label{font-size:11px;font-weight:700;color:#a0a0a0;text-transform:uppercase;margin-bottom:3px}
+
 /*  Post – related product picker  */
 .po-product-picker{position:relative}
 .po-product-drop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid #ebebeb;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:400;overflow:hidden;max-height:240px;overflow-y:auto}
@@ -1206,6 +1217,18 @@ tr.p-selected td{background:#fffbea}
           <div id="quillEditor"></div>
         </div>
         <span class="fnote" style="margin-top:4px">Click biểu tượng ảnh trong toolbar để chèn ảnh từ máy tính</span>
+      </div>
+      <div class="fg s2" style="padding:16px;background:#fffbe6;border:1.5px solid #fecd27;border-radius:10px">
+        <label class="flabel" style="color:#7a5c00;display:flex;align-items:center;gap:6px">
+          <i data-lucide="help-circle" style="width:14px;height:14px;stroke-width:2"></i>
+          FAQ Schema — AEO / SEO / GEO
+          <span style="font-weight:400;color:#b8860b;text-transform:none;letter-spacing:0">Câu hỏi thường gặp cho AI search &amp; featured snippet</span>
+        </label>
+        <div id="po_faq_list" class="po-faq-list" style="margin-top:8px"></div>
+        <button type="button" class="po-faq-add" onclick="poFaqAdd()">
+          <i data-lucide="plus" style="width:14px;height:14px;stroke-width:2.5"></i> Thêm câu hỏi
+        </button>
+        <span class="fnote" style="margin-top:6px;color:#7a5c00">Mỗi câu hỏi sẽ được inject vào <code>FAQPage</code> JSON-LD — Google &amp; AI đọc để hiện trong hộp hỏi đáp</span>
       </div>
       <div class="fg s2">
         <label class="flabel">Sản phẩm phù hợp <span style="font-weight:400;color:#b0b0b0">(hiển thị cuối bài — tối đa 6)</span></label>
@@ -2261,6 +2284,44 @@ function poFilter(q) {
   renderPo(allPo.filter(p => p.title.toLowerCase().includes(lower)))
 }
 
+// ─── FAQ Schema builder ───────────────────────────────────────
+let poFaqItems = []  // [{ q: '', a: '' }, ...]
+
+function poFaqRender() {
+  const list = document.getElementById('po_faq_list')
+  if (!list) return
+  list.innerHTML = poFaqItems.map((item, i) => `
+    <div class="po-faq-row" id="po_faq_row_${i}">
+      <div>
+        <div class="po-faq-label">Câu hỏi ${i + 1}</div>
+        <textarea placeholder="Thời gian thay lọc gió là bao lâu?" oninput="poFaqSet(${i},'q',this.value)">${escHtml(item.q)}</textarea>
+      </div>
+      <div>
+        <div class="po-faq-label">Câu trả lời</div>
+        <textarea placeholder="Nên thay lọc gió sau mỗi 15.000–20.000 km..." oninput="poFaqSet(${i},'a',this.value)">${escHtml(item.a)}</textarea>
+      </div>
+      <button class="po-faq-row-rm" onclick="poFaqRemove(${i})" title="Xoá">✕</button>
+    </div>`).join('')
+  if (window.lucide) lucide.createIcons()
+}
+
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+
+function poFaqSet(i, key, val) { if (poFaqItems[i]) poFaqItems[i][key] = val }
+
+function poFaqAdd() {
+  poFaqItems.push({ q: '', a: '' })
+  poFaqRender()
+  // focus câu hỏi mới
+  const rows = document.querySelectorAll('.po-faq-row textarea')
+  if (rows.length) rows[rows.length - 2]?.focus()
+}
+
+function poFaqRemove(i) {
+  poFaqItems.splice(i, 1)
+  poFaqRender()
+}
+
 // ─── Related product picker ───────────────────────────────────
 let poRelProducts = []   // { id, name, slug, thumbnail_url, price }
 let poSearchTimer = null
@@ -2341,6 +2402,10 @@ function openPostModal(p = null) {
     quillEditor.root.innerHTML = p?.content || ''
   }
 
+  // FAQ items
+  poFaqItems = Array.isArray(p?.faq_items) ? p.faq_items.map(x => ({ q: x.q || '', a: x.a || '' })) : []
+  poFaqRender()
+
   // Related products
   const inp = document.getElementById('po_product_search')
   if (inp) inp.value = ''
@@ -2381,6 +2446,7 @@ async function savePost() {
     published_at:           new Date(document.getElementById('po_date').value).toISOString(),
     is_published:           document.getElementById('po_pub').checked,
     related_product_slugs:  poRelProducts.map(p => p.slug),
+    faq_items:              poFaqItems.filter(x => x.q && x.a),
   }
 
   const { error } = editPoId

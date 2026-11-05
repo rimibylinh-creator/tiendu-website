@@ -81,8 +81,22 @@ function render(p, slug) {
   }
   html = html.replace(/<script id="articleSchema" type="application\/ld\+json">\{\}<\/script>/, () =>
     '<script id="articleSchema" type="application/ld+json">' + jsonForScript(schema) + '</script>')
-  const faq = faqSchema(p.content)
+  // FAQ schema: DB-stored faq_items có ưu tiên cao hơn tự phát hiện từ nội dung
+  const faqFromDb = Array.isArray(p.faq_items) && p.faq_items.length
+    ? p.faq_items.filter(x => x.q && x.a)
+    : null
+  const faqItems = faqFromDb || null
+  const faq = faqItems
+    ? { '@context': 'https://schema.org', '@type': 'FAQPage',
+        mainEntity: faqItems.map(x => ({ '@type': 'Question', name: x.q, acceptedAnswer: { '@type': 'Answer', text: x.a } })) }
+    : faqSchema(p.content)
   if (faq) html = html.replace('</head>', () => '<script type="application/ld+json">' + jsonForScript(faq) + '</script>\n</head>')
+
+  // Inject FAQ accordion data for client-side rendering
+  if (faqItems && faqItems.length) {
+    html = html.replace('</head>', () =>
+      '<script>window.__FAQ_ITEMS__=' + jsonForScript(faqItems) + '</script>\n</head>')
+  }
 
   // Nội dung tối thiểu cho người/bot không chạy JS
   html = html.replace('<body>', () => '<body>\n<noscript><h1>' + esc(p.title) + '</h1><p>' + esc(desc) + '</p></noscript>')

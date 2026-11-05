@@ -144,6 +144,8 @@
 .post-faq summary:focus-visible { outline: 2px solid #101010; outline-offset: -2px }
 .post-faq .faq-a { padding: 0 18px 8px; color: #252b42 }
 .post-faq .faq-a > *:last-child { margin-bottom: 10px }
+.faq-section-wrap { max-width: 820px; margin: 0 auto 48px; padding: 0 24px }
+.faq-section-title { font-size: 20px; font-weight: 700; color: #101010; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #fecd27 }
 .post-loading {
   min-height: 60vh;
   display: flex;
@@ -336,6 +338,11 @@
   </div>
 
 </article>
+
+<section id="faqSection" style="display:none" class="faq-section-wrap">
+  <h2 class="faq-section-title">Câu hỏi thường gặp</h2>
+  <div id="faqList" class="post-faq"></div>
+</section>
 
 <section id="relatedProducts" style="display:none" class="rel-products-section">
   <h2 class="section-title">SẢN PHẨM PHÙ HỢP</h2>
@@ -598,6 +605,23 @@
 
   document.getElementById('postWrap').style.display = 'block'
   document.getElementById('ctaBanner').style.display = 'block'
+
+  // Render FAQ accordion từ faq_items được nhập trong admin (server inject qua window.__FAQ_ITEMS__)
+  // Nếu có faq_items từ DB → hiện accordion chuyên dụng; phần tự phát hiện từ nội dung vẫn chạy bình thường
+  if (Array.isArray(window.__FAQ_ITEMS__) && window.__FAQ_ITEMS__.length) {
+    const faqSec = document.getElementById('faqSection')
+    if (faqSec) {
+      const faqList = document.getElementById('faqList')
+      if (faqList) {
+        faqList.innerHTML = window.__FAQ_ITEMS__.map((item, i) => `
+          <details class="faq-item"${i === 0 ? ' open' : ''}>
+            <summary>${escAttr(item.q)}</summary>
+            <div class="faq-a"><p>${escAttr(item.a)}</p></div>
+          </details>`).join('')
+      }
+      faqSec.style.display = 'block'
+    }
+  }
 
   // Tải sản phẩm cho cả các dãy trong bài lẫn khu "Sản phẩm phù hợp" ở cuối bài.
   // Cuối bài: sản phẩm có link trong bài (không nằm trong dãy) + sản phẩm chọn tay trong admin.
