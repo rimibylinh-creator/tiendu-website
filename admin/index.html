@@ -2282,7 +2282,10 @@ function poFaqGet() {
     const arr = JSON.parse(raw)
     if (!Array.isArray(arr)) return []
     return arr.filter(x => x && typeof x.q === 'string' && typeof x.a === 'string' && x.q && x.a)
-  } catch (e) { return null }  // null = lỗi parse
+  } catch (e) {
+    toast('JSON FAQ không hợp lệ — bỏ qua, lưu với FAQ trống', 'err')
+    return []
+  }
 }
 
 function poFaqSet(items) {
@@ -2405,7 +2408,6 @@ async function savePost() {
   if (!title || !slug) { toast('Nhập đầy đủ tiêu đề và slug', 'err'); return }
 
   const faqItems = poFaqGet()
-  if (faqItems === null) { toast('JSON FAQ không hợp lệ — kiểm tra lại cú pháp', 'err'); return }
 
   const content = quillEditor?.root.innerHTML || ''
 
