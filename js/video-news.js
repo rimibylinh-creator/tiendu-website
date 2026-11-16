@@ -1,6 +1,6 @@
 // Section "Tin vắn từ Tiên Du" (trang chủ): hàng video dọc + lightbox xem full trên nền tối 80%.
-// Mỗi thẻ là <a href="/tin-van/slug"> thật (Google đi theo được); click thường → mở lightbox,
-// Ctrl/⌘-click hoặc bot → vào trang video riêng (api/video.js, có VideoObject schema).
+// Video chỉ xem trong lightbox ngay trên trang chủ (không có trang chi tiết riêng).
+// Schema VideoObject của từng video được gắn vào trang chủ; video sitemap ở /sitemap-videos.xml.
 // Phụ thuộc: js/supabase-client.js (getVideos).
 (function () {
   var SITE = 'https://ototiendu.com'
@@ -54,7 +54,6 @@
     var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60
     return 'PT' + (h ? h + 'H' : '') + (m ? m + 'M' : '') + (x || (!h && !m) ? x + 'S' : '')
   }
-  function pageUrl(v) { return '/tin-van/' + encodeURIComponent(v.slug) }
 
   // ── Thẻ video ───────────────────────────────────────────────
   function cardHtml(v, i) {
@@ -65,13 +64,13 @@
           ? '<video src="' + esc(v.video_url) + '#t=0.5" preload="metadata" muted playsinline></video>'
           : '<span class="vn-noimg"></span>')
     var d = fmtDur(v.duration_seconds)
-    return '<a class="vn-card" role="listitem" href="' + pageUrl(v) + '" data-i="' + i + '" aria-label="Xem video: ' + esc(v.title) + '">' +
+    return '<button type="button" class="vn-card" data-i="' + i + '" aria-label="Xem video: ' + esc(v.title) + '">' +
       media +
       '<span class="vn-shade"></span>' +
       '<span class="vn-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>' +
       (d ? '<span class="vn-dur">' + d + '</span>' : '') +
       '<span class="vn-title">' + esc(v.title) + '</span>' +
-      '</a>'
+      '</button>'
   }
 
   // ── Lightbox ────────────────────────────────────────────────
@@ -86,7 +85,7 @@
       '<button type="button" class="vn-lb-close" aria-label="Đóng video">✕</button>' +
       '<button type="button" class="vn-lb-nav vn-lb-prev" aria-label="Video trước">‹</button>' +
       '<div class="vn-lb-stage"><div class="vn-lb-player"></div>' +
-      '<div class="vn-lb-caption"><p class="vn-lb-title"></p><a class="vn-lb-more" href="#">Xem chi tiết →</a></div></div>' +
+      '<div class="vn-lb-caption"><p class="vn-lb-title"></p></div></div>' +
       '<button type="button" class="vn-lb-nav vn-lb-next" aria-label="Video sau">›</button>'
     document.body.appendChild(lb)
 
@@ -137,7 +136,6 @@
     }
     player.appendChild(el)
     lb.querySelector('.vn-lb-title').textContent = v.title
-    lb.querySelector('.vn-lb-more').href = pageUrl(v)
     var multi = videos.length > 1
     lb.querySelector('.vn-lb-prev').style.display = multi ? '' : 'none'
     lb.querySelector('.vn-lb-next').style.display = multi ? '' : 'none'
@@ -163,13 +161,13 @@
     var thumb = thumbOf(v)
     var o = {
       '@type': 'VideoObject',
-      '@id': SITE + pageUrl(v) + '#video',
+      '@id': SITE + '/#video-' + v.slug,
       name: v.title,
       description: v.description || v.title,
       thumbnailUrl: thumb ? [thumb] : undefined,
       uploadDate: v.published_at,
       duration: isoDur(v.duration_seconds) || undefined,
-      url: SITE + pageUrl(v),
+      url: SITE + '/',
       inLanguage: 'vi',
       isFamilyFriendly: true,
       transcript: v.transcript || undefined,
@@ -181,7 +179,7 @@
   }
   function injectSchema() {
     var items = videos.map(function (v, i) {
-      return { '@type': 'ListItem', position: i + 1, url: SITE + pageUrl(v), item: videoObject(v) }
+      return { '@type': 'ListItem', position: i + 1, item: videoObject(v) }
     })
     var s = document.createElement('script')
     s.type = 'application/ld+json'
@@ -218,9 +216,7 @@
     track.innerHTML = videos.map(cardHtml).join('')
     track.addEventListener('click', function (e) {
       var a = e.target.closest('.vn-card')
-      if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return
-      e.preventDefault()
-      open(+a.dataset.i)
+      if (a) open(+a.dataset.i)
     })
     root.hidden = false
     bindScroll()

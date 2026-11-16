@@ -33,19 +33,18 @@
     { "source": "/about-us/", "destination": "/gioi-thieu.html", "permanent": true },
     { "source": "/danh-muc:path(/.*)?", "destination": "/tim-vin.html", "permanent": true },
     { "source": "/products:path(/.*)?", "destination": "/san-pham.html", "permanent": true },
-    { "source": "/page:path(/.*)?", "destination": "/san-pham.html", "permanent": true }
+    { "source": "/page:path(/.*)?", "destination": "/san-pham.html", "permanent": true },
+    { "source": "/tin-van:path(/.*)?", "destination": "/", "permanent": false }
   ],
   "rewrites": [
     { "source": "/sitemap-products.xml", "destination": "/api/sitemap-products" },
     { "source": "/san-pham-chi-tiet.html", "destination": "/api/product" },
     { "source": "/tin-tuc-chi-tiet.html", "destination": "/api/post" },
     { "source": "/sitemap-posts.xml", "destination": "/api/sitemap-posts" },
-    { "source": "/sitemap-videos.xml", "destination": "/api/sitemap-videos" },
-    { "source": "/tin-van/:slug", "destination": "/api/video?slug=:slug" }
+    { "source": "/sitemap-videos.xml", "destination": "/api/sitemap-videos" }
   ],
   "functions": {
     "api/product.js": { "includeFiles": "api/_tpl/**" },
-    "api/post.js": { "includeFiles": "api/_tpl/**" },
-    "api/video.js": { "includeFiles": "api/_tpl/**" }
+    "api/post.js": { "includeFiles": "api/_tpl/**" }
   }
 }

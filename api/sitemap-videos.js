@@ -1,6 +1,7 @@
 // Video sitemap (chuẩn Google) sinh động từ Supabase — chỉ gồm video đang đăng (is_published = true).
 // Phục vụ tại /sitemap-videos.xml (rewrite trong vercel.json), cache edge 1 giờ.
-// Mỗi <url> là trang /tin-van/:slug kèm <video:video> (thumbnail, title, description, content_loc / player_loc, duration).
+// Video chỉ phát trên trang chủ (không có trang chi tiết) → 1 <url> là trang chủ, kèm nhiều <video:video>
+// (thumbnail, title, description, content_loc / player_loc, duration).
 const SITE = 'https://ototiendu.com'
 const SUPABASE_URL = 'https://kdqjhlpvxrpijeoibgki.supabase.co'
 const SUPABASE_ANON = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkcWpobHB2eHJwaWplb2liZ2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1Mjc0NDYsImV4cCI6MjA5ODEwMzQ0Nn0.cm4yaxaZZi6zIbEij8MEZqfHj_EbVhwlOK93szN-rMQ'
@@ -24,17 +25,16 @@ function thumbOf(v) {
 module.exports = async (req, res) => {
   try {
     const r = await fetch(
-      SUPABASE_URL + '/rest/v1/videos?select=slug,title,description,source,video_url,thumbnail_url,duration_seconds,published_at,updated_at&is_published=eq.true&order=published_at.desc&limit=1000',
+      SUPABASE_URL + '/rest/v1/videos?select=slug,title,description,source,video_url,thumbnail_url,duration_seconds,published_at,updated_at&is_published=eq.true&order=sort_order.asc,published_at.desc&limit=1000',
       { headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + SUPABASE_ANON } }
     )
     if (!r.ok) throw new Error('Supabase ' + r.status)
     const rows = await r.json()
-    const urls = rows.filter(v => v.slug && thumbOf(v) && (v.source === 'file' || playerLoc(v))).map(v => {
+    const items = rows.filter(v => v.slug && thumbOf(v) && (v.source === 'file' || playerLoc(v))).map(v => {
       const loc = v.source === 'file'
         ? '      <video:content_loc>' + esc(v.video_url) + '</video:content_loc>\n'
         : '      <video:player_loc>' + esc(playerLoc(v)) + '</video:player_loc>\n'
-      return '  <url>\n    <loc>' + SITE + '/tin-van/' + esc(encodeURIComponent(v.slug)) + '</loc>\n' +
-        '    <video:video>\n' +
+      return '    <video:video>\n' +
         '      <video:thumbnail_loc>' + esc(thumbOf(v)) + '</video:thumbnail_loc>\n' +
         '      <video:title>' + esc(clip(v.title, 100)) + '</video:title>\n' +
         '      <video:description>' + esc(clip(v.description || v.title, 2000)) + '</video:description>\n' +
@@ -42,8 +42,9 @@ module.exports = async (req, res) => {
         (v.duration_seconds ? '      <video:duration>' + Math.round(v.duration_seconds) + '</video:duration>\n' : '') +
         (v.published_at ? '      <video:publication_date>' + new Date(v.published_at).toISOString() + '</video:publication_date>\n' : '') +
         '      <video:family_friendly>yes</video:family_friendly>\n' +
-        '    </video:video>\n  </url>'
+        '    </video:video>'
     })
+    const urls = items.length ? ['  <url>\n    <loc>' + SITE + '/</loc>\n' + items.join('\n') + '\n  </url>'] : []
     res.setHeader('Content-Type', 'application/xml; charset=utf-8')
     res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
     res.status(200).send('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">\n' + urls.join('\n') + '\n</urlset>\n')

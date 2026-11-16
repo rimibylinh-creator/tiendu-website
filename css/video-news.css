@@ -1,6 +1,5 @@
 /* ===========================================================
    TIN VẮN TỪ TIÊN DU — hàng video dọc + lightbox (trang chủ)
-   + trang video riêng /tin-van/:slug
    =========================================================== */
 .video-news { background: var(--color-near-black); color: var(--color-white); }
 .video-news[hidden] { display: none; }
@@ -35,8 +34,12 @@
   background: #1c1c1c;
   scroll-snap-align: start;
   display: block;
+  padding: 0;
+  border: 0;
+  font: inherit;
   color: inherit;
-  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
   isolation: isolate;
   transition: transform .2s ease, box-shadow .2s ease;
 }
@@ -124,13 +127,8 @@ html.vn-lock, html.vn-lock body { overflow: hidden; }
 .vn-lb-player video, .vn-lb-player iframe {
   width: 100%; height: 100%; border: 0; display: block; background: #000; object-fit: contain;
 }
-.vn-lb-caption {
-  display: flex; align-items: center; justify-content: center; gap: 16px;
-  max-width: min(92vw, 520px); color: #fff; text-align: left;
-}
+.vn-lb-caption { max-width: min(92vw, 520px); color: #fff; text-align: center; }
 .vn-lb-title { margin: 0; font-size: 14px; font-weight: 600; line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.vn-lb-more { color: var(--color-primary); font-size: 13px; font-weight: 600; white-space: nowrap; text-decoration: none; }
-.vn-lb-more:hover { text-decoration: underline; }
 .vn-lb-close {
   position: absolute; top: 16px; right: 16px;
   width: 44px; height: 44px; border-radius: 50%;
@@ -151,31 +149,4 @@ html.vn-lock, html.vn-lock body { overflow: hidden; }
   .vn-lb-next { right: 0; }
   .vn-lb-player { height: min(78vh, 720px); }
   .vn-sub { margin-top: -16px; }
-}
-
-/* ---------- Trang video riêng /tin-van/:slug ---------- */
-.vp-hero { background: var(--color-near-black); color: var(--color-white); padding: 112px var(--container-pad) 56px; }
-.vp-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 48px; align-items: start; }
-.vp-crumbs { grid-column: 1 / -1; font-size: 13px; color: rgba(255,255,255,0.6); }
-.vp-crumbs a { color: rgba(255,255,255,0.85); text-decoration: none; }
-.vp-crumbs a:hover { color: var(--color-primary); }
-.vp-player { aspect-ratio: 9 / 16; width: 100%; background: #000; border-radius: var(--radius-lg); overflow: hidden; }
-.vp-player video, .vp-player iframe { width: 100%; height: 100%; border: 0; display: block; object-fit: contain; }
-.vp-title { margin: 0 0 16px; font-size: 32px; line-height: 1.25; font-weight: 600; }
-.vp-meta { margin: 0 0 20px; color: rgba(255,255,255,0.6); font-size: 13px; }
-.vp-desc { margin: 0 0 24px; font-size: 16px; line-height: 1.7; color: rgba(255,255,255,0.85); white-space: pre-line; }
-.vp-transcript { margin: 0 0 28px; padding: 18px 20px; border-left: 3px solid var(--color-primary); background: rgba(255,255,255,0.06); border-radius: 0 var(--radius-md) var(--radius-md) 0; }
-.vp-transcript h2 { margin: 0 0 8px; font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--color-primary); font-weight: 600; }
-.vp-transcript p { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.8); white-space: pre-line; }
-.vp-ctas { display: flex; flex-wrap: wrap; gap: 12px; }
-.vp-more { background: var(--color-bg-soft); padding: 56px var(--container-pad); }
-.vp-more-inner { max-width: var(--container-max); margin: 0 auto; }
-.vp-more h2 { margin: 0 0 24px; font-size: 22px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500; color: var(--color-near-black); }
-.vp-more .vn-track { padding-bottom: 8px; }
-@media (max-width: 860px) {
-  .vp-hero { padding: 96px var(--container-pad) 40px; }
-  .vp-inner { grid-template-columns: 1fr; gap: 24px; }
-  .vp-player { max-width: 360px; margin: 0 auto; }
-  .vp-title { font-size: 24px; }
-  .vp-more { padding: 40px var(--container-pad); }
 }

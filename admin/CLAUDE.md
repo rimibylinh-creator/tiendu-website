@@ -312,7 +312,7 @@ AI writer: `callAI()` với Claude/Gemini để generate bài viết
 Nav `nav-videos` / `tab-videos` — lazy load `loadVideos()`. State: `allVd`, `vdStore`, `editVdId`. Modal `videoModal` (`.lg`).
 - Nguồn: `file` (upload mp4 lên bucket `videos`, ≤ 50MB; tự lấy thời lượng + chụp ảnh bìa từ khung hình), `youtube`, `tiktok` (link dạng `/video/<số>`), `facebook`.
 - Thứ tự trang chủ: `sort_order` tăng dần, bằng nhau thì `published_at` mới trước (sửa số trực tiếp trong bảng).
-- Website: `js/video-news.js` (hàng video dọc + lightbox nền tối 80%), trang riêng `/tin-van/:slug` (`api/video.js` + `api/_tpl/video-detail.html`, JSON-LD VideoObject), `/sitemap-videos.xml` (`api/sitemap-videos.js`).
+- Website: `js/video-news.js` (hàng video dọc + lightbox nền tối 80%, JSON-LD ItemList/VideoObject gắn vào trang chủ), `/sitemap-videos.xml` (`api/sitemap-videos.js`). Không có trang chi tiết riêng cho video; `/tin-van/*` redirect về trang chủ. `slug` tự tạo từ tiêu đề (field ẩn).
 - Xoá dùng `confirmDel('videos', id, name)`; `execDelete()` có nhánh riêng cho `videos`.
 
 ---

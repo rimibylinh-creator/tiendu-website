@@ -1388,12 +1388,8 @@ tr.p-selected td{background:#fffbea}
         <label class="flabel">Tiêu đề *</label>
         <input class="finput" id="vd_title" placeholder="VD: 3 dấu hiệu má phanh cần thay ngay" oninput="autoSlug('vd_title','vd_slug')">
       </div>
-      <div class="fg">
-        <label class="flabel">Đường dẫn (slug)</label>
-        <input class="finput" id="vd_slug" placeholder="tu-dong-tao-tu-tieu-de">
-        <span class="fnote">Trang riêng: ototiendu.com/tin-van/<span id="vd_slug_hint">…</span></span>
-      </div>
-      <div class="fg">
+      <input type="hidden" id="vd_slug"><!-- mã định danh tự tạo từ tiêu đề (dùng cho schema), không hiển thị -->
+      <div class="fg s2">
         <label class="flabel">Nguồn video</label>
         <select class="fsel" id="vd_source" onchange="vdSourceChange()">
           <option value="file">Tải file MP4 lên (khuyên dùng)</option>
@@ -3810,7 +3806,7 @@ function renderVd(list) {
       <td style="width:54px">${th ? `<img src="${vdHtml(th)}" alt="" style="width:36px;height:64px;object-fit:cover;border-radius:6px;background:#eee;display:block" onerror="this.style.opacity=0">` : '<div style="width:36px;height:64px;border-radius:6px;background:#eee"></div>'}</td>
       <td>
         <div class="rname">${vdHtml(v.title)}</div>
-        <div class="rmeta">/tin-van/${vdHtml(v.slug)}${v.transcript ? ' · <span class="badge b-green" style="font-size:10px">Có transcript</span>' : ''}</div>
+        <div class="rmeta">${v.transcript ? '<span class="badge b-green" style="font-size:10px">Có transcript</span>' : '<span class="badge b-gray" style="font-size:10px">Chưa có transcript</span>'}</div>
       </td>
       <td><span class="badge ${srcCls}">${srcLabel}</span></td>
       <td style="color:#737373;white-space:nowrap">${vdDur(v.duration_seconds)}</td>
@@ -3818,7 +3814,6 @@ function renderVd(list) {
       <td style="color:#a0a0a0;white-space:nowrap">${dt}</td>
       <td><label class="toggle"><input type="checkbox" ${v.is_published ? 'checked' : ''} onchange="vdPatch('${v.id}','is_published',this.checked)"><span class="slider"></span></label></td>
       <td style="text-align:right;white-space:nowrap">
-        <a class="btn-ghost" href="https://ototiendu.com/tin-van/${encodeURIComponent(v.slug)}" target="_blank" title="Xem trang video" style="display:inline-flex;align-items:center"><i data-lucide="external-link" style="width:14px;height:14px;stroke-width:2"></i></a>
         <button class="btn-ghost" onclick="openVideoModal(vdStore['${v.id}'])" title="Sửa" style="display:inline-flex;align-items:center"><i data-lucide="pencil" style="width:14px;height:14px;stroke-width:2"></i></button>
         <button class="btn-del" onclick="confirmDel('videos','${v.id}','${esc(v.title)}')" title="Xoá" style="display:inline-flex;align-items:center"><i data-lucide="trash-2" style="width:14px;height:14px;stroke-width:2"></i></button>
       </td>
@@ -3855,13 +3850,10 @@ function openVideoModal(v = null) {
   const pad = n => String(n).padStart(2, '0')
   document.getElementById('vd_date').value = `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`
   prevImg('vd_thumb', 'vd_prev')
-  vdSourceChange(); vdSlugHint()
+  vdSourceChange()
   document.getElementById('videoModal').style.display = 'flex'
   if (window.lucide) lucide.createIcons()
 }
-
-function vdSlugHint() { document.getElementById('vd_slug_hint').textContent = gv('vd_slug') || '…' }
-document.addEventListener('input', e => { if (e.target.id === 'vd_title' || e.target.id === 'vd_slug') vdSlugHint() })
 
 function vdSourceChange() {
   const src = gv('vd_source')

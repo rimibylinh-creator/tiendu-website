@@ -26,7 +26,7 @@ site/
 ├── lien-he.html         ← Liên hệ
 ├── css/
 │   ├── styles.css       ← Toàn bộ styles (Design system + components + pages)
-│   └── video-news.css   ← Styles section video + trang /tin-van/:slug
+│   └── video-news.css   ← Styles section video + lightbox
 ├── js/
 │   ├── main.js          ← JS cho tabs, mobile nav, lang switch
 │   └── video-news.js    ← Section "Tin vắn từ Tiên Du" (video dọc + lightbox) trên trang chủ
