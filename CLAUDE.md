@@ -25,9 +25,11 @@ site/
 ├── gioi-thieu.html      ← Giới thiệu công ty
 ├── lien-he.html         ← Liên hệ
 ├── css/
-│   └── styles.css       ← Toàn bộ styles (Design system + components + pages)
+│   ├── styles.css       ← Toàn bộ styles (Design system + components + pages)
+│   └── video-news.css   ← Styles section video + trang /tin-van/:slug
 ├── js/
-│   └── main.js          ← JS cho carousel, tabs, mobile nav, vehicle lookup
+│   ├── main.js          ← JS cho tabs, mobile nav, lang switch
+│   └── video-news.js    ← Section "Tin vắn từ Tiên Du" (video dọc + lightbox) trên trang chủ
 └── assets/              ← Hình ảnh, icons, logos
     ├── brands/          ← Logo hãng xe (SVG)
     ├── images/          ← Ảnh danh mục

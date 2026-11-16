@@ -37,6 +37,7 @@ const db = createClient(SB_URL, SB_KEY)  // anon key, RLS "allow all"
 | `categories` | Danh mục (id, name, slug) |
 | `posts` | Bài viết/blog |
 | `post_categories` | Danh mục bài viết |
+| `videos` | Kho video "Tin vắn từ Tiên Du" (slug, title, source file/youtube/tiktok/facebook, video_url, thumbnail_url, duration_seconds, sort_order, is_published). Tạo bằng `database/migration_videos.sql` (kèm bucket Storage `videos`) |
 | `shopee_products` | Kho hàng Shopee (id, category, dong_xe, ten_san_pham, gia_nhap_1_ben, created_at) |
 
 **RLS:** tất cả bảng dùng policy `allow all` — `USING (true) WITH CHECK (true)`.
@@ -303,6 +304,16 @@ Drawer có 3 tab: **Quick Edit** (`.rdtab`), **AI Phân tích**, **Nâng cao**.
 State: `let allPo = []`, `const poStore = {}`  
 Quill editor instance: `quillEditor` (khởi tạo trong `initQuill()`)  
 AI writer: `callAI()` với Claude/Gemini để generate bài viết
+
+---
+
+## Tab Video (Tin vắn từ Tiên Du)
+
+Nav `nav-videos` / `tab-videos` — lazy load `loadVideos()`. State: `allVd`, `vdStore`, `editVdId`. Modal `videoModal` (`.lg`).
+- Nguồn: `file` (upload mp4 lên bucket `videos`, ≤ 50MB; tự lấy thời lượng + chụp ảnh bìa từ khung hình), `youtube`, `tiktok` (link dạng `/video/<số>`), `facebook`.
+- Thứ tự trang chủ: `sort_order` tăng dần, bằng nhau thì `published_at` mới trước (sửa số trực tiếp trong bảng).
+- Website: `js/video-news.js` (hàng video dọc + lightbox nền tối 80%), trang riêng `/tin-van/:slug` (`api/video.js` + `api/_tpl/video-detail.html`, JSON-LD VideoObject), `/sitemap-videos.xml` (`api/sitemap-videos.js`).
+- Xoá dùng `confirmDel('videos', id, name)`; `execDelete()` có nhánh riêng cho `videos`.
 
 ---
 

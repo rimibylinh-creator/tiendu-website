@@ -127,6 +127,14 @@ Tất cả bài viết: https://ototiendu.com/tin-tuc.html
 
 ---
 
+## Video ngắn "Tin vắn từ Tiên Du"
+
+Video dọc ngắn về mẹo chọn phụ tùng, hàng mới về và kinh nghiệm bảo dưỡng xe. Mỗi video có trang riêng kèm mô tả và nội dung chính (transcript) dạng văn bản.
+- Danh sách video: https://ototiendu.com/#videoNews
+- Video sitemap: https://ototiendu.com/sitemap-videos.xml (mỗi trang dạng https://ototiendu.com/tin-van/<ten-video>)
+
+---
+
 ## Thông tin doanh nghiệp
 
 - [Giới thiệu Tiên Du](https://ototiendu.com/gioi-thieu.html): Câu chuyện thương hiệu, giá trị cốt lõi, lý do khách hàng chọn Tiên Du

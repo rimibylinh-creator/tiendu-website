@@ -173,6 +173,24 @@ async function getPosts({ limit } = {}) {
   return data || []
 }
 
+// Video "Tin vắn từ Tiên Du": số nhỏ hiện trước, bằng nhau thì mới nhất lên trước.
+// Bảng chưa tạo (chưa chạy migration_videos.sql) → trả [] để section tự ẩn.
+async function getVideos({ limit } = {}) {
+  const cached = TienduCache.get('videos')
+  if (cached && !limit) return cached
+  let q = db
+    .from('videos')
+    .select('id, slug, title, description, transcript, source, video_url, thumbnail_url, duration_seconds, published_at, updated_at')
+    .eq('is_published', true)
+    .order('sort_order', { ascending: true })
+    .order('published_at', { ascending: false })
+  if (limit) q = q.limit(limit)
+  const { data, error } = await q
+  if (error) { console.warn('getVideos:', error.message); return [] }
+  if (!limit) TienduCache.set('videos', data || [], 60)
+  return data || []
+}
+
 async function getPostBySlug(slug) {
   const { data, error } = await db
     .from('posts')

@@ -25,7 +25,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/styles.css?v=3">
+<link rel="stylesheet" href="css/video-news.css?v=1">
 <link rel="canonical" href="https://ototiendu.com/">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script type="application/ld+json">
@@ -219,38 +220,16 @@
   </div>
 </section>
 
-<!-- ============ PROMO CAROUSEL ============ -->
-<section class="promo-carousel">
-  <div class="promo-track">
-    <div class="promo-slide">
-      <img src="assets/banners/banner1.jpg" alt="Má phanh Tiên Du">
-      <div class="promo-slide-content">
-        <h3 class="promo-slide-title">MÁ PHANH AN TOÀN TỪNG LẦN PHANH</h3>
-        <p class="promo-slide-text">Lắp đặt bởi thợ cấp cao. Bảo hành chất lượng. Xe bạn luôn an toàn.</p>
-        <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-yellow">Liên hệ ngay</a>
-      </div>
+<!-- ============ TIN VẮN TỪ TIÊN DU (video ngắn dọc) ============ -->
+<section class="section video-news" id="videoNews" aria-labelledby="videoNewsTitle" hidden>
+  <div class="section-inner">
+    <h2 class="section-title" id="videoNewsTitle">Tin vắn từ Tiên Du</h2>
+    <p class="vn-sub">Video ngắn: mẹo chọn phụ tùng, hàng mới về và kinh nghiệm bảo dưỡng xe từ thợ Tiên Du.</p>
+    <div class="vn-wrap">
+      <button type="button" class="vn-scroll vn-scroll-prev" aria-label="Cuộn trái">‹</button>
+      <div class="vn-track" role="list"></div>
+      <button type="button" class="vn-scroll vn-scroll-next" aria-label="Cuộn phải">›</button>
     </div>
-    <div class="promo-slide">
-      <img src="assets/banners/banner2.jpg" alt="Lọc gió động cơ Tiên Du">
-      <div class="promo-slide-content">
-        <h3 class="promo-slide-title">LỌC GIÓ SẠCH ĐỘNG CƠ KHỎE MẠNH</h3>
-        <p class="promo-slide-text">Thay định kỳ, xe chạy êm. Công suất đủ, tiêu xăng vừa phải. Hàng có nguồn gốc rõ ràng.</p>
-        <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-yellow">Liên hệ ngay</a>
-      </div>
-    </div>
-    <div class="promo-slide">
-      <img src="assets/banners/banner3.jpg" alt="Dầu nhớt Tiên Du">
-      <div class="promo-slide-content">
-        <h3 class="promo-slide-title">DẦU NHỚT CHẤT LƯỢNG ĐỘNG CƠ BỀN LÂU</h3>
-        <p class="promo-slide-text">Shell, Castrol, Mobil... Thợ tư vấn loại dầu phù hợp xe bạn. Thay đúng chu kỳ = tiết kiệm chi phí.</p>
-        <a href="https://zalo.me/0946915111" target="_blank" rel="noopener" class="btn btn-yellow">Liên hệ ngay</a>
-      </div>
-    </div>
-  </div>
-  <div class="promo-dots">
-    <button class="promo-dot active" aria-label="Slide 1"></button>
-    <button class="promo-dot" aria-label="Slide 2"></button>
-    <button class="promo-dot" aria-label="Slide 3"></button>
   </div>
 </section>
 
@@ -453,6 +432,7 @@
   }
 })()
 </script>
+<script src="js/video-news.js?v=1"></script>
 <script src="js/main.js"></script>
 <script src="js/cms-loader.js"></script>
 <script>

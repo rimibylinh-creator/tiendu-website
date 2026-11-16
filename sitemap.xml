@@ -18,4 +18,9 @@
     <loc>https://ototiendu.com/sitemap-posts.xml</loc>
   </sitemap>
 
+  <!-- Video "Tin vắn từ Tiên Du" (sinh động từ database qua api/sitemap-videos.js) -->
+  <sitemap>
+    <loc>https://ototiendu.com/sitemap-videos.xml</loc>
+  </sitemap>
+
 </sitemapindex>

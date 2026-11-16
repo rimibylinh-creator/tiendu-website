@@ -493,6 +493,9 @@ tr.p-selected td{background:#fffbea}
     <button class="nav-item" id="nav-posts" onclick="showTab('posts')">
       <span class="nav-icon"><i data-lucide="file-text" class="licon"></i></span> Bài viết
     </button>
+    <button class="nav-item" id="nav-videos" onclick="showTab('videos')">
+      <span class="nav-icon"><i data-lucide="clapperboard" class="licon"></i></span> Tin vắn (Video)
+    </button>
     <button class="nav-item" id="nav-tuyendung" onclick="showTab('tuyendung')">
       <span class="nav-icon"><i data-lucide="users" class="licon"></i></span> Tuyển dụng
     </button>
@@ -637,6 +640,32 @@ tr.p-selected td{background:#fffbea}
             <th>Hiển thị</th><th style="text-align:right">Thao tác</th>
           </tr></thead>
           <tbody id="poBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIDEO TAB: kho video "Tin vắn từ Tiên Du" -->
+    <div id="tab-videos" style="display:none">
+      <div class="ph">
+        <div><div class="ph-title">Tin vắn từ Tiên Du</div><div class="ph-sub" id="vdCount">Đang tải...</div></div>
+        <div class="ph-actions">
+          <button class="btn-primary" onclick="openVideoModal()">+ Thêm video</button>
+        </div>
+      </div>
+      <div id="vdSetupNote" style="display:none;margin-bottom:14px;padding:14px 16px;background:#fff7ed;border:1.5px solid #fdba74;border-radius:10px;font-size:13px;color:#9a3412;line-height:1.6">
+        <strong>Chưa tạo bảng video.</strong> Mở Supabase → SQL Editor → chạy file <code>database/migration_videos.sql</code> (1 lần), rồi tải lại trang.
+      </div>
+      <div class="toolbar">
+        <input class="search-input" placeholder="Tìm tiêu đề video..." oninput="vdFilter(this.value)">
+        <span class="fnote" style="align-self:center">Hiển thị ở trang chủ theo thứ tự: số nhỏ trước, bằng nhau thì video mới trước. Kéo ngang trên website.</span>
+      </div>
+      <div class="tcard">
+        <table>
+          <thead><tr>
+            <th></th><th>Video</th><th>Nguồn</th><th>Thời lượng</th><th>Thứ tự</th><th>Ngày đăng</th>
+            <th>Hiển thị</th><th style="text-align:right">Thao tác</th>
+          </tr></thead>
+          <tbody id="vdBody"></tbody>
         </table>
       </div>
     </div>
@@ -1346,6 +1375,89 @@ tr.p-selected td{background:#fffbea}
 </div>
 </div>
 
+<!--  VIDEO MODAL  -->
+<div class="modal-overlay" id="videoModal" style="display:none" onclick="bkClose(event,'videoModal')">
+<div class="modal-box lg">
+  <div class="modal-head">
+    <span class="modal-title" id="vdMTitle">Thêm video</span>
+    <button class="modal-close" onclick="closeModal('videoModal')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="fgrid">
+      <div class="fg s2">
+        <label class="flabel">Tiêu đề *</label>
+        <input class="finput" id="vd_title" placeholder="VD: 3 dấu hiệu má phanh cần thay ngay" oninput="autoSlug('vd_title','vd_slug')">
+      </div>
+      <div class="fg">
+        <label class="flabel">Đường dẫn (slug)</label>
+        <input class="finput" id="vd_slug" placeholder="tu-dong-tao-tu-tieu-de">
+        <span class="fnote">Trang riêng: ototiendu.com/tin-van/<span id="vd_slug_hint">…</span></span>
+      </div>
+      <div class="fg">
+        <label class="flabel">Nguồn video</label>
+        <select class="fsel" id="vd_source" onchange="vdSourceChange()">
+          <option value="file">Tải file MP4 lên (khuyên dùng)</option>
+          <option value="youtube">YouTube / YouTube Shorts</option>
+          <option value="tiktok">TikTok</option>
+          <option value="facebook">Facebook Reels / Video</option>
+        </select>
+      </div>
+      <div class="fg s2">
+        <label class="flabel" id="vd_url_label">File video (.mp4)</label>
+        <div class="finput-row">
+          <input class="finput" id="vd_url" placeholder="Dán link video hoặc tải lên →" oninput="vdUrlChanged()">
+          <label class="upload-btn" id="vd_upload_btn" title="Tải video lên" style="display:inline-flex;align-items:center;justify-content:center"><i data-lucide="video" style="width:16px;height:16px;stroke-width:2;pointer-events:none"></i><input type="file" accept="video/mp4,video/quicktime,video/webm" hidden onchange="uploadVideoFile(this)"></label>
+        </div>
+        <span class="fnote upload-progress" id="vd_upload_note"></span>
+        <span class="fnote" id="vd_url_hint">Nên quay dọc 9:16, MP4 (H.264), ≤ 60 giây, tối đa 50MB. Thumbnail + thời lượng sẽ tự lấy từ video.</span>
+      </div>
+      <div class="fg">
+        <label class="flabel">Ảnh bìa dọc (9:16)</label>
+        <div class="finput-row">
+          <input class="finput" id="vd_thumb" placeholder="URL ảnh hoặc upload →" oninput="prevImg('vd_thumb','vd_prev')">
+          <label class="upload-btn" title="Tải ảnh bìa lên" style="display:inline-flex;align-items:center;justify-content:center"><i data-lucide="camera" style="width:16px;height:16px;stroke-width:2;pointer-events:none"></i><input type="file" accept="image/*" hidden onchange="uploadVideoThumb(this)"></label>
+        </div>
+        <span class="fnote upload-progress" id="vd_thumb_note"></span>
+        <button type="button" class="btn-outline" id="vd_capture_btn" style="align-self:flex-start;font-size:12px;padding:5px 12px" onclick="captureVideoThumb()">Lấy ảnh bìa từ khung hình video</button>
+        <img class="img-prev" id="vd_prev" alt="Xem trước ảnh bìa" style="width:90px;height:160px">
+      </div>
+      <div class="fg">
+        <div class="fgrid" style="gap:12px">
+          <div class="fg">
+            <label class="flabel">Thời lượng (giây)</label>
+            <input class="finput" type="number" min="0" id="vd_duration" placeholder="VD: 45">
+          </div>
+          <div class="fg">
+            <label class="flabel">Thứ tự hiển thị</label>
+            <input class="finput" type="number" id="vd_order" value="0">
+          </div>
+          <div class="fg s2">
+            <label class="flabel">Ngày đăng</label>
+            <input class="finput" type="datetime-local" id="vd_date">
+          </div>
+          <div class="fg s2">
+            <label class="flabel">Hiển thị trên website</label>
+            <label class="toggle" style="margin-top:6px"><input type="checkbox" id="vd_pub" checked><span class="slider"></span></label>
+          </div>
+        </div>
+      </div>
+      <div class="fg s2">
+        <label class="flabel">Mô tả ngắn (hiện trên Google &amp; AI)</label>
+        <textarea class="ftextarea" id="vd_desc" placeholder="1–2 câu tóm tắt video: nói về phụ tùng/xe nào, người xem nhận được gì..."></textarea>
+      </div>
+      <div class="fg s2" style="padding:14px 16px;background:#fffbe6;border:1.5px solid #fecd27;border-radius:10px">
+        <label class="flabel" style="color:#7a5c00">Nội dung chính / Transcript — AEO · GEO</label>
+        <textarea class="ftextarea" id="vd_transcript" style="min-height:110px" placeholder="Gõ lại lời thoại hoặc các ý chính của video. AI (Google AI Overviews, ChatGPT, Perplexity...) không xem được hình/tiếng — chỉ đọc được chữ, nên phần này giúp video được trích dẫn."></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn-outline" onclick="closeModal('videoModal')">Hủy</button>
+    <button class="btn-primary" id="vd_save_btn" onclick="saveVideo()">Lưu video</button>
+  </div>
+</div>
+</div>
+
 <!--  CONFIRM DELETE  -->
 <div class="modal-overlay" id="confirmModal" style="display:none" onclick="bkClose(event,'confirmModal')">
 <div class="modal-box sm">
@@ -1378,6 +1490,8 @@ const pStore = {}, poStore = {}
 const pF = { q: '', cat: '', stock: '', brand: '', priceMin: '', priceMax: '', pub: '' }
 let editPId = null, editPoId = null, editTDId = null
 let allTD = []
+let allVd = [], vdQ = '', editVdId = null
+const vdStore = {}
 const tdStore = {}
 const tdF = { q: '', status: '' }
 let delTarget = {}
@@ -1423,13 +1537,14 @@ async function startAdmin(user) {
 
 function showTab(name) {
   document.querySelector('.main').classList.toggle('p-view', name === 'products')
-  ;['dashboard','products','posts','tuyendung','agent','shopee'].forEach(t => {
+  ;['dashboard','products','posts','videos','tuyendung','agent','shopee'].forEach(t => {
     document.getElementById('tab-' + t).style.display = t === name ? '' : 'none'
     const nav = document.getElementById('nav-' + t)
     if (nav) nav.classList.toggle('active', t === name)
   })
   if (name === 'products'  && !allP.length)  loadProducts()
   if (name === 'posts'     && !allPo.length) loadPosts()
+  if (name === 'videos'    && !allVd.length) loadVideos()
   if (name === 'tuyendung' && !allTD.length) loadTD()
   if (name === 'agent')                       initAgentTab()
   if (name === 'shopee'    && !allShopee.length) loadShopee()
@@ -2610,6 +2725,7 @@ async function execDelete() {
   if (error) { toast('Xoá thất bại: ' + error.message, 'err'); return }
   toast('Đã xoá!')
   closeModal('confirmModal')
+  if (delTarget.table === 'videos') { allVd = []; await loadVideos(); return }
   if (delTarget.table === 'products') { allP = []; await loadProducts(); loadDashboard() }
   else { allPo = []; await loadPosts() }
 }
@@ -2696,7 +2812,7 @@ function autoSlug(srcId, dstId) {
 }
 
 document.addEventListener('input', e => {
-  if (e.target.id === 'p_slug' || e.target.id === 'po_slug') e.target._manual = true
+  if (e.target.id === 'p_slug' || e.target.id === 'po_slug' || e.target.id === 'vd_slug') e.target._manual = true
 })
 
 //  IMAGE PREVIEW 
@@ -3645,6 +3761,257 @@ async function advApplyTierPrice() {
   updateAdvLabels(qeProduct)
   await loadProducts()
   toast(`Đã áp giá ${fmt(newPrice)} ₫ (lãi ${tier.rate}%)`)
+}
+
+//  VIDEO — "Tin vắn từ Tiên Du" 
+
+const vdHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]))
+const VD_SRC = { file: ['Tải lên', 'b-green'], youtube: ['YouTube', 'b-red'], tiktok: ['TikTok', 'b-gray'], facebook: ['Facebook', 'b-blue'] }
+const vdYtId = u => { const m = /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|embed\/|live\/|watch\?(?:.*&)?v=))([\w-]{11})/.exec(u || ''); return m ? m[1] : '' }
+const vdTiktokId = u => { const m = /tiktok\.com\/.*?\/video\/(\d+)/.exec(u || ''); return m ? m[1] : '' }
+const vdThumb = v => v.thumbnail_url || (v.source === 'youtube' && vdYtId(v.video_url) ? `https://i.ytimg.com/vi/${vdYtId(v.video_url)}/hqdefault.jpg` : '')
+const vdDur = s => { s = Math.round(+s || 0); return s ? Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') : '—' }
+
+async function loadVideos() {
+  document.getElementById('vdCount').textContent = 'Đang tải...'
+  const { data, error } = await db.from('videos').select('*').order('sort_order', { ascending: true }).order('published_at', { ascending: false })
+  const note = document.getElementById('vdSetupNote')
+  if (error) {
+    const missing = /relation|does not exist|schema cache|videos/i.test(error.message || '')
+    note.style.display = missing ? '' : 'none'
+    document.getElementById('vdCount').textContent = missing ? 'Chưa có bảng video' : 'Lỗi tải: ' + error.message
+    allVd = []; renderVd([]); return
+  }
+  note.style.display = 'none'
+  allVd = data || []
+  allVd.forEach(v => vdStore[v.id] = v)
+  renderVd(vdFiltered())
+}
+
+function vdFiltered() {
+  const q = vdQ.trim().toLowerCase()
+  return q ? allVd.filter(v => (v.title || '').toLowerCase().includes(q)) : allVd
+}
+function vdFilter(q) { vdQ = q; renderVd(vdFiltered()) }
+
+function renderVd(list) {
+  document.getElementById('vdCount').textContent = `${allVd.length} video · ${allVd.filter(v => v.is_published).length} đang hiển thị`
+  const tbody = document.getElementById('vdBody')
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-icon"><i data-lucide="clapperboard" style="width:32px;height:32px;stroke-width:1.5"></i></div><p>Chưa có video — bấm “+ Thêm video”</p></div></td></tr>'
+    if (window.lucide) lucide.createIcons(); return
+  }
+  tbody.innerHTML = list.map(v => {
+    const d = new Date(v.published_at)
+    const dt = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`
+    const [srcLabel, srcCls] = VD_SRC[v.source] || ['?', 'b-gray']
+    const th = vdThumb(v)
+    return `<tr${v.is_published ? '' : ' style="opacity:0.45"'}>
+      <td style="width:54px">${th ? `<img src="${vdHtml(th)}" alt="" style="width:36px;height:64px;object-fit:cover;border-radius:6px;background:#eee;display:block" onerror="this.style.opacity=0">` : '<div style="width:36px;height:64px;border-radius:6px;background:#eee"></div>'}</td>
+      <td>
+        <div class="rname">${vdHtml(v.title)}</div>
+        <div class="rmeta">/tin-van/${vdHtml(v.slug)}${v.transcript ? ' · <span class="badge b-green" style="font-size:10px">Có transcript</span>' : ''}</div>
+      </td>
+      <td><span class="badge ${srcCls}">${srcLabel}</span></td>
+      <td style="color:#737373;white-space:nowrap">${vdDur(v.duration_seconds)}</td>
+      <td><input class="finput" type="number" value="${v.sort_order ?? 0}" style="width:64px;padding:5px 8px" onchange="vdPatch('${v.id}','sort_order',parseInt(this.value)||0,true)"></td>
+      <td style="color:#a0a0a0;white-space:nowrap">${dt}</td>
+      <td><label class="toggle"><input type="checkbox" ${v.is_published ? 'checked' : ''} onchange="vdPatch('${v.id}','is_published',this.checked)"><span class="slider"></span></label></td>
+      <td style="text-align:right;white-space:nowrap">
+        <a class="btn-ghost" href="https://ototiendu.com/tin-van/${encodeURIComponent(v.slug)}" target="_blank" title="Xem trang video" style="display:inline-flex;align-items:center"><i data-lucide="external-link" style="width:14px;height:14px;stroke-width:2"></i></a>
+        <button class="btn-ghost" onclick="openVideoModal(vdStore['${v.id}'])" title="Sửa" style="display:inline-flex;align-items:center"><i data-lucide="pencil" style="width:14px;height:14px;stroke-width:2"></i></button>
+        <button class="btn-del" onclick="confirmDel('videos','${v.id}','${esc(v.title)}')" title="Xoá" style="display:inline-flex;align-items:center"><i data-lucide="trash-2" style="width:14px;height:14px;stroke-width:2"></i></button>
+      </td>
+    </tr>`
+  }).join('')
+  if (window.lucide) lucide.createIcons()
+}
+
+async function vdPatch(id, field, val, rerender) {
+  const { error } = await db.from('videos').update({ [field]: val }).eq('id', id)
+  if (error) { toast('Lỗi cập nhật: ' + error.message, 'err'); return }
+  toast('Đã lưu!')
+  const row = allVd.find(v => v.id === id)
+  if (row) { row[field] = val; vdStore[id] = row }
+  if (field === 'sort_order' || rerender) {
+    allVd.sort((a, b) => (a.sort_order - b.sort_order) || (new Date(b.published_at) - new Date(a.published_at)))
+  }
+  renderVd(vdFiltered())
+}
+
+function openVideoModal(v = null) {
+  editVdId = v?.id || null
+  document.getElementById('vdMTitle').textContent = v ? 'Chỉnh sửa video' : 'Thêm video'
+  sv('vd_title', v?.title || ''); sv('vd_slug', v?.slug || '')
+  document.getElementById('vd_slug')._manual = !!v
+  document.getElementById('vd_source').value = v?.source || 'file'
+  sv('vd_url', v?.video_url || ''); sv('vd_thumb', v?.thumbnail_url || '')
+  sv('vd_desc', v?.description || ''); sv('vd_transcript', v?.transcript || '')
+  sv('vd_duration', v?.duration_seconds ?? ''); sv('vd_order', v?.sort_order ?? 0)
+  document.getElementById('vd_pub').checked = v ? !!v.is_published : true
+  document.getElementById('vd_upload_note').textContent = ''
+  document.getElementById('vd_thumb_note').textContent = ''
+  const dt = v?.published_at ? new Date(v.published_at) : new Date()
+  const pad = n => String(n).padStart(2, '0')
+  document.getElementById('vd_date').value = `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`
+  prevImg('vd_thumb', 'vd_prev')
+  vdSourceChange(); vdSlugHint()
+  document.getElementById('videoModal').style.display = 'flex'
+  if (window.lucide) lucide.createIcons()
+}
+
+function vdSlugHint() { document.getElementById('vd_slug_hint').textContent = gv('vd_slug') || '…' }
+document.addEventListener('input', e => { if (e.target.id === 'vd_title' || e.target.id === 'vd_slug') vdSlugHint() })
+
+function vdSourceChange() {
+  const src = gv('vd_source')
+  const isFile = src === 'file'
+  document.getElementById('vd_upload_btn').style.display = isFile ? 'inline-flex' : 'none'
+  document.getElementById('vd_capture_btn').style.display = isFile ? '' : 'none'
+  document.getElementById('vd_url_label').textContent = isFile ? 'File video (.mp4)' : 'Link video'
+  document.getElementById('vd_url').placeholder = isFile ? 'Dán link .mp4 hoặc tải lên →' : ({
+    youtube: 'https://www.youtube.com/shorts/xxxxxxxxxxx', tiktok: 'https://www.tiktok.com/@ototiendu/video/1234567890', facebook: 'https://www.facebook.com/reel/1234567890'
+  }[src])
+  document.getElementById('vd_url_hint').textContent = isFile
+    ? 'Nên quay dọc 9:16, MP4 (H.264), ≤ 60 giây, tối đa 50MB. Thời lượng + ảnh bìa sẽ tự lấy từ video.'
+    : (src === 'youtube' ? 'Ảnh bìa tự lấy từ YouTube nếu để trống. Điền thời lượng (giây) để Google hiển thị đủ thông tin.'
+      : src === 'tiktok' ? 'Dán link đầy đủ có dạng …/video/<số> (link rút gọn vm.tiktok.com không dùng được). Cần tải ảnh bìa lên.'
+      : 'Video phải để chế độ Công khai. Cần tải ảnh bìa lên.')
+}
+function vdUrlChanged() {
+  // YouTube: tự hiện ảnh bìa mặc định để xem trước
+  const src = gv('vd_source')
+  if (src === 'youtube' && !gv('vd_thumb') && vdYtId(gv('vd_url'))) {
+    const img = document.getElementById('vd_prev'); img.src = `https://i.ytimg.com/vi/${vdYtId(gv('vd_url'))}/hqdefault.jpg`; img.classList.add('on')
+  }
+}
+
+const vdSafeName = n => n.toLowerCase().replace(/[^a-z0-9.]/g, '-').replace(/-+/g, '-')
+
+// Đọc thời lượng + chụp khung hình từ 1 URL (blob: hoặc public URL) bằng thẻ <video> ẩn
+function vdProbe(url, withFrame) {
+  return new Promise((resolve, reject) => {
+    const el = document.createElement('video')
+    el.crossOrigin = 'anonymous'; el.muted = true; el.playsInline = true; el.preload = 'auto'
+    const fail = () => reject(new Error('Không đọc được video (định dạng không hỗ trợ hoặc bị chặn CORS)'))
+    el.onerror = fail
+    el.onloadedmetadata = () => {
+      const duration = Math.round(el.duration || 0)
+      if (!withFrame) return resolve({ duration })
+      el.currentTime = Math.min(1, (el.duration || 1) / 2)
+    }
+    el.onseeked = () => {
+      try {
+        const scale = Math.min(1, 720 / Math.max(el.videoWidth, 1))
+        const c = document.createElement('canvas')
+        c.width = Math.round(el.videoWidth * scale); c.height = Math.round(el.videoHeight * scale)
+        c.getContext('2d').drawImage(el, 0, 0, c.width, c.height)
+        c.toBlob(b => b ? resolve({ duration: Math.round(el.duration || 0), blob: b }) : fail(), 'image/jpeg', 0.85)
+      } catch (e) { fail() }
+    }
+    el.src = url
+  })
+}
+
+async function vdUploadBlob(path, blob, contentType) {
+  const { data, error } = await db.storage.from('videos').upload(path, blob, { upsert: false, contentType })
+  if (error) throw error
+  return db.storage.from('videos').getPublicUrl(data.path).data.publicUrl
+}
+
+async function uploadVideoFile(input) {
+  const file = input.files[0]; input.value = ''
+  if (!file) return
+  const note = document.getElementById('vd_upload_note')
+  if (file.size > 50 * 1024 * 1024) { note.textContent = `File ${(file.size/1048576).toFixed(0)}MB — vượt 50MB, hãy nén lại`; toast('Video vượt 50MB', 'err'); return }
+  note.textContent = 'Đang tải video lên...'
+  try {
+    const url = await vdUploadBlob(`files/${Date.now()}-${vdSafeName(file.name)}`, file, file.type || 'video/mp4')
+    sv('vd_url', url)
+    document.getElementById('vd_source').value = 'file'; vdSourceChange()
+    note.textContent = 'Đã tải lên! Đang lấy thời lượng + ảnh bìa...'
+    // Dùng file local (blob:) để chụp khung hình, tránh phụ thuộc CORS
+    const local = URL.createObjectURL(file)
+    try {
+      const { duration, blob } = await vdProbe(local, true)
+      if (duration && !gv('vd_duration')) sv('vd_duration', duration)
+      if (blob && !gv('vd_thumb')) {
+        const t = await vdUploadBlob(`thumbs/${Date.now()}-${vdSafeName(file.name)}.jpg`, blob, 'image/jpeg')
+        sv('vd_thumb', t); prevImg('vd_thumb', 'vd_prev')
+      }
+      note.textContent = 'Đã tải lên + lấy thời lượng, ảnh bìa tự động!'
+    } catch (e) {
+      note.textContent = 'Đã tải lên. Không tự lấy được ảnh bìa — hãy tải ảnh lên thủ công.'
+    } finally { URL.revokeObjectURL(local) }
+    toast('Video đã được lưu!')
+  } catch (e) {
+    note.textContent = 'Upload thất bại'; toast(e.message || 'Upload thất bại', 'err')
+  }
+}
+
+async function uploadVideoThumb(input) {
+  const file = input.files[0]; input.value = ''
+  if (!file) return
+  const note = document.getElementById('vd_thumb_note')
+  note.textContent = 'Đang tải lên...'
+  try {
+    const url = await vdUploadBlob(`thumbs/${Date.now()}-${vdSafeName(file.name)}`, file, file.type)
+    sv('vd_thumb', url); prevImg('vd_thumb', 'vd_prev')
+    note.textContent = 'Đã tải lên!'; toast('Ảnh bìa đã được lưu!')
+  } catch (e) { note.textContent = 'Upload thất bại'; toast(e.message || 'Upload thất bại', 'err') }
+}
+
+async function captureVideoThumb() {
+  const url = gv('vd_url').trim()
+  const note = document.getElementById('vd_thumb_note')
+  if (!url) { toast('Hãy tải video lên hoặc dán link .mp4 trước', 'err'); return }
+  note.textContent = 'Đang chụp khung hình...'
+  try {
+    const { duration, blob } = await vdProbe(url, true)
+    if (duration && !gv('vd_duration')) sv('vd_duration', duration)
+    const t = await vdUploadBlob(`thumbs/${Date.now()}-frame.jpg`, blob, 'image/jpeg')
+    sv('vd_thumb', t); prevImg('vd_thumb', 'vd_prev')
+    note.textContent = 'Đã lấy ảnh bìa từ video!'
+  } catch (e) { note.textContent = e.message || 'Không chụp được' }
+}
+
+async function saveVideo() {
+  const title = gv('vd_title').trim()
+  const source = gv('vd_source')
+  let url = gv('vd_url').trim()
+  if (!title) { toast('Nhập tiêu đề video', 'err'); return }
+  if (!url) { toast('Chưa có video — tải lên hoặc dán link', 'err'); return }
+  if (source === 'youtube' && !vdYtId(url)) { toast('Link YouTube không hợp lệ', 'err'); return }
+  if (source === 'tiktok' && !vdTiktokId(url)) { toast('Link TikTok cần dạng …/video/<số> (không dùng link rút gọn)', 'err'); return }
+  if (source === 'facebook' && !/facebook\.com|fb\.watch/.test(url)) { toast('Link Facebook không hợp lệ', 'err'); return }
+  const thumb = gv('vd_thumb').trim() || null
+  if (!thumb && source !== 'youtube') toast('Chưa có ảnh bìa — Google cần ảnh bìa để hiển thị video', 'err')
+
+  let slug = toSlug(gv('vd_slug').trim() || title)
+  if (!slug) { toast('Tiêu đề không tạo được slug', 'err'); return }
+  // slug phải duy nhất
+  const { data: dup } = await db.from('videos').select('id').eq('slug', slug).limit(1)
+  if (dup?.length && dup[0].id !== editVdId) slug += '-' + Date.now().toString(36).slice(-4)
+
+  const payload = {
+    slug, title, source, video_url: url,
+    description: gv('vd_desc').trim() || null,
+    transcript: gv('vd_transcript').trim() || null,
+    thumbnail_url: thumb,
+    duration_seconds: parseInt(gv('vd_duration')) || null,
+    sort_order: parseInt(gv('vd_order')) || 0,
+    is_published: document.getElementById('vd_pub').checked,
+    published_at: gv('vd_date') ? new Date(gv('vd_date')).toISOString() : new Date().toISOString()
+  }
+  const btn = document.getElementById('vd_save_btn'); btn.disabled = true
+  const { error } = editVdId
+    ? await db.from('videos').update(payload).eq('id', editVdId)
+    : await db.from('videos').insert(payload)
+  btn.disabled = false
+  if (error) { toast('Lỗi lưu: ' + error.message, 'err'); return }
+  toast(editVdId ? 'Đã cập nhật video' : 'Đã thêm video')
+  closeModal('videoModal')
+  allVd = []; await loadVideos()
 }
 
 //  UTILS 

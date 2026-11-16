@@ -1,35 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  /* ---------- Promo carousel ---------- */
-  const track = document.querySelector('.promo-track');
-  const slides = document.querySelectorAll('.promo-slide');
-  const dots = document.querySelectorAll('.promo-dot');
-  let current = 0;
-  let autoplayTimer = null;
-
-  function goToSlide(index) {
-    current = (index + slides.length) % slides.length;
-    track.style.transform = `translateX(-${current * 100}%)`;
-    dots.forEach((dot, i) => dot.classList.toggle('active', i === current));
-  }
-
-  dots.forEach((dot, i) => {
-    dot.addEventListener('click', () => {
-      goToSlide(i);
-      restartAutoplay();
-    });
-  });
-
-  function autoplay() {
-    autoplayTimer = setInterval(() => goToSlide(current + 1), 5000);
-  }
-  function restartAutoplay() {
-    clearInterval(autoplayTimer);
-    autoplay();
-  }
-  if (track && slides.length) {
-    autoplay();
-  }
-
   /* ---------- Language switcher (nav) ---------- */
   // Ngôn ngữ hiện tại do js/i18n.js quyết định (localStorage 'tiendu-lang'); đổi ngôn ngữ = tải lại trang.
   const langSwitch = document.querySelector('.lang-switch');
